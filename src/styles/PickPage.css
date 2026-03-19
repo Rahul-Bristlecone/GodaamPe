@@ -1,0 +1,532 @@
+/* Upload Area Styling */
+.upload-section {
+    margin-bottom: 2rem;
+}
+
+.upload-section h2 {
+    margin: 0 0 1.5rem 0;
+    color: #2d3748;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* Drag & Drop Zone */
+.drag-drop-zone {
+    border: 3px dashed #cbd5e0;
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    background-color: #f7fafc;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.drag-drop-zone:hover {
+    border-color: #667eea;
+    background-color: #edf2f7;
+}
+
+.drag-drop-zone.drag-over {
+    border-color: #667eea;
+    background-color: #dfe7fd;
+    transform: scale(1.01);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.drag-drop-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.7;
+}
+
+.drag-drop-text {
+    margin: 0;
+    color: #4a5568;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.drag-drop-subtext {
+    margin: 0.5rem 0 0 0;
+    color: #a0aec0;
+    font-size: 0.95rem;
+}
+
+.drag-drop-input {
+    display: none;
+}
+
+/* File Select Button */
+.file-select-button {
+    padding: 0.6rem 1.2rem;
+    background-color: #667eea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.4);
+    margin-top: 1rem;
+}
+
+.file-select-button:hover:not(:disabled) {
+    background-color: #5568d3;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.6);
+}
+
+.file-select-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* File Select Button in Orders Header */
+.orders-header-actions .file-select-button {
+    margin-top: 0;
+}
+
+/* Orders Display Section */
+.orders-section {
+    margin-top: 0rem;
+}
+
+/* Orders Header with Action Buttons */
+.orders-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    gap: 1rem;
+}
+
+.orders-header-left {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.orders-header-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.orders-header-center h2 {
+    margin: 0;
+    color: #2d3748;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.orders-header-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.orders-header-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.order-count {
+    color: #718096;
+    font-size: 0.95rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.orders-header-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.refresh-button {
+    padding: 0.6rem 1.2rem;
+    background-color: #667eea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.4);
+}
+
+.refresh-button:hover:not(:disabled) {
+    background-color: #5568d3;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.6);
+}
+
+.refresh-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Orders Table */
+.orders-table-wrapper {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.orders-table thead {
+    background-color: #f7fafc;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.orders-table th {
+    padding: 0.75rem 0.75rem;
+    text-align: left;
+    color: #4a5568;
+    font-weight: 600;
+    white-space: nowrap;
+    font-size: 0.9rem;
+}
+
+.orders-table tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+    transition: background-color 0.2s ease;
+}
+
+.orders-table tbody tr:hover {
+    background-color: #f7fafc;
+    cursor: pointer;
+}
+
+.orders-table tbody tr:active {
+    background-color: #edf2f7;
+}
+
+.orders-table td {
+    padding: 0.75rem 0.75rem;
+    color: #2d3748;
+    font-size: 0.9rem;
+}
+
+.order-details-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.order-details-cell div {
+    color: #718096;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    color: #a0aec0;
+    font-size: 1rem;
+    padding: 2rem;
+    background-color: #f7fafc;
+    border-radius: 8px;
+    border: 2px dashed #cbd5e0;
+}
+
+/* Order Details Modal */
+.order-details-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.order-details-content {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    max-width: 700px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.order-details-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #718096;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
+}
+
+.order-details-close:hover {
+    color: #2d3748;
+}
+
+.order-details-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.order-details-header h2 {
+    margin: 0 0 0.5rem 0;
+    color: #2d3748;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.order-details-status {
+    display: inline-block;
+    padding: 0.35rem 0.85rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: white;
+}
+
+.order-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.order-detail-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.order-detail-label {
+    color: #718096;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.order-detail-value {
+    color: #2d3748;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.order-detail-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.order-items-section {
+    margin-bottom: 2rem;
+}
+
+.order-items-section h3 {
+    margin: 0 0 1rem 0;
+    color: #2d3748;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.order-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.order-item-card {
+    background-color: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.order-item-card strong {
+    color: #2d3748;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.close-modal-button {
+    padding: 0.75rem 1.5rem;
+    background-color: #e2e8f0;
+    color: #4a5568;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.close-modal-button:hover {
+    background-color: #cbd5e0;
+}
+
+/* Uploading State */
+.uploading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    text-align: center;
+}
+
+.uploading-spinner::before {
+    content: '';
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e2e8f0;
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 1rem;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.uploading-spinner p {
+    color: #718096;
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .drag-drop-zone {
+        padding: 2rem 1rem;
+        min-height: 150px;
+    }
+
+    .drag-drop-icon {
+        font-size: 2rem;
+    }
+
+    .drag-drop-text {
+        font-size: 1rem;
+    }
+
+    .orders-header {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .orders-header-left {
+        justify-content: center;
+    }
+
+    .orders-header-center h2 {
+        font-size: 1.3rem;
+    }
+
+    .orders-header-right {
+        justify-content: center;
+    }
+
+    .orders-table {
+        font-size: 0.85rem;
+    }
+
+    .orders-table th,
+    .orders-table td {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .order-details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .order-details-content {
+        max-width: 95vw;
+    }
+}
+
+@media (max-width: 480px) {
+    .drag-drop-zone {
+        padding: 1.5rem 1rem;
+        min-height: 120px;
+    }
+
+    .drag-drop-icon {
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .drag-drop-text {
+        font-size: 0.95rem;
+    }
+
+    .orders-header {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .orders-header-center h2 {
+        font-size: 1.1rem;
+    }
+
+    .orders-header-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .refresh-button,
+    .file-select-button {
+        width: 100%;
+    }
+
+    .orders-table {
+        font-size: 0.8rem;
+    }
+
+    .orders-table th,
+    .orders-table td {
+        padding: 0.5rem 0.25rem;
+    }
+
+    .order-details-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .order-details-content {
+        padding: 1.5rem;
+    }
+
+    .order-details-close {
+        top: 1rem;
+        right: 1rem;
+    }
+}
