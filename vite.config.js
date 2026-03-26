@@ -6,6 +6,11 @@ import path from 'path';
 import child_process from 'child_process';
 import { env } from 'process';
 
+const USER_SERVICE_PROXY_PATH = '/user-api';
+const STORE_SERVICE_PROXY_PATH = '/store-api';
+const USER_SERVICE_FALLBACK = 'http://127.0.0.1:5001';
+const STORE_SERVICE_FALLBACK = 'http://127.0.0.1:5002';
+
 export default defineConfig(({ command }) => {
   const isDev = command === 'serve';
 
@@ -15,6 +20,8 @@ export default defineConfig(({ command }) => {
     : env.ASPNETCORE_URLS
     ? env.ASPNETCORE_URLS.split(';')[0]
     : 'https://localhost:7212';
+  const userServiceTarget = env.VITE_USER_SERVICE_URL_LOCAL || USER_SERVICE_FALLBACK;
+  const storeServiceTarget = env.VITE_STORE_SERVICE_URL_LOCAL || STORE_SERVICE_FALLBACK;
 
   if (isDev) {
     const baseFolder =
@@ -69,6 +76,20 @@ export default defineConfig(({ command }) => {
         '^/weatherforecast': {
           target: proxyTarget,
           secure: false,
+        },
+        [`^${USER_SERVICE_PROXY_PATH}`]: {
+          target: userServiceTarget,
+          changeOrigin: true,
+          secure: false,
+          rewrite: (requestPath) =>
+            requestPath.replace(new RegExp(`^${USER_SERVICE_PROXY_PATH}`), ''),
+        },
+        [`^${STORE_SERVICE_PROXY_PATH}`]: {
+          target: storeServiceTarget,
+          changeOrigin: true,
+          secure: false,
+          rewrite: (requestPath) =>
+            requestPath.replace(new RegExp(`^${STORE_SERVICE_PROXY_PATH}`), ''),
         },
       },
       port: parseInt(env.DEV_SERVER_PORT || '56875'),
