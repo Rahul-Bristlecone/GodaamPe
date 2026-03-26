@@ -3,8 +3,9 @@
  */
 
 import { getAuthToken } from './authService';
+import { getStoreServiceUrl } from './apiConfig';
 
-const API_URL = 'http://127.0.0.1:5002';
+const API_URL = getStoreServiceUrl();
 
 /**
  * Get Authorization header with JWT token
