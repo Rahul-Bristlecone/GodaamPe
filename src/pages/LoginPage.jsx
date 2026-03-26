@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import '../styles/LoginPage.css';
+import { getUserServiceUrl } from '../utils/apiConfig';
 
-const API_URL = 'http://127.0.0.1:5001';
+const userServiceUrl = getUserServiceUrl();
 
 function LoginPage({ onLoginSuccess }) {
     const [username, setUsername] = useState('');
@@ -25,10 +26,10 @@ function LoginPage({ onLoginSuccess }) {
                 password: password
             };
             
-            console.log('Sending login request to:', `${API_URL}/login`);
+            console.log('Sending login request to:', `${userServiceUrl}/login`);
             console.log('Request body:', requestBody);
 
-            const response = await fetch(`${API_URL}/login`, {
+            const response = await fetch(`${userServiceUrl}/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

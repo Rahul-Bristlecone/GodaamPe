@@ -1,0 +1,12 @@
+node_modules
+dist
+.git
+.gitignore
+.vscode
+obj
+backend
+npm-debug.log
+README.md
+CHANGELOG.md
+FLASK_SETUP.md
+FLOW_DIAGRAM.md

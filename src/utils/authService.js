@@ -2,6 +2,8 @@
  * Auth Service - Manages JWT token storage and retrieval
  */
 
+import { getUserServiceUrl } from './apiConfig';
+
 const AUTH_TOKEN_KEY = 'authToken';
 const USERNAME_KEY = 'username';
 
@@ -52,7 +54,7 @@ export const clearAuth = () => {
  * Logout user by calling backend endpoint and clearing auth data
  */
 export const logout = async () => {
-    const API_URL = 'http://127.0.0.1:49886';
+    const API_URL = getUserServiceUrl();
     const token = getAuthToken();
 
     try {

@@ -107,6 +107,38 @@ Default Vite URL:
 npm run build
 ```
 
+## Docker Build And Run
+
+For a containerized frontend, remember that Vite injects `VITE_*` variables at build time, not when the container starts. That means the image must be built with browser-reachable backend URLs.
+
+Example build for a backend running on the same Windows host:
+
+```bash
+docker build -t godaampe:v1 \
+	--build-arg VITE_USER_SERVICE_URL=http://host.docker.internal:5001 \
+	--build-arg VITE_STORE_SERVICE_URL=http://host.docker.internal:5002 \
+	--build-arg VITE_ORDER_SERVICE_URL=http://host.docker.internal:5003 \
+	.
+```
+
+Run the frontend container:
+
+```bash
+docker run -d --name godaampe-frontend -p 3000:3000 godaampe:v1
+```
+
+If your backend is exposed directly on the host at `localhost`, you can also bake those URLs instead:
+
+```bash
+docker build -t godaampe:v1 \
+	--build-arg VITE_USER_SERVICE_URL=http://localhost:5001 \
+	--build-arg VITE_STORE_SERVICE_URL=http://localhost:5002 \
+	--build-arg VITE_ORDER_SERVICE_URL=http://localhost:5003 \
+	.
+```
+
+Use `host.docker.internal` when the frontend container must call services running on the host machine. Use Docker service names like `user-service` only when the browser itself can resolve them, which is generally not the case when the React app is served as static assets and executed in the user's browser.
+
 ### Preview Build
 
 ```bash

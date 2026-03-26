@@ -18,6 +18,7 @@ FLOW_DIAGRAM.md
 .vscode/*
 !.vscode/extensions.json
 .idea
+.env
 .DS_Store
 *.suo
 *.ntvs*
