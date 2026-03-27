@@ -4,7 +4,7 @@ import { getUserServiceUrl } from '../utils/apiConfig';
 
 const userServiceUrl = getUserServiceUrl();
 
-function LoginPage({ onLoginSuccess }) {
+function LoginPage({ onLoginSuccess, onNavigateToRegister }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loginType, setLoginType] = useState('company');
@@ -96,6 +96,16 @@ function LoginPage({ onLoginSuccess }) {
 
     return (
         <div className="login-container">
+            <div className="auth-page-actions">
+                <button
+                    type="button"
+                    className="auth-link-btn"
+                    onClick={onNavigateToRegister}
+                >
+                    Sign Up
+                </button>
+            </div>
+
             <div className="login-branding">
                 <h1 className="brand-title">ABS Suite</h1>
                 <p className="brand-subtitle">Advanced Barcoding Solution</p>
@@ -147,8 +157,8 @@ function LoginPage({ onLoginSuccess }) {
                         />
                     </div>
                     <div className="button-group">
-                        <button onClick={handleCancel} className="cancel-btn">Cancel</button>
-                        <button onClick={handleLogin} className="login-btn">Login</button>
+                        <button onClick={handleCancel} className="cancel-btn" disabled={loading}>Cancel</button>
+                        <button onClick={handleLogin} className="login-btn" disabled={loading}>Login</button>
                     </div>
                 </div>
             </div>

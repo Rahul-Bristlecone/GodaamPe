@@ -17,6 +17,8 @@ const firstDefined = (...values) => {
 
 const USER_SERVICE_FALLBACK = '/user-api';
 const STORE_SERVICE_FALLBACK = '/store-api';
+const USER_SERVICE_DEV_PROXY_PATH = '/user-api';
+const STORE_SERVICE_DEV_PROXY_PATH = '/store-api';
 
 
 export const getUserServiceUrl = () => {

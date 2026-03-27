@@ -1,4 +1,5 @@
 .login-container {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -6,6 +7,29 @@
     min-height: 100vh;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 1rem;
+}
+
+.auth-page-actions {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+}
+
+.auth-link-btn {
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.14);
+    color: white;
+    padding: 0.7rem 1rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.auth-link-btn:hover {
+    background-color: rgba(255, 255, 255, 0.24);
+    transform: translateY(-1px);
 }
 
 .login-branding {
@@ -92,6 +116,18 @@
     text-align: center;
 }
 
+.success-message {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0;
+    background-color: #ecfdf3;
+    color: #166534;
+    border: 2px solid #86efac;
+    border-radius: 8px 8px 0 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: center;
+}
+
 .login-form {
     width: 100%;
     padding: 1.5rem;
@@ -99,6 +135,36 @@
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     background-color: white;
     box-sizing: border-box;
+}
+
+.register-type-tabs .login-tab {
+    cursor: default;
+}
+
+.register-type-tabs .login-tab:hover {
+    transform: none;
+}
+
+.register-type-tabs {
+    justify-content: center;
+}
+
+.register-type-tabs .register-single-tab {
+    width: 100%;
+    max-width: none;
+    margin: 0.2rem;
+}
+
+.register-form-compact {
+    padding: 1.1rem 1.25rem 1.2rem;
+}
+
+.register-form-compact .form-group {
+    margin-bottom: 0.7rem;
+}
+
+.register-form-compact .button-group {
+    margin-top: 0.95rem;
 }
 
 .form-group {
@@ -175,6 +241,11 @@
         padding: 1rem;
     }
 
+    .auth-page-actions {
+        top: 1rem;
+        right: 1rem;
+    }
+
     .brand-title {
         font-size: 2.5rem;
     }
@@ -207,6 +278,10 @@
 
     .login-form {
         padding: 2rem;
+    }
+
+    .register-form-compact {
+        padding: 1.05rem 1rem 1.15rem;
     }
 
     .button-group {
