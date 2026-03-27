@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import PickPage from './pages/PickPage';
 import ConfigManagerPage from './pages/ConfigManagerPage';
@@ -25,12 +26,14 @@ function App() {
         // Get username from localStorage if available
         return localStorage.getItem('username') || '';
     });
+    const [authView, setAuthView] = useState('login');
     const [currentPage, setCurrentPage] = useState('dashboard');
 
     const handleLoginSuccess = (username) => {
         setLoggedInUser(username);
         setIsLoggedIn(true);
         setCurrentPage('dashboard');
+        setAuthView('login');
     };
 
     const handleLogout = async () => {
@@ -41,6 +44,7 @@ function App() {
         setIsLoggedIn(false);
         setLoggedInUser('');
         setCurrentPage('dashboard');
+        setAuthView('login');
     };
 
     const handleNavigate = (pageName) => {
@@ -93,7 +97,14 @@ function App() {
     return (
         <div className="app">
             {!isLoggedIn ? (
-                <LoginPage onLoginSuccess={handleLoginSuccess} />
+                authView === 'register' ? (
+                    <RegisterPage onNavigateToLogin={() => setAuthView('login')} />
+                ) : (
+                    <LoginPage
+                        onLoginSuccess={handleLoginSuccess}
+                        onNavigateToRegister={() => setAuthView('register')}
+                    />
+                )
             ) : (
                 renderPage()
             )}
