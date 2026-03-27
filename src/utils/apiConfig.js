@@ -15,10 +15,9 @@ const firstDefined = (...values) => {
     return '';
 };
 
-const USER_SERVICE_FALLBACK = 'http://127.0.0.1:5001';
-const STORE_SERVICE_FALLBACK = 'http://127.0.0.1:5002';
-const USER_SERVICE_DEV_PROXY_PATH = '/user-api';
-const STORE_SERVICE_DEV_PROXY_PATH = '/store-api';
+const USER_SERVICE_FALLBACK = '/user-api';
+const STORE_SERVICE_FALLBACK = '/store-api';
+
 
 export const getUserServiceUrl = () => {
     if (import.meta.env.DEV) {
