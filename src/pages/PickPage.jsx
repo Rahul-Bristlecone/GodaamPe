@@ -3,20 +3,68 @@ import Header from '../components/Header';
 import '../styles/SubPage.css';
 import '../styles/PickPage.css';
 import { uploadEDIFile, getAllOrders } from '../utils/uploadService';
+import { getAllStores } from '../utils/storeService';
 
 function PickPage({ username, onLogout, onBack }) {
+    const orderStatusOptions = ['pending', 'cancelled', 'outstanding', 'discarded', 'downloading', 'Picking', 'complete'];
+    const poaStatusOptions = ['POA sent', 'POA not sent'];
+    const carrierOptions = ['Select carrier', 'DHL', 'FedEx', 'Blue Dart', 'Delhivery'];
+    const todayDate = getTodayDateString();
+    const defaultOrderFormData = {
+        orderStatus: 'pending',
+        shipByDate: todayDate,
+        notAfter: todayDate,
+        notBefore: todayDate,
+        dontPickBefore: todayDate,
+        poaStatus: 'POA not sent',
+        carrier: 'Select carrier',
+        consignmentNoteNumber: ''
+    };
+
     const [orders, setOrders] = useState([]);
+    const [storesById, setStoresById] = useState({});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [dragOver, setDragOver] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [selectedOrderKey, setSelectedOrderKey] = useState('');
     const [showOrderModal, setShowOrderModal] = useState(false);
+    const [orderDrafts, setOrderDrafts] = useState({});
+    const [orderFormData, setOrderFormData] = useState({
+        orderStatus: 'pending',
+        shipByDate: todayDate,
+        notAfter: todayDate,
+        notBefore: todayDate,
+        dontPickBefore: todayDate,
+        poaStatus: 'POA not sent',
+        carrier: 'Select carrier',
+        consignmentNoteNumber: ''
+    });
 
     // Fetch orders on component mount
     useEffect(() => {
         fetchOrders();
+        fetchStoresForLookup();
     }, []);
+
+    const fetchStoresForLookup = async () => {
+        const result = await getAllStores();
+        if (!result.success) {
+            return;
+        }
+
+        const storesList = Array.isArray(result.data) ? result.data : (result.data?.stores || []);
+        const nextStoresById = storesList.reduce((accumulator, store) => {
+            const storeId = store.store_id || store.id;
+            if (storeId) {
+                accumulator[storeId] = store.store_name || store.name || '';
+            }
+            return accumulator;
+        }, {});
+
+        setStoresById(nextStoresById);
+    };
 
     const fetchOrders = async () => {
         setLoading(true);
@@ -98,15 +146,109 @@ function PickPage({ username, onLogout, onBack }) {
         }
     };
 
-    const handleOrderClick = (order) => {
+    const getOrderKey = (order, index = 0) => {
+        return `${order.order_id || 'order'}-${order.store_id || 'store'}-${index}`;
+    };
+
+    const getSavedOrderDraft = (orderKey) => {
+        const savedDraft = orderDrafts[orderKey];
+        if (!savedDraft) {
+            return undefined;
+        }
+
+        const mergedDraft = {
+            ...defaultOrderFormData,
+            ...savedDraft
+        };
+
+        if (isPastDate(mergedDraft.shipByDate, todayDate)) {
+            return {
+                ...mergedDraft,
+                orderStatus: 'cancelled'
+            };
+        }
+
+        return mergedDraft;
+    };
+
+    const getDisplayOrderStatus = (order, index) => {
+        return getSavedOrderDraft(getOrderKey(order, index))?.orderStatus || order.order_status || 'pending';
+    };
+
+    const getDisplayShipByDate = (order, index) => {
+        return getSavedOrderDraft(getOrderKey(order, index))?.shipByDate || defaultOrderFormData.shipByDate;
+    };
+
+    const getDisplayNotAfterDate = (order, index) => {
+        return getSavedOrderDraft(getOrderKey(order, index))?.notAfter || defaultOrderFormData.notAfter;
+    };
+
+    const getDisplayStoreName = (order) => {
+        return order.store_name || storesById[order.store_id] || 'Unknown Store';
+    };
+
+    const handleOrderClick = (order, index) => {
+        const orderKey = getOrderKey(order, index);
         setSelectedOrder(order);
+        setSelectedOrderKey(orderKey);
+        setOrderFormData(getSavedOrderDraft(orderKey) || defaultOrderFormData);
         setShowOrderModal(true);
     };
 
     const closeOrderModal = () => {
         setShowOrderModal(false);
-        setTimeout(() => setSelectedOrder(null), 300);
+        setTimeout(() => {
+            setSelectedOrder(null);
+            setSelectedOrderKey('');
+            setOrderFormData(defaultOrderFormData);
+        }, 300);
     };
+
+    const handleOrderFormChange = (e) => {
+        const { name, value } = e.target;
+        setOrderFormData(prev => ({
+            ...prev,
+            [name]: value,
+            ...(name === 'shipByDate'
+                ? { orderStatus: isPastDate(value, todayDate) ? 'cancelled' : 'pending' }
+                : {})
+        }));
+    };
+
+    const handleSaveOrderChanges = () => {
+        if (!selectedOrderKey) {
+            return;
+        }
+
+        const nextOrderFormData = isPastDate(orderFormData.shipByDate, todayDate)
+            ? { ...orderFormData, orderStatus: 'cancelled' }
+            : orderFormData;
+
+        setOrderDrafts(prev => ({
+            ...prev,
+            [selectedOrderKey]: nextOrderFormData
+        }));
+
+        if (selectedOrder) {
+            setSelectedOrder(prev => prev ? ({
+                ...prev,
+                order_status: nextOrderFormData.orderStatus
+            }) : prev);
+        }
+
+        setSuccess('Order changes saved locally.');
+        setTimeout(() => setSuccess(''), 2500);
+        closeOrderModal();
+    };
+
+    const hasOrderChanges = selectedOrderKey && JSON.stringify(orderFormData) !== JSON.stringify(getSavedOrderDraft(selectedOrderKey) || defaultOrderFormData);
+    const selectedOrderStoreName = selectedOrder ? (selectedOrder.store_name || storesById[selectedOrder.store_id] || 'Unknown Store') : '';
+    const isOrderStatusLocked = isPastDate(orderFormData.shipByDate, todayDate);
+
+    const getStatusBadgeStyle = (status) => ({
+        backgroundColor: getStatusColor(status),
+        color: getStatusTextColor(status)
+    });
 
     return (
         <div className="page-container">
@@ -170,40 +312,42 @@ function PickPage({ username, onLogout, onBack }) {
                                         <thead>
                                             <tr>
                                                 <th>Order ID</th>
-                                                <th>Store ID</th>
-                                                <th>User ID</th>
-                                                <th>Total Amount</th>
+                                                <th>Store Name</th>
+                                                <th>Ship by Date</th>
+                                                <th>Not After Date</th>
                                                 <th>Status</th>
                                                 <th>Items</th>
-                                                <th>Created At</th>
+                                                <th>Total Amount</th>
+                                                <th>Order Creation Date</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {orders.map((order, index) => (
                                                 <tr 
                                                     key={order.order_id || index}
-                                                    onClick={() => handleOrderClick(order)}
+                                                    onClick={() => handleOrderClick(order, index)}
                                                     style={{ cursor: 'pointer' }}
                                                 >
                                                     <td>{order.order_id || '-'}</td>
-                                                    <td>{order.store_id || '-'}</td>
-                                                    <td>{order.user_id || '-'}</td>
+                                                    <td>{getDisplayStoreName(order)}</td>
                                                     <td>
-                                                        {order.currency} {order.total_amount ? order.total_amount.toFixed(2) : '-'}
+                                                        {formatDisplayDate(getDisplayShipByDate(order, index))}
                                                     </td>
                                                     <td>
-                                                        <span style={{
-                                                            padding: '0.25rem 0.75rem',
-                                                            borderRadius: '4px',
-                                                            fontSize: '0.85rem',
-                                                            fontWeight: '600',
-                                                            backgroundColor: getStatusColor(order.order_status),
-                                                            color: 'white'
-                                                        }}>
-                                                            {order.order_status || 'pending'}
+                                                        {formatDisplayDate(getDisplayNotAfterDate(order, index))}
+                                                    </td>
+                                                    <td>
+                                                        <span
+                                                            className="order-status-badge"
+                                                            style={getStatusBadgeStyle(getDisplayOrderStatus(order, index))}
+                                                        >
+                                                            {getDisplayOrderStatus(order, index)}
                                                         </span>
                                                     </td>
                                                     <td>{order.items && order.items.length > 0 ? order.items.length : '0'} item(s)</td>
+                                                    <td>
+                                                        {order.currency} {order.total_amount ? order.total_amount.toFixed(2) : '-'}
+                                                    </td>
                                                     <td>
                                                         {order.created_at ? new Date(order.created_at).toLocaleDateString() : '-'}
                                                     </td>
@@ -265,45 +409,144 @@ function PickPage({ username, onLogout, onBack }) {
             {showOrderModal && selectedOrder && (
                 <div className="order-details-modal" onClick={closeOrderModal}>
                     <div className="order-details-content" onClick={(e) => e.stopPropagation()}>
-                        <button className="order-details-close" onClick={closeOrderModal}>✕</button>
-                        
-                        <div className="order-details-header">
-                            <h2>Order #{selectedOrder.order_id}</h2>
-                            <span className="order-details-status" style={{ backgroundColor: getStatusColor(selectedOrder.order_status) }}>
-                                {selectedOrder.order_status.toUpperCase()}
-                            </span>
+                        <div className="order-modal-header">
+                            <div className="order-modal-title-block">
+                                <h2>Modify Order</h2>
+                                <p className="order-modal-subtitle">Order #{selectedOrder.order_id}</p>
+                            </div>
+                            <div className="order-store-name-block">
+                                <div className="order-modal-meta-label">Store name</div>
+                                <div className="order-modal-meta-value">{selectedOrderStoreName}</div>
+                            </div>
+                            <div className="order-modal-header-actions">
+                                <span className="order-details-status order-status-badge" style={getStatusBadgeStyle(orderFormData.orderStatus)}>
+                                    {(orderFormData.orderStatus || 'pending').toUpperCase()}
+                                </span>
+                                <button className="order-details-close" onClick={closeOrderModal}>×</button>
+                            </div>
                         </div>
 
-                        <div className="order-details-grid">
-                            <div className="order-detail-item">
-                                <span className="order-detail-label">Order ID</span>
-                                <span className="order-detail-value">{selectedOrder.order_id}</span>
-                            </div>
-                            <div className="order-detail-item">
-                                <span className="order-detail-label">Store ID</span>
-                                <span className="order-detail-value">{selectedOrder.store_id}</span>
-                            </div>
-                            <div className="order-detail-item">
-                                <span className="order-detail-label">User ID</span>
-                                <span className="order-detail-value">{selectedOrder.user_id}</span>
-                            </div>
-                            <div className="order-detail-item">
-                                <span className="order-detail-label">Total Amount</span>
-                                <span className="order-detail-value">
-                                    {selectedOrder.currency} {selectedOrder.total_amount ? selectedOrder.total_amount.toFixed(2) : '-'}
-                                </span>
-                            </div>
-                            <div className="order-detail-item">
-                                <span className="order-detail-label">Created At</span>
-                                <span className="order-detail-value">
+                        <div className="order-form compact-order-form">
+                            <div className="order-form-section">
+                                <div className="order-form-section-title">Order Summary</div>
+                                <div className="order-form-row order-form-row-two">
+                                    <div className="order-form-group">
+                                        <label>Order ID</label>
+                                        <div className="order-readonly-value">{selectedOrder.order_id}</div>
+                                    </div>
+                                    <div className="order-form-group">
+                                        <label htmlFor="carrier">Carrier</label>
+                                        <select
+                                            id="carrier"
+                                            className="order-detail-input"
+                                            name="carrier"
+                                            value={orderFormData.carrier}
+                                            onChange={handleOrderFormChange}
+                                        >
+                                            {carrierOptions.map(option => (
+                                                <option key={option} value={option}>{option}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="order-form-row order-form-row-two">
+                                    <div className="order-form-group">
+                                        <label>Order Date</label>
+                                        <div className="order-readonly-value">
                                     {selectedOrder.created_at ? new Date(selectedOrder.created_at).toLocaleString() : '-'}
-                                </span>
+                                        </div>
+                                    </div>
+                                    <div className="order-form-group">
+                                        <label htmlFor="consignmentNoteNumber">Consignment note number</label>
+                                        <input
+                                            id="consignmentNoteNumber"
+                                            type="text"
+                                            className="order-detail-input"
+                                            name="consignmentNoteNumber"
+                                            value={orderFormData.consignmentNoteNumber}
+                                            onChange={handleOrderFormChange}
+                                        />
+                                    </div>
+                                </div>
                             </div>
-                            <div className="order-detail-item">
-                                <span className="order-detail-label">Updated At</span>
-                                <span className="order-detail-value">
-                                    {selectedOrder.updated_at ? new Date(selectedOrder.updated_at).toLocaleString() : '-'}
-                                </span>
+
+                            <div className="order-form-section">
+                                <div className="order-form-section-title">Order Controls</div>
+                                <div className="order-controls-grid">
+                                    <div className="order-form-group">
+                                        <label htmlFor="shipByDate">Ship by</label>
+                                        <input
+                                            id="shipByDate"
+                                            type="date"
+                                            className="order-detail-input"
+                                            name="shipByDate"
+                                            value={orderFormData.shipByDate}
+                                            onChange={handleOrderFormChange}
+                                        />
+                                    </div>
+                                    <div className="order-form-group">
+                                        <label htmlFor="notAfter">Not after</label>
+                                        <input
+                                            id="notAfter"
+                                            type="date"
+                                            className="order-detail-input"
+                                            name="notAfter"
+                                            value={orderFormData.notAfter}
+                                            onChange={handleOrderFormChange}
+                                        />
+                                    </div>
+                                    <div className="order-form-group">
+                                        <label htmlFor="orderStatus">Status</label>
+                                        <select
+                                            id="orderStatus"
+                                            className="order-detail-input"
+                                            name="orderStatus"
+                                            value={orderFormData.orderStatus}
+                                            onChange={handleOrderFormChange}
+                                            disabled={isOrderStatusLocked}
+                                        >
+                                            {orderStatusOptions.map(status => (
+                                                <option key={status} value={status}>{status}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="order-form-group">
+                                        <label htmlFor="notBefore">Not before</label>
+                                        <input
+                                            id="notBefore"
+                                            type="date"
+                                            className="order-detail-input"
+                                            name="notBefore"
+                                            value={orderFormData.notBefore}
+                                            onChange={handleOrderFormChange}
+                                        />
+                                    </div>
+                                    <div className="order-form-group">
+                                        <label htmlFor="dontPickBefore">Don't pick before</label>
+                                        <input
+                                            id="dontPickBefore"
+                                            type="date"
+                                            className="order-detail-input"
+                                            name="dontPickBefore"
+                                            value={orderFormData.dontPickBefore}
+                                            onChange={handleOrderFormChange}
+                                        />
+                                    </div>
+                                    <div className="order-form-group">
+                                        <label htmlFor="poaStatus">POA status</label>
+                                        <select
+                                            id="poaStatus"
+                                            className="order-detail-input"
+                                            name="poaStatus"
+                                            value={orderFormData.poaStatus}
+                                            onChange={handleOrderFormChange}
+                                        >
+                                            {poaStatusOptions.map(status => (
+                                                <option key={status} value={status}>{status}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -326,7 +569,10 @@ function PickPage({ username, onLogout, onBack }) {
                             </div>
                         )}
 
-                        <button className="close-modal-button" onClick={closeOrderModal}>Close</button>
+                        <div className="order-form-actions">
+                            <button className="close-modal-button" onClick={closeOrderModal}>Close</button>
+                            <button className="save-order-button" onClick={handleSaveOrderChanges} disabled={!hasOrderChanges}>Save Changes</button>
+                        </div>
                     </div>
                 </div>
             )}
@@ -341,14 +587,55 @@ function getStatusColor(status) {
     if (!status) return '#a0aec0';
     
     const statusLower = status.toLowerCase();
-    if (statusLower === 'completed' || statusLower === 'success' || statusLower === 'delivered') {
-        return '#48bb78';
-    } else if (statusLower === 'pending' || statusLower === 'processing' || statusLower === 'open') {
-        return '#ed8936';
-    } else if (statusLower === 'error' || statusLower === 'failed' || statusLower === 'cancelled') {
+    if (statusLower === 'cancelled') {
         return '#f56565';
+    } else if (statusLower === 'pending') {
+        return '#ed8936';
+    } else if (statusLower === 'outstanding') {
+        return '#48bb78';
+    } else if (statusLower === 'downloading') {
+        return '#b794f4';
+    } else if (statusLower === 'picking') {
+        return '#ecc94b';
+    } else if (statusLower === 'discarded') {
+        return '#a0aec0';
+    } else if (statusLower === 'completed' || statusLower === 'complete') {
+        return '#4299e1';
     }
     return '#667eea';
+}
+
+function getStatusTextColor(status) {
+    const statusLower = (status || '').toLowerCase();
+    if (statusLower === 'picking') {
+        return '#2d3748';
+    }
+    return '#ffffff';
+}
+
+function getTodayDateString() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = `${today.getMonth() + 1}`.padStart(2, '0');
+    const day = `${today.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function isPastDate(dateValue, todayDate) {
+    return Boolean(dateValue) && dateValue < todayDate;
+}
+
+function formatDisplayDate(dateValue) {
+    if (!dateValue) {
+        return '-';
+    }
+
+    const normalizedDate = new Date(`${dateValue}T00:00:00`);
+    if (Number.isNaN(normalizedDate.getTime())) {
+        return dateValue;
+    }
+
+    return normalizedDate.toLocaleDateString();
 }
 
 export default PickPage;
