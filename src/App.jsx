@@ -17,6 +17,8 @@ import ReportViewerPage from './pages/ReportViewerPage';
 import { logout } from './utils/authService';
 import './styles/App.css';
 
+const CURRENT_PAGE_KEY = 'currentPage';
+
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(() => {
         // Check if auth token exists in localStorage to determine initial login state
@@ -27,12 +29,15 @@ function App() {
         return localStorage.getItem('username') || '';
     });
     const [authView, setAuthView] = useState('login');
-    const [currentPage, setCurrentPage] = useState('dashboard');
+    const [currentPage, setCurrentPage] = useState(() => {
+        return localStorage.getItem(CURRENT_PAGE_KEY) || 'dashboard';
+    });
 
     const handleLoginSuccess = (username) => {
         setLoggedInUser(username);
         setIsLoggedIn(true);
         setCurrentPage('dashboard');
+        localStorage.setItem(CURRENT_PAGE_KEY, 'dashboard');
         setAuthView('login');
     };
 
@@ -44,15 +49,18 @@ function App() {
         setIsLoggedIn(false);
         setLoggedInUser('');
         setCurrentPage('dashboard');
+        localStorage.removeItem(CURRENT_PAGE_KEY);
         setAuthView('login');
     };
 
     const handleNavigate = (pageName) => {
         setCurrentPage(pageName);
+        localStorage.setItem(CURRENT_PAGE_KEY, pageName);
     };
 
     const handleBackToDashboard = () => {
         setCurrentPage('dashboard');
+        localStorage.setItem(CURRENT_PAGE_KEY, 'dashboard');
     };
 
     const renderPage = () => {

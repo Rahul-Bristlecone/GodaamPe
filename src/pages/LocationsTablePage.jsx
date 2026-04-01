@@ -6,6 +6,8 @@ import { createStore, getAllStores, updateStore, deleteStore } from '../utils/st
 
 // this page will consume all "store" backend apis
 function LocationsTablePage({ username, onLogout, onBack }) {
+    const priceGroupPlaceholderOptions = ['Group 1', 'Group 2', 'Group 3'];
+
     const [showAddForm, setShowAddForm] = useState(false);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [selectedLocation, setSelectedLocation] = useState(null);
@@ -15,6 +17,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [formData, setFormData] = useState({
+        userStoreNumber: '',
         storeName: '',
         customerId: '',
         addressLine1: '',
@@ -23,7 +26,10 @@ function LocationsTablePage({ username, onLogout, onBack }) {
         pinCode: '',
         stateCode: '',
         countryCode: '',
-        shippingTime: ''
+        shippingTime: '',
+        contractPriceGroup: '',
+        promoPriceGroup: '',
+        retailPriceGroup: ''
     });
 
     // Fetch locations on component mount
@@ -55,9 +61,15 @@ function LocationsTablePage({ username, onLogout, onBack }) {
         }));
     };
 
+    const getAddressPreviewLines = (location) => {
+        return [location.address_line1, location.address_line2, location.address_line3]
+            .filter(Boolean)
+            .slice(0, 2);
+    };
+
     const handleSave = async () => {
         // Validate required fields
-        if (!formData.storeName || !formData.customerId || !formData.addressLine1 || !formData.pinCode || !formData.stateCode || !formData.countryCode || !formData.shippingTime) {
+        if (!formData.userStoreNumber || !formData.storeName || !formData.customerId || !formData.addressLine1 || !formData.pinCode || !formData.stateCode || !formData.countryCode || !formData.shippingTime) {
             setError('Please fill in all required fields');
             return;
         }
@@ -69,6 +81,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
         // Prepare payload - adjust field names to match backend schema
         // Convert numeric fields to proper types
         const payload = {
+            user_store_number: parseInt(formData.userStoreNumber, 10),
             store_name: formData.storeName,
             customer_id: parseInt(formData.customerId, 10),
             address_line1: formData.addressLine1,
@@ -87,6 +100,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
             
             // Reset form and close
             setFormData({
+                userStoreNumber: '',
                 storeName: '',
                 customerId: '',
                 addressLine1: '',
@@ -95,7 +109,10 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                 pinCode: '',
                 stateCode: '',
                 countryCode: '',
-                shippingTime: ''
+                shippingTime: '',
+                contractPriceGroup: '',
+                promoPriceGroup: '',
+                retailPriceGroup: ''
             });
             setShowAddForm(false);
             
@@ -113,6 +130,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
 
     const handleCancel = () => {
         setFormData({
+            userStoreNumber: '',
             storeName: '',
             customerId: '',
             addressLine1: '',
@@ -121,7 +139,10 @@ function LocationsTablePage({ username, onLogout, onBack }) {
             pinCode: '',
             stateCode: '',
             countryCode: '',
-            shippingTime: ''
+            shippingTime: '',
+            contractPriceGroup: '',
+            promoPriceGroup: '',
+            retailPriceGroup: ''
         });
         setError('');
         setShowAddForm(false);
@@ -130,6 +151,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
     const handleRowClick = (location) => {
         setSelectedLocation(location);
         setFormData({
+            userStoreNumber: location.user_store_number || '',
             storeName: location.store_name || '',
             customerId: location.customer_id || '',
             addressLine1: location.address_line1 || '',
@@ -138,7 +160,10 @@ function LocationsTablePage({ username, onLogout, onBack }) {
             pinCode: location.pin_code || '',
             stateCode: location.state_code || '',
             countryCode: location.country_code || '',
-            shippingTime: location.shipping_time || ''
+            shippingTime: location.shipping_time || '',
+            contractPriceGroup: '',
+            promoPriceGroup: '',
+            retailPriceGroup: ''
         });
         setIsEditing(false);
         setShowDetailModal(true);
@@ -153,6 +178,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
         setIsEditing(false);
         setSelectedLocation(null);
         setFormData({
+            userStoreNumber: '',
             storeName: '',
             customerId: '',
             addressLine1: '',
@@ -161,14 +187,17 @@ function LocationsTablePage({ username, onLogout, onBack }) {
             pinCode: '',
             stateCode: '',
             countryCode: '',
-            shippingTime: ''
+            shippingTime: '',
+            contractPriceGroup: '',
+            promoPriceGroup: '',
+            retailPriceGroup: ''
         });
         setError('');
     };
 
     const handleSaveEdit = async () => {
         // Validate required fields
-        if (!formData.storeName || !formData.customerId || !formData.addressLine1 || !formData.pinCode || !formData.stateCode || !formData.countryCode || !formData.shippingTime) {
+        if (!formData.userStoreNumber || !formData.storeName || !formData.customerId || !formData.addressLine1 || !formData.pinCode || !formData.stateCode || !formData.countryCode || !formData.shippingTime) {
             setError('Please fill in all required fields');
             return;
         }
@@ -179,6 +208,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
 
         // Prepare payload
         const payload = {
+            user_store_number: parseInt(formData.userStoreNumber, 10),
             store_name: formData.storeName,
             customer_id: parseInt(formData.customerId, 10),
             address_line1: formData.addressLine1,
@@ -261,6 +291,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                             <table className="locations-table">
                                 <thead>
                                     <tr>
+                                        <th>Store Number</th>
                                         <th>Store Name</th>
                                         <th>Customer ID</th>
                                         <th>Address</th>
@@ -278,13 +309,14 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                             onClick={() => handleRowClick(location)}
                                             style={{ cursor: 'pointer' }}
                                         >
+                                            <td>{location.user_store_number || '-'}</td>
                                             <td>{location.store_name || '-'}</td>
                                             <td>{location.customer_id || '-'}</td>
                                             <td>
                                                 <div className="address-cell">
-                                                    {location.address_line1}
-                                                    {location.address_line2 && <div>{location.address_line2}</div>}
-                                                    {location.address_line3 && <div>{location.address_line3}</div>}
+                                                    {getAddressPreviewLines(location).map((line, index) => (
+                                                        <div key={`${location.store_id || location.id}-address-${index}`}>{line}</div>
+                                                    ))}
                                                 </div>
                                             </td>
                                             <td>{location.pin_code || '-'}</td>
@@ -313,10 +345,33 @@ function LocationsTablePage({ username, onLogout, onBack }) {
             {showAddForm && (
                 <div className="modal-overlay">
                     <div className="modal-content">
-                        <h2>Add New Location</h2>
+                        <div className="modal-header">
+                            <h2>Add New Location</h2>
+                            <button
+                                type="button"
+                                className="modal-close-button"
+                                onClick={handleCancel}
+                                aria-label="Close add location form"
+                            >
+                                ×
+                            </button>
+                        </div>
                         {error && <div className="alert alert-error">{error}</div>}
-                        <form className="location-form">
-                            <div className="form-row">
+                        <form className="location-form compact-form">
+                            <div className="form-row form-row-three">
+                                <div className="form-group">
+                                    <label htmlFor="userStoreNumber">Store Number *</label>
+                                    <input
+                                        type="number"
+                                        id="userStoreNumber"
+                                        name="userStoreNumber"
+                                        value={formData.userStoreNumber}
+                                        onChange={handleInputChange}
+                                        placeholder="Enter Store Number"
+                                        required
+                                        disabled={loading}
+                                    />
+                                </div>
                                 <div className="form-group">
                                     <label htmlFor="storeName">Store Name *</label>
                                     <input
@@ -362,7 +417,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                             </div>
 
                             <div className="form-row">
-                                <div className="form-group full-width">
+                                <div className="form-group">
                                     <label htmlFor="addressLine2">Address Line 2</label>
                                     <input
                                         type="text"
@@ -374,10 +429,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                         disabled={loading}
                                     />
                                 </div>
-                            </div>
-
-                            <div className="form-row">
-                                <div className="form-group full-width">
+                                <div className="form-group">
                                     <label htmlFor="addressLine3">Address Line 3</label>
                                     <input
                                         type="text"
@@ -391,7 +443,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                 </div>
                             </div>
 
-                            <div className="form-row">
+                            <div className="form-row form-row-four">
                                 <div className="form-group">
                                     <label htmlFor="pinCode">Pin Code *</label>
                                     <input
@@ -418,9 +470,6 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                         disabled={loading}
                                     />
                                 </div>
-                            </div>
-
-                            <div className="form-row">
                                 <div className="form-group">
                                     <label htmlFor="countryCode">Country Code *</label>
                                     <input
@@ -446,6 +495,54 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                         required
                                         disabled={loading}
                                     />
+                                </div>
+                            </div>
+
+                            <div className="form-section">
+                                <div className="form-section-title">Location wise prices</div>
+                                <div className="form-row form-row-three">
+                                    <div className="form-group">
+                                        <label htmlFor="contractPriceGroup">Contract price group</label>
+                                        <select
+                                            id="contractPriceGroup"
+                                            name="contractPriceGroup"
+                                            value={formData.contractPriceGroup}
+                                            onChange={handleInputChange}
+                                        >
+                                            <option value="">Select contract price group</option>
+                                            {priceGroupPlaceholderOptions.map(option => (
+                                                <option key={`contract-${option}`} value={option}>{option}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="promoPriceGroup">Promo price group</label>
+                                        <select
+                                            id="promoPriceGroup"
+                                            name="promoPriceGroup"
+                                            value={formData.promoPriceGroup}
+                                            onChange={handleInputChange}
+                                        >
+                                            <option value="">Select promo price group</option>
+                                            {priceGroupPlaceholderOptions.map(option => (
+                                                <option key={`promo-${option}`} value={option}>{option}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="retailPriceGroup">Retail Price group</label>
+                                        <select
+                                            id="retailPriceGroup"
+                                            name="retailPriceGroup"
+                                            value={formData.retailPriceGroup}
+                                            onChange={handleInputChange}
+                                        >
+                                            <option value="">Select retail price group</option>
+                                            {priceGroupPlaceholderOptions.map(option => (
+                                                <option key={`retail-${option}`} value={option}>{option}</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
 
@@ -476,24 +573,46 @@ function LocationsTablePage({ username, onLogout, onBack }) {
             {showDetailModal && selectedLocation && (
                 <div className="modal-overlay">
                     <div className="modal-content">
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                        <div className="modal-header">
                             <h2>Location Details</h2>
-                            {!isEditing && (
-                                <button 
+                            <div className="modal-header-actions">
+                                {!isEditing && (
+                                    <button 
+                                        type="button"
+                                        className="save-button"
+                                        onClick={handleEditLocation}
+                                    >
+                                        ✏️ Modify
+                                    </button>
+                                )}
+                                <button
                                     type="button"
-                                    className="save-button"
-                                    onClick={handleEditLocation}
-                                    style={{ padding: '0.6rem 1rem', fontSize: '0.9rem' }}
+                                    className="modal-close-button"
+                                    onClick={closeDetailModal}
+                                    aria-label="Close location details"
                                 >
-                                    ✏️ Edit
+                                    ×
                                 </button>
-                            )}
+                            </div>
                         </div>
                         {error && <div className="alert alert-error">{error}</div>}
                         {success && <div className="alert alert-success">{success}</div>}
                         
-                        <form className="location-form">
-                            <div className="form-row">
+                        <form className="location-form compact-form">
+                            <div className="form-row form-row-three">
+                                <div className="form-group">
+                                    <label htmlFor="userStoreNumber">Store Number *</label>
+                                    <input
+                                        type="number"
+                                        id="userStoreNumber"
+                                        name="userStoreNumber"
+                                        value={formData.userStoreNumber}
+                                        onChange={handleInputChange}
+                                        placeholder="Enter Store Number"
+                                        required
+                                        disabled={!isEditing || loading}
+                                    />
+                                </div>
                                 <div className="form-group">
                                     <label htmlFor="storeName">Store Name *</label>
                                     <input
@@ -539,7 +658,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                             </div>
 
                             <div className="form-row">
-                                <div className="form-group full-width">
+                                <div className="form-group">
                                     <label htmlFor="addressLine2">Address Line 2</label>
                                     <input
                                         type="text"
@@ -551,10 +670,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                         disabled={!isEditing || loading}
                                     />
                                 </div>
-                            </div>
-
-                            <div className="form-row">
-                                <div className="form-group full-width">
+                                <div className="form-group">
                                     <label htmlFor="addressLine3">Address Line 3</label>
                                     <input
                                         type="text"
@@ -568,7 +684,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                 </div>
                             </div>
 
-                            <div className="form-row">
+                            <div className="form-row form-row-four">
                                 <div className="form-group">
                                     <label htmlFor="pinCode">Pin Code *</label>
                                     <input
@@ -595,9 +711,6 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                         disabled={!isEditing || loading}
                                     />
                                 </div>
-                            </div>
-
-                            <div className="form-row">
                                 <div className="form-group">
                                     <label htmlFor="countryCode">Country Code *</label>
                                     <input
@@ -623,6 +736,57 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                         required
                                         disabled={!isEditing || loading}
                                     />
+                                </div>
+                            </div>
+
+                            <div className="form-section">
+                                <div className="form-section-title">Location wise prices</div>
+                                <div className="form-row form-row-three">
+                                    <div className="form-group">
+                                        <label htmlFor="contractPriceGroup">Contract price group</label>
+                                        <select
+                                            id="contractPriceGroup"
+                                            name="contractPriceGroup"
+                                            value={formData.contractPriceGroup}
+                                            onChange={handleInputChange}
+                                            disabled={!isEditing || loading}
+                                        >
+                                            <option value="">Select contract price group</option>
+                                            {priceGroupPlaceholderOptions.map(option => (
+                                                <option key={`detail-contract-${option}`} value={option}>{option}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="promoPriceGroup">Promo price group</label>
+                                        <select
+                                            id="promoPriceGroup"
+                                            name="promoPriceGroup"
+                                            value={formData.promoPriceGroup}
+                                            onChange={handleInputChange}
+                                            disabled={!isEditing || loading}
+                                        >
+                                            <option value="">Select promo price group</option>
+                                            {priceGroupPlaceholderOptions.map(option => (
+                                                <option key={`detail-promo-${option}`} value={option}>{option}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="retailPriceGroup">Retail Price group</label>
+                                        <select
+                                            id="retailPriceGroup"
+                                            name="retailPriceGroup"
+                                            value={formData.retailPriceGroup}
+                                            onChange={handleInputChange}
+                                            disabled={!isEditing || loading}
+                                        >
+                                            <option value="">Select retail price group</option>
+                                            {priceGroupPlaceholderOptions.map(option => (
+                                                <option key={`detail-retail-${option}`} value={option}>{option}</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
 
