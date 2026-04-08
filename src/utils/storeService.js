@@ -23,6 +23,19 @@ const getAuthHeader = () => {
     };
 };
 
+const parseJsonResponse = async (response) => {
+    const text = await response.text();
+    if (!text) {
+        return null;
+    }
+    try {
+        return JSON.parse(text);
+    } catch (err) {
+        console.warn('Unable to parse JSON response:', err, text);
+        return null;
+    }
+};
+
 /**
  * Create a new store/location
  * @param {Object} storeData - Store data object matching StoreSchema
@@ -37,11 +50,11 @@ export const createStore = async (storeData) => {
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `Error: ${response.status} ${response.statusText}`);
+            const errorData = await parseJsonResponse(response);
+            throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
         return { success: true, data };
     } catch (err) {
         console.error('Error creating store:', err);
@@ -61,11 +74,11 @@ export const getAllStores = async () => {
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `Error: ${response.status} ${response.statusText}`);
+            const errorData = await parseJsonResponse(response);
+            throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
         return { success: true, data };
     } catch (err) {
         console.error('Error fetching stores:', err);
@@ -86,11 +99,11 @@ export const getStoreById = async (storeId) => {
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `Error: ${response.status} ${response.statusText}`);
+            const errorData = await parseJsonResponse(response);
+            throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
         return { success: true, data };
     } catch (err) {
         console.error('Error fetching store:', err);
@@ -113,11 +126,11 @@ export const updateStore = async (storeId, updateData) => {
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `Error: ${response.status} ${response.statusText}`);
+            const errorData = await parseJsonResponse(response);
+            throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
         return { success: true, data };
     } catch (err) {
         console.error('Error updating store:', err);
@@ -138,8 +151,8 @@ export const deleteStore = async (storeId) => {
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `Error: ${response.status} ${response.statusText}`);
+            const errorData = await parseJsonResponse(response);
+            throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 
         return { success: true, message: 'Store deleted successfully' };

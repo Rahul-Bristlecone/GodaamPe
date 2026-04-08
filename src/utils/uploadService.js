@@ -19,6 +19,19 @@ const getAuthHeader = () => {
     return headers;
 };
 
+const parseJsonResponse = async (response) => {
+    const text = await response.text();
+    if (!text) {
+        return null;
+    }
+    try {
+        return JSON.parse(text);
+    } catch (err) {
+        console.warn('Unable to parse JSON response:', err, text);
+        return null;
+    }
+};
+
 /**
  * Upload EDI file for order import
  * @param {File} file - The file to upload
@@ -36,11 +49,11 @@ export const uploadEDIFile = async (file) => {
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `Error: ${response.status} ${response.statusText}`);
+            const errorData = await parseJsonResponse(response);
+            throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
         return { success: true, data };
     } catch (err) {
         console.error('Error uploading file:', err);
@@ -60,11 +73,11 @@ export const getAllOrders = async () => {
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `Error: ${response.status} ${response.statusText}`);
+            const errorData = await parseJsonResponse(response);
+            throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
         return { success: true, data };
     } catch (err) {
         console.error('Error fetching orders:', err);
