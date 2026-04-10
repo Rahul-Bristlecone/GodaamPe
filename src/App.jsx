@@ -32,6 +32,7 @@ function App() {
     const [currentPage, setCurrentPage] = useState(() => {
         return localStorage.getItem(CURRENT_PAGE_KEY) || 'dashboard';
     });
+    const [showConfigModal, setShowConfigModal] = useState(false);
 
     const handleLoginSuccess = (username) => {
         setLoggedInUser(username);
@@ -54,8 +55,16 @@ function App() {
     };
 
     const handleNavigate = (pageName) => {
-        setCurrentPage(pageName);
-        localStorage.setItem(CURRENT_PAGE_KEY, pageName);
+        if (pageName === 'Config Manager') {
+            setShowConfigModal(true);
+        } else {
+            setCurrentPage(pageName);
+            localStorage.setItem(CURRENT_PAGE_KEY, pageName);
+        }
+    };
+
+    const handleCloseConfigModal = () => {
+        setShowConfigModal(false);
     };
 
     const handleBackToDashboard = () => {
@@ -72,11 +81,18 @@ function App() {
 
         switch (currentPage) {
             case 'dashboard':
-                return <DashboardPage username={loggedInUser} onLogout={handleLogout} onNavigate={handleNavigate} />;
+                return (
+                    <>
+                        <DashboardPage username={loggedInUser} onLogout={handleLogout} onNavigate={handleNavigate} />
+                        {showConfigModal && (
+                            <ConfigManagerPage
+                                onClose={handleCloseConfigModal}
+                            />
+                        )}
+                    </>
+                );
             case 'ABS Pick':
                 return <PickPage {...pageProps} />;
-            case 'Config Manager':
-                return <ConfigManagerPage {...pageProps} />;
             case 'Sales Manager':
                 return <SalesManagerPage {...pageProps} />;
             case 'Product Table':
