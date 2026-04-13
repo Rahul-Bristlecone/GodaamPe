@@ -1,6 +1,6 @@
 /* Upload Area Styling */
 .upload-section {
-    margin-bottom: 2rem;
+    margin-bottom: 1.2rem;
 }
 
 .upload-section h2 {
@@ -90,6 +90,8 @@
 /* File Select Button in Orders Header */
 .orders-header-actions .file-select-button {
     margin-top: 0;
+    padding: 0.45rem 0.8rem;
+    font-size: 0.8rem;
 }
 
 /* Orders Display Section */
@@ -97,13 +99,119 @@
     margin-top: 0rem;
 }
 
+.pick-page .page-content {
+    padding: 1.2rem 1.5rem;
+}
+
+.pick-page .page-header {
+    margin-bottom: 1rem;
+    gap: 0.9rem;
+}
+
+.pick-page .page-header h1 {
+    font-size: 1.55rem;
+}
+
+.pick-page .content-area {
+    padding: 1rem;
+    min-height: 320px;
+}
+
+.import-status-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.32rem;
+    margin-bottom: 0.55rem;
+}
+
+.import-status-tab {
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 0.38rem 0.78rem;
+    min-width: 122px;
+    color: #ffffff;
+    font-size: 0.76rem;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease, filter 0.2s ease;
+    opacity: 0.62;
+    filter: saturate(0.8);
+}
+
+.import-status-tab:hover {
+    opacity: 0.86;
+}
+
+.import-status-tab.active {
+    opacity: 1;
+    filter: none;
+    border-color: var(--active-border-color, rgba(15, 23, 42, 0.55));
+    transform: translateY(-1px) scale(1.03);
+    box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.34), 0 6px 14px rgba(15, 23, 42, 0.28);
+}
+
+.import-status-tab:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.28);
+}
+
+.import-status-tab.status-rejected {
+    background-color: #dc143c;
+    border-color: #dc143c;
+    --active-border-color: #930d29;
+}
+
+.import-status-tab.status-unpicked {
+    background-color: #ff9f7a;
+    border-color: #ff9f7a;
+    --active-border-color: #dc7a52;
+}
+
+.import-status-tab.status-downloading {
+    background-color: #d9a400;
+    border-color: #d9a400;
+    color: #ffffff;
+    --active-border-color: #976f00;
+}
+
+.import-status-tab.status-picking {
+    background-color: #8f8ce7;
+    border-color: #8f8ce7;
+    --active-border-color: #5f5bc4;
+}
+
+.import-status-tab.status-partially-filled {
+    background-color: #ff8a66;
+    border-color: #ff8a66;
+    --active-border-color: #d76643;
+}
+
+.import-status-tab.status-filled {
+    background-color: #f97316;
+    border-color: #f97316;
+    --active-border-color: #c95506;
+}
+
+.import-status-tab.status-complete {
+    background-color: #16a34a;
+    border-color: #16a34a;
+    --active-border-color: #0d7735;
+}
+
 /* Orders Header with Action Buttons */
 .orders-header {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr auto;
     align-items: center;
-    margin-bottom: 0.75rem;
-    gap: 1rem;
+    margin-bottom: 0.5rem;
+    gap: 0.65rem;
 }
 
 .orders-header-left {
@@ -113,9 +221,7 @@
 }
 
 .orders-header-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: none;
 }
 
 .orders-header-center h2 {
@@ -146,18 +252,18 @@
 
 .orders-header-actions {
     display: flex;
-    gap: 1rem;
+    gap: 0.5rem;
     align-items: center;
     flex-wrap: wrap;
 }
 
 .refresh-button {
-    padding: 0.6rem 1.2rem;
+    padding: 0.45rem 0.8rem;
     background-color: #667eea;
     color: white;
     border: none;
     border-radius: 6px;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -184,7 +290,7 @@
 .orders-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.95rem;
+    font-size: 0.84rem;
 }
 
 .orders-table thead {
@@ -193,12 +299,12 @@
 }
 
 .orders-table th {
-    padding: 0.75rem 0.75rem;
+    padding: 0.52rem 0.58rem;
     text-align: left;
     color: #4a5568;
     font-weight: 600;
     white-space: nowrap;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
 }
 
 .orders-table tbody tr {
@@ -216,9 +322,9 @@
 }
 
 .orders-table td {
-    padding: 0.75rem 0.75rem;
+    padding: 0.52rem 0.58rem;
     color: #2d3748;
-    font-size: 0.9rem;
+    font-size: 0.82rem;
 }
 
 .order-details-cell {
@@ -374,16 +480,16 @@
 }
 
 .order-status-badge {
-    display: inline-flex;
+    border: 1px solid transparent;
     align-items: center;
     justify-content: center;
-    min-width: 112px;
-    height: 34px;
+    color: #ffffff;
     padding: 0 0.75rem;
     border-radius: 6px;
     font-size: 0.8rem;
     font-weight: 700;
     line-height: 1;
+    opacity: 0.85;
     text-align: center;
     text-transform: uppercase;
 }
@@ -399,10 +505,10 @@
 }
 
 .order-form-section {
-    border: 1px solid #e2e8f0;
     border-radius: 8px;
     padding: 0.7rem;
     background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
 }
 
 .order-form-section-title {

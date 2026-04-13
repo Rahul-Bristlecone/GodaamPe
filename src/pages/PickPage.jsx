@@ -6,6 +6,7 @@ import { uploadEDIFile, getAllOrders } from '../utils/uploadService';
 import { getAllStores } from '../utils/storeService';
 
 function PickPage({ username, onLogout, onBack }) {
+    const importStatusTabs = ['Rejected', 'unpicked', 'Downloading', 'picking', 'partially filled', 'filled', 'complete'];
     const orderStatusOptions = ['pending', 'cancelled', 'outstanding', 'discarded', 'downloading', 'Picking', 'complete'];
     const poaStatusOptions = ['POA sent', 'POA not sent'];
     const carrierOptions = ['Select carrier', 'DHL', 'FedEx', 'Blue Dart', 'Delhivery'];
@@ -22,6 +23,7 @@ function PickPage({ username, onLogout, onBack }) {
     };
 
     const [orders, setOrders] = useState([]);
+    const [activeImportTab, setActiveImportTab] = useState('unpicked');
     const [storesById, setStoresById] = useState({});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -250,8 +252,28 @@ function PickPage({ username, onLogout, onBack }) {
         color: getStatusTextColor(status)
     });
 
+    const getImportTabStatusClass = (tab) => {
+        const tabSlug = tab.toLowerCase().replace(/\s+/g, '-');
+        return `status-${tabSlug}`;
+    };
+
+    const shouldShowOrderForActiveTab = (order, index) => {
+        const orderStatus = (getDisplayOrderStatus(order, index) || '').toLowerCase();
+        if (orderStatus === 'pending') {
+            return activeImportTab === 'unpicked';
+        }
+        return true;
+    };
+
+    const visibleOrders = orders.reduce((accumulator, order, index) => {
+        if (shouldShowOrderForActiveTab(order, index)) {
+            accumulator.push({ order, sourceIndex: index });
+        }
+        return accumulator;
+    }, []);
+
     return (
-        <div className="page-container">
+        <div className="page-container pick-page">
             <Header username={username} onLogout={onLogout} onDashboard={onBack} />
             <div className="page-content">
                 <div className="page-header">
@@ -268,11 +290,10 @@ function PickPage({ username, onLogout, onBack }) {
                             <div className="orders-header">
                                 <div className="orders-header-left">
                                     <span className="order-count">
-                                        Total Orders: <strong>{orders.length}</strong>
+                                        Total Orders: <strong>{visibleOrders.length}</strong>
                                     </span>
                                 </div>
                                 <div className="orders-header-center">
-                                    <h2>Imported Orders</h2>
                                 </div>
                                 <div className="orders-header-right">
                                     <div className="orders-header-actions">
@@ -302,9 +323,28 @@ function PickPage({ username, onLogout, onBack }) {
                                 </div>
                             </div>
 
+                            <div className="import-status-tabs" aria-label="ABSPick import status tabs" role="tablist">
+                                {importStatusTabs.map((tab) => (
+                                    <button
+                                        key={tab}
+                                        type="button"
+                                        className={`import-status-tab ${getImportTabStatusClass(tab)} ${activeImportTab === tab ? 'active' : ''}`}
+                                        onClick={() => setActiveImportTab(tab)}
+                                        role="tab"
+                                        aria-selected={activeImportTab === tab}
+                                    >
+                                        {tab}
+                                    </button>
+                                ))}
+                            </div>
+
                             {loading ? (
                                 <div className="uploading-spinner">
                                     <p>Loading orders...</p>
+                                </div>
+                            ) : visibleOrders.length === 0 ? (
+                                <div className="empty-state">
+                                    No orders available for the selected tab.
                                 </div>
                             ) : (
                                 <div className="orders-table-wrapper">
@@ -322,26 +362,26 @@ function PickPage({ username, onLogout, onBack }) {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {orders.map((order, index) => (
+                                            {visibleOrders.map(({ order, sourceIndex }) => (
                                                 <tr 
-                                                    key={order.order_id || index}
-                                                    onClick={() => handleOrderClick(order, index)}
+                                                    key={order.order_id || sourceIndex}
+                                                    onClick={() => handleOrderClick(order, sourceIndex)}
                                                     style={{ cursor: 'pointer' }}
                                                 >
                                                     <td>{order.order_id || '-'}</td>
                                                     <td>{getDisplayStoreName(order)}</td>
                                                     <td>
-                                                        {formatDisplayDate(getDisplayShipByDate(order, index))}
+                                                        {formatDisplayDate(getDisplayShipByDate(order, sourceIndex))}
                                                     </td>
                                                     <td>
-                                                        {formatDisplayDate(getDisplayNotAfterDate(order, index))}
+                                                        {formatDisplayDate(getDisplayNotAfterDate(order, sourceIndex))}
                                                     </td>
                                                     <td>
                                                         <span
                                                             className="order-status-badge"
-                                                            style={getStatusBadgeStyle(getDisplayOrderStatus(order, index))}
+                                                            style={getStatusBadgeStyle(getDisplayOrderStatus(order, sourceIndex))}
                                                         >
-                                                            {getDisplayOrderStatus(order, index)}
+                                                            {getDisplayOrderStatus(order, sourceIndex)}
                                                         </span>
                                                     </td>
                                                     <td>{order.items && order.items.length > 0 ? order.items.length : '0'} item(s)</td>
