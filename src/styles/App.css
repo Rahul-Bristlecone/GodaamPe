@@ -7,3 +7,25 @@
     width: 100%;
     min-height: 100vh;
 }
+
+/* Shared modern button system across app pages */
+button:not(.modal-close-button):not(.order-details-close):not(.import-status-tab) {
+    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
+    transition: transform 0.18s ease, box-shadow 0.2s ease, filter 0.18s ease;
+}
+
+button:not(.modal-close-button):not(.order-details-close):not(.import-status-tab):hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 20px rgba(15, 23, 42, 0.14);
+}
+
+button:not(.modal-close-button):not(.order-details-close):not(.import-status-tab):active:not(:disabled) {
+    transform: translateY(0);
+}
+
+button:not(.modal-close-button):not(.order-details-close):not(.import-status-tab):disabled {
+    box-shadow: none;
+    opacity: 0.6;
+}
