@@ -1,0 +1,685 @@
+/* Products Form Container */
+.product-form-container {
+    max-width: 900px;
+}
+
+/* Products Section */
+.products-section {
+    margin-top: 0rem;
+}
+
+/* Product Form Specific Styles */
+.product-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.product-form .compact-form {
+    gap: 0.4rem;
+}
+
+.product-form .form-section {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.55rem 0.6rem;
+    background-color: #f8fafc;
+    margin-bottom: 0.1rem;
+}
+
+.product-form .form-section:last-of-type {
+    margin-bottom: 0;
+}
+
+.product-form .form-section-title {
+    margin-bottom: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #2d3748;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.product-form .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem;
+}
+
+.product-form .form-row-two {
+    grid-template-columns: 1fr 1fr;
+}
+
+.product-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.product-form .form-group label {
+    color: #4a5568;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+.readonly-helper-text {
+    margin-top: 0.1rem;
+    color: #718096;
+    font-size: 0.7rem;
+    line-height: 1.2;
+}
+
+.product-form .form-group input,
+.product-form .form-group select {
+    padding: 0.4rem 0.5rem;
+    border: 1px solid #cbd5e0;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    color: #2d3748;
+    transition: border-color 0.3s ease;
+    font-family: inherit;
+    height: 32px;
+}
+
+.product-form .form-group input:focus,
+.product-form .form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.08);
+}
+
+.product-form .form-group input:disabled,
+.product-form .form-group select:disabled {
+    background-color: #f7fafc;
+    color: #a0aec0;
+    cursor: not-allowed;
+}
+
+.product-form .checkbox-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.3rem 0;
+}
+
+.product-form .checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #334155;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.product-form .checkbox-label input {
+    width: auto;
+    height: auto;
+    accent-color: #667eea;
+    cursor: pointer;
+}
+
+.product-form .form-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 0.4rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.product-form .cancel-button,
+.product-form .save-button {
+    padding: 0.45rem 0.9rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.product-form .cancel-button {
+    background-color: #e2e8f0;
+    color: #4a5568;
+}
+
+.product-form .cancel-button:hover:not(:disabled) {
+    background-color: #cbd5e0;
+}
+
+.product-form .cancel-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.product-form .save-button {
+    background-color: #48bb78;
+    color: white;
+    box-shadow: 0 2px 4px rgba(72, 187, 120, 0.3);
+}
+
+.product-form .save-button:hover:not(:disabled) {
+    background-color: #38a169;
+    box-shadow: 0 3px 8px rgba(72, 187, 120, 0.4);
+}
+
+.product-form .save-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Products Header with Action Buttons */
+.products-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    gap: 0.65rem;
+}
+
+.products-header-left {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.products-header-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.products-header-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.products-header-actions .file-select-button,
+.products-header-actions .add-product-button,
+.products-header-actions .refresh-button {
+    margin-top: 0;
+    min-height: 38px;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.1);
+    letter-spacing: 0.01em;
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+    transition: transform 0.18s ease, box-shadow 0.2s ease, filter 0.18s ease;
+}
+
+.products-header-actions .file-select-button:hover:not(:disabled),
+.products-header-actions .add-product-button:hover:not(:disabled),
+.products-header-actions .refresh-button:hover:not(:disabled) {
+    transform: translateY(-1px) scale(1.01);
+    box-shadow: 0 14px 24px rgba(15, 23, 42, 0.16);
+    filter: saturate(1.08);
+}
+
+.products-header-actions .file-select-button:active:not(:disabled),
+.products-header-actions .add-product-button:active:not(:disabled),
+.products-header-actions .refresh-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.product-count {
+    color: #718096;
+    font-size: 0.95rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Add Product Button */
+.add-product-button {
+    padding: 0.45rem 0.8rem;
+    background: linear-gradient(145deg, #66d59a 0%, #2f9e65 100%);
+    color: white;
+    border: 1px solid rgba(22, 101, 52, 0.22);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 16px rgba(47, 158, 101, 0.28);
+}
+
+.add-product-button:hover:not(:disabled) {
+    background: linear-gradient(145deg, #74dda7 0%, #278a57 100%);
+    box-shadow: 0 12px 20px rgba(39, 138, 87, 0.34);
+}
+
+.add-product-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.refresh-button {
+    padding: 0.45rem 0.8rem;
+    background: linear-gradient(145deg, #88a0ff 0%, #4d67d8 100%);
+    color: white;
+    border: 1px solid rgba(55, 65, 169, 0.24);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 16px rgba(77, 103, 216, 0.28);
+}
+
+.refresh-button:hover:not(:disabled) {
+    background: linear-gradient(145deg, #98adff 0%, #4058c4 100%);
+    box-shadow: 0 12px 20px rgba(64, 88, 196, 0.34);
+}
+
+.refresh-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.add-product-button-large {
+    padding: 0.5rem 1.2rem;
+    background: linear-gradient(145deg, #66d59a 0%, #2f9e65 100%);
+    color: white;
+    border: 1px solid rgba(22, 101, 52, 0.22);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 18px rgba(47, 158, 101, 0.3);
+}
+
+.add-product-button-large:hover:not(:disabled) {
+    background: linear-gradient(145deg, #74dda7 0%, #278a57 100%);
+    box-shadow: 0 14px 22px rgba(39, 138, 87, 0.36);
+}
+
+.add-product-button-large:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Products Table */
+.products-table-wrapper {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.products-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+}
+
+.products-table thead {
+    background-color: #f7fafc;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.products-table th {
+    padding: 0.52rem 0.58rem;
+    text-align: left;
+    color: #4a5568;
+    font-weight: 600;
+    white-space: nowrap;
+    font-size: 0.8rem;
+}
+
+.products-table tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+    transition: background-color 0.2s ease;
+}
+
+.products-table tbody tr:hover {
+    background-color: #f7fafc;
+    cursor: pointer;
+}
+
+.products-table tbody tr:active {
+    background-color: #edf2f7;
+}
+
+.products-table td {
+    padding: 0.52rem 0.58rem;
+    color: #2d3748;
+    font-size: 0.82rem;
+}
+
+.product-delete-button {
+    padding: 0.35rem 0.6rem;
+    background: linear-gradient(145deg, #ef5757 0%, #cb3c3c 100%);
+    color: white;
+    border: 1px solid rgba(153, 27, 27, 0.22);
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 8px 14px rgba(203, 60, 60, 0.25);
+}
+
+.product-delete-button:hover:not(:disabled) {
+    background: linear-gradient(145deg, #f16b6b 0%, #b83434 100%);
+    box-shadow: 0 12px 18px rgba(184, 52, 52, 0.32);
+}
+
+.product-delete-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.product-modify-button {
+    padding: 0.45rem 0.9rem;
+    background: linear-gradient(145deg, #66d59a 0%, #2f9e65 100%);
+    color: white;
+    border: 1px solid rgba(22, 101, 52, 0.22);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 8px 14px rgba(47, 158, 101, 0.28);
+}
+
+.product-modify-button:hover:not(:disabled) {
+    background: linear-gradient(145deg, #74dda7 0%, #278a57 100%);
+    box-shadow: 0 12px 18px rgba(39, 138, 87, 0.34);
+}
+
+.product-modify-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Upload Section */
+.upload-section {
+    margin-bottom: 0.8rem;
+}
+
+.upload-section.compact-upload {
+    margin-bottom: 0.5rem;
+}
+
+.upload-section h2 {
+    margin: 0 0 0.8rem 0;
+    color: #2d3748;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.upload-section h3 {
+    margin: 0;
+    color: #4a5568;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.compact-drag-drop {
+    border: 2px dashed #cbd5e0;
+    border-radius: 8px;
+    padding: 1.2rem 1rem;
+    text-align: center;
+    background-color: #f7fafc;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.compact-drag-drop:hover {
+    border-color: #667eea;
+    background-color: #edf2f7;
+}
+
+.compact-drag-drop.drag-over {
+    border-color: #667eea;
+    background-color: #dfe7fd;
+    transform: scale(1.01);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.drag-drop-icon {
+    font-size: 2rem;
+    margin-bottom: 0.4rem;
+    opacity: 0.7;
+}
+
+.drag-drop-text {
+    margin: 0;
+    color: #4a5568;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.drag-drop-subtext {
+    margin: 0.4rem 0 0 0;
+    color: #a0aec0;
+    font-size: 0.85rem;
+}
+
+.drag-drop-input {
+    display: none;
+}
+
+/* File Select Button */
+.file-select-button {
+    padding: 0.5rem 1rem;
+    background: linear-gradient(145deg, #88a0ff 0%, #4d67d8 100%);
+    color: white;
+    border: 1px solid rgba(55, 65, 169, 0.24);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 16px rgba(77, 103, 216, 0.28);
+    margin-top: 0.8rem;
+}
+
+.file-select-button:hover:not(:disabled) {
+    background: linear-gradient(145deg, #98adff 0%, #4058c4 100%);
+    box-shadow: 0 12px 20px rgba(64, 88, 196, 0.34);
+}
+
+.file-select-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* OR Divider */
+.or-divider {
+    text-align: center;
+    margin: 0.6rem 0;
+    position: relative;
+    font-weight: 600;
+    color: #718096;
+    font-size: 0.8rem;
+    height: 1rem;
+}
+
+.or-divider::before {
+    content: '';
+    display: block;
+    height: 1px;
+    background-color: #e2e8f0;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+}
+
+.or-divider::after {
+    content: 'OR';
+    position: relative;
+    z-index: 1;
+    background-color: white;
+    padding: 0 0.6rem;
+    display: inline-block;
+}
+
+/* Add Product Section */
+.add-product-section {
+    text-align: center;
+    padding: 1rem 0.8rem;
+    background-color: #f7fafc;
+    border: 2px dashed #cbd5e0;
+    border-radius: 8px;
+}
+
+.add-product-section h3 {
+    margin: 0 0 0.6rem 0;
+    color: #4a5568;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Uploading Spinner */
+.uploading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 2rem;
+    text-align: center;
+}
+
+.uploading-spinner::before {
+    content: '';
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e2e8f0;
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 1rem;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.uploading-spinner p {
+    color: #718096;
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    color: #a0aec0;
+    font-size: 1rem;
+    padding: 2rem;
+    background-color: #f7fafc;
+    border-radius: 8px;
+    border: 2px dashed #cbd5e0;
+}
+
+/* Form Row Styling */
+.checkbox-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.3rem 0;
+}
+
+.checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #334155;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.checkbox-label input {
+    width: auto;
+    accent-color: #667eea;
+    cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .products-header {
+        grid-template-columns: 1fr;
+    }
+
+    .products-header-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .file-select-button,
+    .add-product-button,
+    .refresh-button,
+    .add-product-button-large {
+        width: 100%;
+    }
+
+    .form-row-two {
+        grid-template-columns: 1fr;
+    }
+
+    .products-table {
+        font-size: 0.75rem;
+    }
+
+    .products-table th,
+    .products-table td {
+        padding: 0.4rem 0.4rem;
+    }
+
+    .checkbox-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .or-divider {
+        margin: 1.5rem 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .upload-section h2 {
+        font-size: 1.25rem;
+    }
+
+    .upload-section h3 {
+        font-size: 1rem;
+    }
+
+    .products-table th,
+    .products-table td {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.25rem;
+    }
+
+    .products-header-actions {
+        gap: 0.3rem;
+    }
+
+    .file-select-button,
+    .add-product-button,
+    .refresh-button {
+        font-size: 0.7rem;
+        padding: 0.4rem 0.6rem;
+    }
+}

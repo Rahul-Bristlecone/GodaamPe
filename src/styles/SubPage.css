@@ -5,13 +5,13 @@
 }
 
 .page-content {
-    padding: 2rem 2.5rem;
+    padding: 1.2rem 1.8rem;
     width: 100%;
     box-sizing: border-box;
 }
 
 .page-header {
-    margin-bottom: 2rem;
+    margin-bottom: 1.2rem;
     display: flex;
     align-items: center;
     gap: 1.5rem;
@@ -21,7 +21,7 @@
 .page-header h1 {
     margin: 0;
     color: #2d3748;
-    font-size: 2rem;
+    font-size: 1.6rem;
     font-weight: 600;
 }
 
@@ -45,7 +45,7 @@
 
 .content-area {
     background-color: white;
-    padding: 2rem;
+    padding: 1.2rem;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     min-height: 400px;
