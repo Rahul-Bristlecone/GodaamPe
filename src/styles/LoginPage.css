@@ -5,7 +5,7 @@
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--theme-olive) 0%, var(--theme-lavender) 100%);
     padding: 1rem;
 }
 
@@ -92,7 +92,7 @@
 
 .login-tab.active {
     background-color: white;
-    color: #667eea;
+    color: var(--theme-olive);
     border-color: white;
 }
 
@@ -183,8 +183,8 @@
 
 .form-group input:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: var(--theme-lavender);
+    box-shadow: 0 0 0 3px var(--theme-focus);
 }
 
 .button-group {
@@ -206,23 +206,23 @@
 }
 
 .cancel-btn {
-    background-color: #e2e8f0;
-    color: #2d3748;
+    background-color: var(--theme-lavender);
+    color: white;
 }
 
 .cancel-btn:hover {
-    background-color: #cbd5e0;
+    background-color: var(--theme-lavender-hover);
 }
 
 .login-btn {
-    background-color: #667eea;
+    background-color: var(--theme-olive);
     color: white;
 }
 
 .login-btn:hover {
-    background-color: #5568d3;
+    background-color: var(--theme-olive-hover);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 8px rgba(93, 107, 52, 0.35);
 }
 
 .cancel-btn:disabled,

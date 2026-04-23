@@ -28,15 +28,15 @@
 }
 
 .drag-drop-zone:hover {
-    border-color: #667eea;
-    background-color: #edf2f7;
+    border-color: var(--theme-lavender);
+    background-color: #f1ebf8;
 }
 
 .drag-drop-zone.drag-over {
-    border-color: #667eea;
-    background-color: #dfe7fd;
+    border-color: var(--theme-lavender);
+    background-color: #ece4f7;
     transform: scale(1.01);
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 4px var(--theme-focus);
 }
 
 .drag-drop-icon {
@@ -65,7 +65,7 @@
 /* File Select Button */
 .file-select-button {
     padding: 0.6rem 1.2rem;
-    background-color: #667eea;
+    background-color: var(--theme-lavender);
     color: white;
     border: none;
     border-radius: 6px;
@@ -73,13 +73,13 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 2px 4px rgba(166, 142, 199, 0.4);
     margin-top: 1rem;
 }
 
 .file-select-button:hover:not(:disabled) {
-    background-color: #5568d3;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.6);
+    background-color: var(--theme-lavender-hover);
+    box-shadow: 0 4px 12px rgba(150, 125, 184, 0.5);
 }
 
 .file-select-button:disabled {
@@ -90,7 +90,7 @@
 /* File Select Button in Orders Header */
 .orders-header-actions .file-select-button {
     margin-top: 0;
-    padding: 0.45rem 0.8rem;
+    padding: 0;
     font-size: 0.8rem;
 }
 
@@ -112,6 +112,80 @@
     font-size: 1.55rem;
 }
 
+/* ABS Pick buttons aligned with header user-info segmented style */
+.pick-page .split-olive-button {
+    width: fit-content;
+    min-width: 132px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    border: none;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.164);
+    cursor: pointer;
+    padding: 0 !important;
+    background: transparent !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pick-page .split-olive-button:hover:not(:disabled) {
+    transform: translateY(-1px) !important;
+    box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.22);
+}
+
+.pick-page .split-olive-button:disabled {
+    opacity: 0.6;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.pick-page .split-olive-button-text {
+    flex: 1 1 auto;
+    width: auto;
+    height: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.8rem;
+    color: #ffffff;
+    background-color: #7e9146;
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background-color 0.2s ease;
+}
+
+.pick-page .split-olive-button-icon-wrap {
+    flex: 0 0 36px;
+    width: 36px;
+    height: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    background-color: #6f7f3e;
+    transition: background-color 0.2s ease;
+}
+
+.pick-page .split-olive-button:hover:not(:disabled) .split-olive-button-text {
+    background-color: #70813e;
+}
+
+.pick-page .split-olive-button:hover:not(:disabled) .split-olive-button-icon-wrap {
+    background-color: #5f6f36;
+}
+
+.pick-page .split-olive-button-icon-wrap svg {
+    width: 16px;
+    height: 16px;
+}
+
+.pick-page .back-button.split-olive-button {
+    min-width: 168px;
+}
+
 .pick-page .content-area {
     padding: 1rem;
     min-height: 320px;
@@ -125,10 +199,12 @@
 }
 
 .import-status-tab {
-    border: 1px solid transparent;
-    border-radius: 8px;
-    padding: 0.38rem 0.78rem;
+    position: relative;
+    border: none;
+    border-radius: 4px;
+    padding: 0.38rem 2rem 0.38rem 0.78rem;
     min-width: 122px;
+    background-color: #7e9146;
     color: #ffffff;
     font-size: 0.76rem;
     font-weight: 700;
@@ -140,69 +216,75 @@
     white-space: nowrap;
     cursor: pointer;
     letter-spacing: 0.01em;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease, filter 0.2s ease;
-    opacity: 0.62;
-    filter: saturate(0.8);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    opacity: 1;
+    filter: none;
+    overflow: hidden;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.164);
 }
 
 .import-status-tab:hover {
-    opacity: 0.86;
+    background-color: #70813e;
+}
+
+.import-status-tab::after {
+    content: var(--status-icon);
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 28px;
+    height: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #6f7f3e;
+    color: #ffffff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1;
 }
 
 .import-status-tab.active {
-    opacity: 1;
-    filter: none;
-    border-color: var(--active-border-color, rgba(15, 23, 42, 0.55));
-    transform: translateY(-1px) scale(1.03);
-    box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.34), 0 6px 14px rgba(15, 23, 42, 0.28);
+    background-color: #7f67a1;
+    transform: translateY(-1px);
+    box-shadow: 2px 4px 12px rgba(65, 47, 92, 0.32);
+}
+
+.import-status-tab.active::after {
+    background-color: #654c87;
 }
 
 .import-status-tab:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.28);
+    box-shadow: 0 0 0 3px var(--theme-focus);
 }
 
 .import-status-tab.status-rejected {
-    background-color: #dc143c;
-    border-color: #dc143c;
-    --active-border-color: #930d29;
+    --status-icon: "✕";
 }
 
 .import-status-tab.status-unpicked {
-    background-color: #ff9f7a;
-    border-color: #ff9f7a;
-    --active-border-color: #dc7a52;
+    --status-icon: "○";
 }
 
 .import-status-tab.status-downloading {
-    background-color: #d9a400;
-    border-color: #d9a400;
-    color: #ffffff;
-    --active-border-color: #976f00;
+    --status-icon: "↓";
 }
 
 .import-status-tab.status-picking {
-    background-color: #8f8ce7;
-    border-color: #8f8ce7;
-    --active-border-color: #5f5bc4;
+    --status-icon: "↻";
 }
 
 .import-status-tab.status-partially-filled {
-    background-color: #ff8a66;
-    border-color: #ff8a66;
-    --active-border-color: #d76643;
+    --status-icon: "◐";
 }
 
 .import-status-tab.status-filled {
-    background-color: #f97316;
-    border-color: #f97316;
-    --active-border-color: #c95506;
+    --status-icon: "▣";
 }
 
 .import-status-tab.status-complete {
-    background-color: #16a34a;
-    border-color: #16a34a;
-    --active-border-color: #0d7735;
+    --status-icon: "✓";
 }
 
 /* Orders Header with Action Buttons */
@@ -259,7 +341,7 @@
 
 .refresh-button {
     padding: 0.45rem 0.8rem;
-    background-color: #667eea;
+    background-color: var(--theme-olive);
     color: white;
     border: none;
     border-radius: 6px;
@@ -267,12 +349,12 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 2px 4px rgba(93, 107, 52, 0.35);
 }
 
 .refresh-button:hover:not(:disabled) {
-    background-color: #5568d3;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.6);
+    background-color: var(--theme-olive-hover);
+    box-shadow: 0 4px 12px rgba(93, 107, 52, 0.5);
 }
 
 .refresh-button:disabled {
@@ -367,7 +449,7 @@
 
 .order-details-content {
     background-color: white;
-    border-radius: 12px;
+    border-radius: 8px;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
     padding: 1.1rem;
     max-width: 860px;
@@ -384,19 +466,19 @@
     width: 34px;
     height: 34px;
     padding: 0;
-    background-color: #edf2f7;
+    background: #7e9146 !important;
     border: 1px solid #a0aec0;
     border-radius: 4px;
     font-size: 1rem;
     font-weight: 700;
-    color: #2d3748;
+    color: #ffffff;
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
 }
 
 .order-details-close:hover {
-    background-color: #e2e8f0;
+    background: #70813e !important;
     border-color: #718096;
     box-shadow: 0 3px 8px rgba(15, 23, 42, 0.12);
 }
@@ -407,7 +489,7 @@
 
 .order-details-close:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.18);
+    box-shadow: 0 0 0 3px var(--theme-focus);
 }
 
 .order-modal-header {
@@ -485,7 +567,7 @@
     justify-content: center;
     color: #ffffff;
     padding: 0 0.75rem;
-    border-radius: 6px;
+    border-radius: 4px;
     font-size: 0.8rem;
     font-weight: 700;
     line-height: 1;
@@ -505,7 +587,7 @@
 }
 
 .order-form-section {
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 0.7rem;
     background-color: #f8fafc;
     border: 1px solid #e2e8f0;
@@ -562,7 +644,7 @@
     min-height: 40px;
     height: 40px;
     border: 2px solid #e2e8f0;
-    border-radius: 6px;
+    border-radius: 4px;
     background-color: #fff;
     color: #2d3748;
     font-size: 0.9rem;
@@ -576,7 +658,7 @@
     padding: 0.5rem 0.6rem;
     height: 40px;
     border: 2px solid #e2e8f0;
-    border-radius: 6px;
+    border-radius: 4px;
     font-size: 0.85rem;
     line-height: 1.2;
     color: #2d3748;
@@ -587,8 +669,8 @@
 
 .order-detail-input:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: var(--theme-lavender);
+    box-shadow: 0 0 0 3px var(--theme-focus);
 }
 
 .order-detail-input[type="date"],
@@ -633,7 +715,7 @@ select.order-detail-input {
 .order-item-card {
     background-color: #fff;
     border: 1px solid #e2e8f0;
-    border-radius: 6px;
+    border-radius: 4px;
     padding: 1rem;
 }
 
@@ -645,8 +727,8 @@ select.order-detail-input {
 
 .close-modal-button {
     padding: 0.55rem 1rem;
-    background-color: #e2e8f0;
-    color: #4a5568;
+    background-color: var(--theme-lavender);
+    color: white;
     border: none;
     border-radius: 6px;
     font-size: 0.85rem;
@@ -656,7 +738,7 @@ select.order-detail-input {
 }
 
 .close-modal-button:hover {
-    background-color: #cbd5e0;
+    background-color: var(--theme-lavender-hover);
 }
 
 .order-form-actions {
@@ -668,9 +750,57 @@ select.order-detail-input {
     border-top: 1px solid #e2e8f0;
 }
 
+/* Modify order modal buttons should follow header user-info segmented design */
+.pick-page .order-details-close.split-olive-button,
+.pick-page .close-modal-button.split-olive-button,
+.pick-page .save-order-button.split-olive-button {
+    width: fit-content;
+    min-width: 132px;
+    height: 40px;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 4px !important;
+    overflow: hidden;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.164) !important;
+}
+
+.pick-page .order-details-close.split-olive-button:hover:not(:disabled),
+.pick-page .close-modal-button.split-olive-button:hover:not(:disabled),
+.pick-page .save-order-button.split-olive-button:hover:not(:disabled) {
+    transform: translateY(-1px) !important;
+    box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.22) !important;
+}
+
+.pick-page .order-details-close.split-olive-button .split-olive-button-text,
+.pick-page .close-modal-button.split-olive-button .split-olive-button-text,
+.pick-page .save-order-button.split-olive-button .split-olive-button-text {
+    background-color: #7e9146;
+    color: #ffffff;
+}
+
+.pick-page .order-details-close.split-olive-button .split-olive-button-icon-wrap,
+.pick-page .close-modal-button.split-olive-button .split-olive-button-icon-wrap,
+.pick-page .save-order-button.split-olive-button .split-olive-button-icon-wrap {
+    background-color: #6f7f3e;
+    color: #ffffff;
+}
+
+.pick-page .order-details-close.split-olive-button:hover:not(:disabled) .split-olive-button-text,
+.pick-page .close-modal-button.split-olive-button:hover:not(:disabled) .split-olive-button-text,
+.pick-page .save-order-button.split-olive-button:hover:not(:disabled) .split-olive-button-text {
+    background-color: #70813e;
+}
+
+.pick-page .order-details-close.split-olive-button:hover:not(:disabled) .split-olive-button-icon-wrap,
+.pick-page .close-modal-button.split-olive-button:hover:not(:disabled) .split-olive-button-icon-wrap,
+.pick-page .save-order-button.split-olive-button:hover:not(:disabled) .split-olive-button-icon-wrap {
+    background-color: #5f6f36;
+}
+
 .save-order-button {
     padding: 0.55rem 1rem;
-    background-color: #48bb78;
+    background-color: var(--theme-olive);
     color: white;
     border: none;
     border-radius: 6px;
@@ -678,12 +808,12 @@ select.order-detail-input {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(72, 187, 120, 0.35);
+    box-shadow: 0 2px 4px rgba(93, 107, 52, 0.35);
 }
 
 .save-order-button:hover:not(:disabled) {
-    background-color: #38a169;
-    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.45);
+    background-color: var(--theme-olive-hover);
+    box-shadow: 0 4px 12px rgba(93, 107, 52, 0.45);
 }
 
 .save-order-button:disabled {
@@ -707,7 +837,7 @@ select.order-detail-input {
     width: 40px;
     height: 40px;
     border: 4px solid #e2e8f0;
-    border-top-color: #667eea;
+    border-top-color: var(--theme-lavender);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
     margin-right: 1rem;
@@ -809,6 +939,13 @@ select.order-detail-input {
     .close-modal-button,
     .save-order-button {
         width: 100%;
+    }
+
+    .pick-page .order-details-close.split-olive-button,
+    .pick-page .close-modal-button.split-olive-button,
+    .pick-page .save-order-button.split-olive-button {
+        min-width: 124px;
+        height: 38px;
     }
 }
 

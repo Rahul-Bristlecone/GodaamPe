@@ -231,9 +231,33 @@ function ConfigManagerPage({ onClose }) {
 
                 <div className="config-dialog-footer">
                     <div className="dialog-actions">
-                        <button type="button" className="secondary-button" onClick={onClose}>Cancel</button>
-                        <button type="button" className="secondary-button">Help</button>
-                        <button type="button" className="primary-button">Update</button>
+                        <button type="button" className="config-action-button help-action-button">
+                            <span className="config-action-button-text">Help</span>
+                            <span className="config-action-button-icon-wrap" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9.09 9a3 3 0 1 1 5.82 1c0 2-3 2-3 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M12 17h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                                </svg>
+                            </span>
+                        </button>
+                        <button type="button" className="config-action-button" onClick={onClose}>
+                            <span className="config-action-button-text">Cancel</span>
+                            <span className="config-action-button-icon-wrap" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="m6 6 12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                            </span>
+                        </button>
+                        <button type="button" className="config-action-button">
+                            <span className="config-action-button-text">Update</span>
+                            <span className="config-action-button-icon-wrap" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="m5 13 4 4L19 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                            </span>
+                        </button>
                     </div>
                 </div>
             </div>

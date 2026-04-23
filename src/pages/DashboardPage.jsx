@@ -27,7 +27,7 @@ function DashboardPage({ onLogout, username, onNavigate }) {
             <Header username={username} onLogout={onLogout} onDashboard={() => {}} />
             <div className="dashboard-content">
                 <h2 className="welcome-message">
-                    Welcome <span className="username-highlight">{username}</span> to the ABS
+                    Welcome <span className="username-highlight">{username}</span> to the ABS Suite
                 </h2>
                 <div className="cards-grid">
                     {cards.map(card => (

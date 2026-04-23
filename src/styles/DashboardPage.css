@@ -1,6 +1,6 @@
 .dashboard-container {
     min-height: 100vh;
-    background: linear-gradient(135deg, #f5f7fa 0%, #eef1f8 50%, #f0f3fb 100%);
+    background: linear-gradient(135deg, #f6f4ef 0%, #f0ecf6 50%, #efe8f5 100%);
     width: 100%;
     position: relative;
 }
@@ -12,8 +12,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at top right, rgba(102, 126, 234, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at bottom left, rgba(118, 75, 162, 0.03) 0%, transparent 50%);
+    background: radial-gradient(circle at top right, rgba(111, 127, 62, 0.07) 0%, transparent 50%),
+                radial-gradient(circle at bottom left, rgba(183, 161, 212, 0.1) 0%, transparent 50%);
     pointer-events: none;
 }
 
@@ -32,10 +32,10 @@
     font-weight: 400;
     text-align: center;
     background: white;
-    padding: 1.5rem 2.5rem;
-    border-radius: 16px;
+    padding: 0.95rem 2rem;
+    border-radius: 6px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(102, 126, 234, 0.1);
+    border: 1px solid rgba(183, 161, 212, 0.35);
     position: relative;
     overflow: hidden;
 }
@@ -47,30 +47,24 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(90deg, var(--theme-olive) 0%, var(--theme-lavender) 100%);
 }
 
 .username-highlight {
     font-weight: 700;
     font-size: 1.75rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    padding: 0 0.5rem;
-    display: inline-block;
-    position: relative;
+    color: #4f6227;
+    background: #efe7f8;
+    border: 1px solid rgba(127, 103, 161, 0.35);
+    border-radius: 6px;
+    padding: 0.1rem 0.55rem;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.2;
 }
 
 .username-highlight::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0.5rem;
-    right: 0.5rem;
-    height: 2px;
-    background: linear-gradient(90deg, transparent 0%, #667eea 50%, transparent 100%);
-    opacity: 0.4;
+    content: none;
 }
 
 @media (max-width: 768px) {
@@ -81,7 +75,7 @@
     .welcome-message {
         font-size: 1.25rem;
         margin-bottom: 1rem;
-        padding: 0.75rem 1rem;
+        padding: 0.65rem 0.9rem;
     }
 
     .username-highlight {
@@ -99,7 +93,7 @@
 .dashboard-card {
     background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
     padding: 1.5rem;
-    border-radius: 12px;
+    border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     cursor: pointer;
     transition: all 0.3s ease;
@@ -109,8 +103,8 @@
 
 .dashboard-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.25);
-    border-color: #667eea;
+    box-shadow: 0 8px 24px rgba(111, 127, 62, 0.3);
+    border-color: var(--theme-lavender);
 }
 
 .card-icon {
