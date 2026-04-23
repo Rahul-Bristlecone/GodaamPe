@@ -1,4 +1,16 @@
 :root {
+  --theme-olive: #6f7f3e;
+  --theme-olive-hover: #7e9146;
+  --theme-lavender: #b7a1d4;
+  --theme-lavender-hover: #a18bc2;
+  --theme-dust-red: #b96a67;
+  --theme-dust-red-hover: #a45754;
+  --theme-bg-soft: #f6f4ef;
+  --theme-surface: #ffffff;
+  --theme-text: #2f3630;
+  --theme-border: #d9d4df;
+  --theme-focus: rgba(183, 161, 212, 0.35);
+
   --text: #6b6375;
   --text-h: #08060d;
   --bg: #fff;
@@ -52,6 +64,8 @@
 
 body {
   margin: 0;
+  background: var(--theme-bg-soft);
+  color: var(--theme-text);
 }
 
 #root {
