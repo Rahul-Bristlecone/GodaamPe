@@ -19,6 +19,10 @@
     gap: 0.4rem;
 }
 
+.add-product-modal-content {
+    border-radius: 5px;
+}
+
 .product-form .form-section {
     border: 1px solid #e2e8f0;
     border-radius: 8px;
@@ -172,6 +176,59 @@
     cursor: not-allowed;
 }
 
+.product-form .form-actions .split-olive-button.product-form-action-button {
+    min-width: 152px;
+    height: 38px;
+}
+
+.product-form .form-actions.add-product-form-actions {
+    justify-content: space-between;
+    align-items: center;
+}
+
+.add-product-form-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.product-form .form-actions .product-form-action-button .split-olive-button-text {
+    font-size: 0.85rem;
+}
+
+.product-form .form-actions .product-form-action-button .split-olive-button-icon-wrap svg {
+    width: 15px;
+    height: 15px;
+}
+
+.product-form .product-form-help-button .split-olive-button-text {
+    background-color: #7d69b4;
+}
+
+.product-form .product-form-help-button .split-olive-button-icon-wrap {
+    background-color: #6f5aa8;
+}
+
+.product-form .product-form-help-button:hover:not(:disabled) .split-olive-button-text {
+    background-color: #6f5aa8;
+}
+
+.product-form .product-form-help-button:hover:not(:disabled) .split-olive-button-icon-wrap {
+    background-color: #604b97;
+}
+
+.product-add-close-button {
+    background: #5f6f36 !important;
+    background-image: none !important;
+    border: none !important;
+    color: #ffffff !important;
+}
+
+.product-add-close-button:hover:not(:disabled) {
+    background: #54632f !important;
+    background-image: none !important;
+}
+
 /* Products Header with Action Buttons */
 .products-header {
     display: grid;
@@ -304,6 +361,12 @@
 .add-product-button-large:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.file-select-button.split-olive-button,
+.add-product-button-large.split-olive-button {
+    min-width: 168px;
+    height: 40px;
 }
 
 /* Products Table */

@@ -89,9 +89,10 @@
 
 /* File Select Button in Orders Header */
 .orders-header-actions .file-select-button {
-    margin-top: 0;
-    padding: 0;
-    font-size: 0.8rem;
+    margin-top: 0 !important;
+    height: 40px !important;
+    min-width: 148px;
+    align-self: center;
 }
 
 /* Orders Display Section */
@@ -283,7 +284,8 @@
     --status-icon: "▣";
 }
 
-.import-status-tab.status-complete {
+.import-status-tab.status-complete,
+.import-status-tab.status-completed {
     --status-icon: "✓";
 }
 
@@ -321,8 +323,10 @@
 
 .orders-header-actions {
     display: flex;
-    gap: 0.75rem;
+    gap: 0.5rem;
     align-items: center;
+    flex-wrap: wrap;
+    height: 40px;
 }
 
 .order-count {
@@ -332,29 +336,24 @@
     white-space: nowrap;
 }
 
-.orders-header-actions {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    flex-wrap: wrap;
+.refresh-button.split-olive-button {
+    min-width: 126px;
 }
 
-.refresh-button {
-    padding: 0.45rem 0.8rem;
-    background-color: var(--theme-olive);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(93, 107, 52, 0.35);
+.refresh-button.split-olive-button .split-olive-button-text {
+    background-color: #7e9146;
 }
 
-.refresh-button:hover:not(:disabled) {
-    background-color: var(--theme-olive-hover);
-    box-shadow: 0 4px 12px rgba(93, 107, 52, 0.5);
+.refresh-button.split-olive-button .split-olive-button-icon-wrap {
+    background-color: #6f7f3e;
+}
+
+.refresh-button.split-olive-button:hover:not(:disabled) .split-olive-button-text {
+    background-color: #70813e;
+}
+
+.refresh-button.split-olive-button:hover:not(:disabled) .split-olive-button-icon-wrap {
+    background-color: #5f6f36;
 }
 
 .refresh-button:disabled {
@@ -743,11 +742,39 @@ select.order-detail-input {
 
 .order-form-actions {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
     gap: 0.75rem;
     margin-top: 0.75rem;
     padding-top: 0.75rem;
     border-top: 1px solid #e2e8f0;
+}
+
+.order-form-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Help button - lavender */
+.pick-page .order-help-button.split-olive-button {
+    min-width: 110px;
+}
+
+.pick-page .order-help-button .split-olive-button-text {
+    background-color: #7d69b4;
+}
+
+.pick-page .order-help-button .split-olive-button-icon-wrap {
+    background-color: #6f5aa8;
+}
+
+.pick-page .order-help-button:hover:not(:disabled) .split-olive-button-text {
+    background-color: #6f5aa8;
+}
+
+.pick-page .order-help-button:hover:not(:disabled) .split-olive-button-icon-wrap {
+    background-color: #604b97;
 }
 
 /* Modify order modal buttons should follow header user-info segmented design */

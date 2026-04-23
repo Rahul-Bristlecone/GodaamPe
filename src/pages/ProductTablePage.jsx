@@ -425,14 +425,21 @@ function ProductTablePage({ username, onLogout, onBack }) {
                                     disabled={loading}
                                 />
                                 <button
-                                    className="file-select-button"
+                                    className="file-select-button split-olive-button"
                                     disabled={loading}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         document.getElementById('file-input-product').click();
                                     }}
                                 >
-                                    {loading ? 'Uploading...' : 'Select File'}
+                                    <span className="split-olive-button-text">{loading ? 'Uploading...' : 'Select File'}</span>
+                                    <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 16V4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <path d="m7 9 5-5 5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <path d="M20 16.5V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-2.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </span>
                                 </button>
                             </div>
 
@@ -441,11 +448,17 @@ function ProductTablePage({ username, onLogout, onBack }) {
                             <div className="add-product-section">
                                 <h3>Add Product Manually</h3>
                                 <button
-                                    className="add-product-button-large"
+                                    className="add-product-button-large split-olive-button"
                                     onClick={handleAddProduct}
                                     disabled={loading}
                                 >
-                                    ➕ Add New Product
+                                    <span className="split-olive-button-text">Add New Product</span>
+                                    <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 5v14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </span>
                                 </button>
                             </div>
                         </div>
@@ -463,12 +476,12 @@ function ProductTablePage({ username, onLogout, onBack }) {
             {/* Add Product Modal */}
             {showAddForm && (
                 <div className="modal-overlay">
-                    <div className="modal-content">
+                    <div className="modal-content add-product-modal-content">
                         <div className="modal-header">
                             <h2>Add New Product</h2>
                             <button
                                 type="button"
-                                className="modal-close-button"
+                                className="modal-close-button product-add-close-button"
                                 onClick={handleCancelAddProduct}
                                 aria-label="Close add product form"
                             >
@@ -622,23 +635,46 @@ function ProductTablePage({ username, onLogout, onBack }) {
                             </div>
 
                             {/* Form Actions */}
-                            <div className="form-actions">
-                                <button 
-                                    type="button" 
-                                    className="cancel-button"
-                                    onClick={handleCancelAddProduct}
-                                    disabled={loading}
-                                >
-                                    Cancel
+                            <div className="form-actions add-product-form-actions">
+                                <button type="button" className="split-olive-button product-form-action-button product-form-help-button">
+                                    <span className="split-olive-button-text">Help</span>
+                                    <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M9.09 9a3 3 0 1 1 5.82 1c0 2-3 2-3 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <path d="M12 17h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                                        </svg>
+                                    </span>
                                 </button>
-                                <button 
-                                    type="button" 
-                                    className="save-button"
-                                    onClick={handleSaveProduct}
-                                    disabled={loading}
-                                >
-                                    {loading ? 'Saving...' : 'Save Product'}
-                                </button>
+                                <div className="add-product-form-actions-right">
+                                    <button 
+                                        type="button" 
+                                        className="split-olive-button product-form-action-button"
+                                        onClick={handleCancelAddProduct}
+                                        disabled={loading}
+                                    >
+                                        <span className="split-olive-button-text">Cancel</span>
+                                        <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                <path d="m6 6 12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        </span>
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        className="split-olive-button product-form-action-button"
+                                        onClick={handleSaveProduct}
+                                        disabled={loading}
+                                    >
+                                        <span className="split-olive-button-text">{loading ? 'Saving...' : 'Save Product'}</span>
+                                        <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="m5 13 4 4L19 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        </span>
+                                    </button>
+                                </div>
                             </div>
                         </form>
                     </div>

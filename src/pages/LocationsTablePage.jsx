@@ -11,11 +11,30 @@ function LocationsTablePage({ username, onLogout, onBack }) {
     const [showAddForm, setShowAddForm] = useState(false);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [selectedLocation, setSelectedLocation] = useState(null);
-    const [isEditing, setIsEditing] = useState(false);
+    const [originalFormData, setOriginalFormData] = useState(null);
     const [locations, setLocations] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [dragOver, setDragOver] = useState(false);
+    const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+
+    const handleDragOver = (e) => { e.preventDefault(); setDragOver(true); };
+    const handleDragLeave = () => setDragOver(false);
+    const handleDrop = (e) => {
+        e.preventDefault();
+        setDragOver(false);
+        const file = e.dataTransfer.files[0];
+        if (file) handleLocationFile(file);
+    };
+    const handleFileInputChange = (e) => {
+        const file = e.target.files[0];
+        if (file) handleLocationFile(file);
+    };
+    const handleLocationFile = (file) => {
+        // TODO: implement location file upload
+        setError('File upload for locations is not yet supported.');
+    };
     const [formData, setFormData] = useState({
         userStoreNumber: '',
         storeName: '',
@@ -149,8 +168,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
     };
 
     const handleRowClick = (location) => {
-        setSelectedLocation(location);
-        setFormData({
+        const data = {
             userStoreNumber: location.user_store_number || '',
             storeName: location.store_name || '',
             customerId: location.customer_id || '',
@@ -164,19 +182,21 @@ function LocationsTablePage({ username, onLogout, onBack }) {
             contractPriceGroup: '',
             promoPriceGroup: '',
             retailPriceGroup: ''
-        });
-        setIsEditing(false);
+        };
+        setSelectedLocation(location);
+        setFormData(data);
+        setOriginalFormData(data);
         setShowDetailModal(true);
     };
 
-    const handleEditLocation = () => {
-        setIsEditing(true);
-    };
+    const hasDetailChanges = originalFormData
+        ? Object.keys(originalFormData).some(k => String(formData[k]) !== String(originalFormData[k]))
+        : false;
 
     const closeDetailModal = () => {
         setShowDetailModal(false);
-        setIsEditing(false);
         setSelectedLocation(null);
+        setOriginalFormData(null);
         setFormData({
             userStoreNumber: '',
             storeName: '',
@@ -237,15 +257,15 @@ function LocationsTablePage({ username, onLogout, onBack }) {
     };
 
     const handleDeleteLocation = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this location?')) {
-            return;
-        }
+        setConfirmDeleteId(id);
+    };
 
+    const confirmDelete = async () => {
+        const id = confirmDeleteId;
+        setConfirmDeleteId(null);
         setLoading(true);
         setError('');
-        
         const result = await deleteStore(id);
-        
         if (result.success) {
             setSuccess('Location deleted successfully!');
             await fetchLocations();
@@ -253,7 +273,6 @@ function LocationsTablePage({ username, onLogout, onBack }) {
         } else {
             setError(result.error || 'Failed to delete location');
         }
-
         setLoading(false);
     };
 
@@ -276,23 +295,108 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                     {error && <div className="alert alert-error">{error}</div>}
                     {success && <div className="alert alert-success">{success}</div>}
 
-                    <div className="locations-header">
-                        <h2>Location Records</h2>
-                        <button 
-                            className="add-location-button"
-                            onClick={() => setShowAddForm(true)}
-                            disabled={loading}
-                        >
-                            + Add Location
-                        </button>
-                    </div>
+                    {locations.length > 0 && (
+                        <div className="locations-header">
+                            <div className="locations-header-left">
+                                <span className="location-count">
+                                    Total Stores: <strong>{locations.length}</strong>
+                                </span>
+                            </div>
+                            <div className="locations-header-right">
+                                <div className="locations-header-actions">
+                                <button 
+                                    className="add-location-button split-olive-button"
+                                    onClick={() => setShowAddForm(true)}
+                                    disabled={loading}
+                                >
+                                    <span className="split-olive-button-text">Add Location</span>
+                                    <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 5v14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </span>
+                                </button>
+                                <button
+                                    className="refresh-button split-olive-button"
+                                    onClick={fetchLocations}
+                                    disabled={loading}
+                                >
+                                    <span className="split-olive-button-text">Refresh</span>
+                                    <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M21 12a9 9 0 1 1-2.64-6.36" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <path d="M21 3v6h-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </span>
+                                </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {loading && !showAddForm ? (
                         <div className="loading-spinner">
                             <p>Loading locations...</p>
                         </div>
                     ) : locations.length === 0 ? (
-                        <p className="empty-state">No locations added yet. Click "Add Location" to get started.</p>
+                        <div className="upload-section compact-upload">
+                            <h2>Import Location data or Add New Location</h2>
+                            <div
+                                className={`drag-drop-zone compact-drag-drop ${dragOver ? 'drag-over' : ''}`}
+                                onDragOver={handleDragOver}
+                                onDragLeave={handleDragLeave}
+                                onDrop={handleDrop}
+                                onClick={() => document.getElementById('file-input-location').click()}
+                            >
+                                <div className="drag-drop-icon">📁</div>
+                                <p className="drag-drop-text">Drag and drop file here</p>
+                                <input
+                                    id="file-input-location"
+                                    type="file"
+                                    className="drag-drop-input"
+                                    onChange={handleFileInputChange}
+                                    accept=".txt,.csv"
+                                    disabled={loading}
+                                />
+                                <button
+                                    className="file-select-button split-olive-button"
+                                    disabled={loading}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        document.getElementById('file-input-location').click();
+                                    }}
+                                >
+                                    <span className="split-olive-button-text">{loading ? 'Uploading...' : 'Select File'}</span>
+                                    <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 16V4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <path d="m7 9 5-5 5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <path d="M20 16.5V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-2.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </span>
+                                </button>
+                            </div>
+
+                            <div className="or-divider"></div>
+
+                            <div className="add-location-section">
+                                <h3>Add Location Manually</h3>
+                                <button
+                                    className="add-location-button-large split-olive-button"
+                                    onClick={() => setShowAddForm(true)}
+                                    disabled={loading}
+                                >
+                                    <span className="split-olive-button-text">Add New Location</span>
+                                    <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 5v14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
                     ) : (
                         <div className="locations-table-wrapper">
                             <table className="locations-table">
@@ -332,11 +436,18 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                             <td>{location.shipping_time || '-'}</td>
                                             <td onClick={(e) => e.stopPropagation()}>
                                                 <button 
-                                                    className="delete-button"
+                                                    className="delete-button split-olive-button"
                                                     onClick={() => handleDeleteLocation(location.id || location.location_id)}
                                                     disabled={loading}
                                                 >
-                                                    Delete
+                                                    <span className="split-olive-button-text">Delete</span>
+                                                    <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M3 6h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                            <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                            <path d="M19 6v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                        </svg>
+                                                    </span>
                                                 </button>
                                             </td>
                                         </tr>
@@ -553,23 +664,46 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                 </div>
                             </div>
 
-                            <div className="form-actions">
-                                <button 
-                                    type="button" 
-                                    className="cancel-button"
-                                    onClick={handleCancel}
-                                    disabled={loading}
-                                >
-                                    Cancel
+                            <div className="form-actions add-location-form-actions">
+                                <button type="button" className="split-olive-button location-form-action-button location-form-help-button">
+                                    <span className="split-olive-button-text">Help</span>
+                                    <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M9.09 9a3 3 0 1 1 5.82 1c0 2-3 2-3 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <path d="M12 17h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                                        </svg>
+                                    </span>
                                 </button>
-                                <button 
-                                    type="button" 
-                                    className="save-button"
-                                    onClick={handleSave}
-                                    disabled={loading}
-                                >
-                                    {loading ? 'Saving...' : 'Save Location'}
-                                </button>
+                                <div className="add-location-form-actions-right">
+                                    <button 
+                                        type="button" 
+                                        className="split-olive-button location-form-action-button"
+                                        onClick={handleCancel}
+                                        disabled={loading}
+                                    >
+                                        <span className="split-olive-button-text">Cancel</span>
+                                        <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                <path d="m6 6 12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        </span>
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        className="split-olive-button location-form-action-button"
+                                        onClick={handleSave}
+                                        disabled={loading}
+                                    >
+                                        <span className="split-olive-button-text">{loading ? 'Saving...' : 'Save Location'}</span>
+                                        <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="m5 13 4 4L19 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        </span>
+                                    </button>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -581,26 +715,15 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                 <div className="modal-overlay">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h2>Location Details</h2>
-                            <div className="modal-header-actions">
-                                {!isEditing && (
-                                    <button 
-                                        type="button"
-                                        className="save-button"
-                                        onClick={handleEditLocation}
-                                    >
-                                        ✏️ Modify
-                                    </button>
-                                )}
-                                <button
-                                    type="button"
-                                    className="modal-close-button"
-                                    onClick={closeDetailModal}
-                                    aria-label="Close location details"
-                                >
-                                    ×
-                                </button>
-                            </div>
+                            <h2>Modify Location details</h2>
+                            <button
+                                type="button"
+                                className="modal-close-button location-add-close-button"
+                                onClick={closeDetailModal}
+                                aria-label="Close location details"
+                            >
+                                ×
+                            </button>
                         </div>
                         {error && <div className="alert alert-error">{error}</div>}
                         {success && <div className="alert alert-success">{success}</div>}
@@ -617,7 +740,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                         onChange={handleInputChange}
                                         placeholder="Enter Store Number"
                                         required
-                                        disabled={!isEditing || loading}
+                                        disabled
                                     />
                                 </div>
                                 <div className="form-group">
@@ -630,7 +753,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                         onChange={handleInputChange}
                                         placeholder="Enter Store Name"
                                         required
-                                        disabled={!isEditing || loading}
+                                        disabled={loading}
                                     />
                                 </div>
                                 <div className="form-group">
@@ -643,7 +766,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                         onChange={handleInputChange}
                                         placeholder="Enter Customer ID"
                                         required
-                                        disabled={!isEditing || loading}
+                                        disabled={loading}
                                     />
                                 </div>
                             </div>
@@ -659,7 +782,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                         onChange={handleInputChange}
                                         placeholder="Enter Address Line 1"
                                         required
-                                        disabled={!isEditing || loading}
+                                        disabled={loading}
                                     />
                                 </div>
                             </div>
@@ -674,7 +797,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                         value={formData.addressLine2}
                                         onChange={handleInputChange}
                                         placeholder="Enter Address Line 2 (optional)"
-                                        disabled={!isEditing || loading}
+                                        disabled={loading}
                                     />
                                 </div>
                                 <div className="form-group">
@@ -686,7 +809,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                         value={formData.addressLine3}
                                         onChange={handleInputChange}
                                         placeholder="Enter Address Line 3 (optional)"
-                                        disabled={!isEditing || loading}
+                                        disabled={loading}
                                     />
                                 </div>
                             </div>
@@ -702,7 +825,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                         onChange={handleInputChange}
                                         placeholder="Enter Pin Code"
                                         required
-                                        disabled={!isEditing || loading}
+                                        disabled={loading}
                                     />
                                 </div>
                                 <div className="form-group">
@@ -715,7 +838,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                         onChange={handleInputChange}
                                         placeholder="Enter State Code"
                                         required
-                                        disabled={!isEditing || loading}
+                                        disabled={loading}
                                     />
                                 </div>
                                 <div className="form-group">
@@ -728,7 +851,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                         onChange={handleInputChange}
                                         placeholder="Enter Country Code"
                                         required
-                                        disabled={!isEditing || loading}
+                                        disabled={loading}
                                     />
                                 </div>
                                 <div className="form-group">
@@ -741,7 +864,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                         onChange={handleInputChange}
                                         placeholder="Enter Shipping Time in hours"
                                         required
-                                        disabled={!isEditing || loading}
+                                        disabled={loading}
                                     />
                                 </div>
                             </div>
@@ -756,7 +879,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                             name="contractPriceGroup"
                                             value={formData.contractPriceGroup}
                                             onChange={handleInputChange}
-                                            disabled={!isEditing || loading}
+                                            disabled={loading}
                                         >
                                             <option value="">Select contract price group</option>
                                             {priceGroupPlaceholderOptions.map(option => (
@@ -771,7 +894,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                             name="promoPriceGroup"
                                             value={formData.promoPriceGroup}
                                             onChange={handleInputChange}
-                                            disabled={!isEditing || loading}
+                                            disabled={loading}
                                         >
                                             <option value="">Select promo price group</option>
                                             {priceGroupPlaceholderOptions.map(option => (
@@ -786,7 +909,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                             name="retailPriceGroup"
                                             value={formData.retailPriceGroup}
                                             onChange={handleInputChange}
-                                            disabled={!isEditing || loading}
+                                            disabled={loading}
                                         >
                                             <option value="">Select retail price group</option>
                                             {priceGroupPlaceholderOptions.map(option => (
@@ -797,39 +920,87 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                 </div>
                             </div>
 
-                            {isEditing && (
-                                <div className="form-actions">
-                                    <button 
-                                        type="button" 
-                                        className="cancel-button"
-                                        onClick={closeDetailModal}
-                                        disabled={loading}
-                                    >
-                                        Cancel
+                            <div className="form-actions add-location-form-actions">
+                                    <button type="button" className="split-olive-button location-form-action-button location-form-help-button">
+                                        <span className="split-olive-button-text">Help</span>
+                                        <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M9.09 9a3 3 0 1 1 5.82 1c0 2-3 2-3 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                <path d="M12 17h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                                            </svg>
+                                        </span>
                                     </button>
-                                    <button 
-                                        type="button" 
-                                        className="save-button"
-                                        onClick={handleSaveEdit}
-                                        disabled={loading}
-                                    >
-                                        {loading ? 'Saving...' : 'Save Changes'}
-                                    </button>
+                                    <div className="add-location-form-actions-right">
+                                        <button
+                                            type="button"
+                                            className="split-olive-button location-form-action-button"
+                                            onClick={closeDetailModal}
+                                            disabled={loading}
+                                        >
+                                            <span className="split-olive-button-text">Close</span>
+                                            <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                    <path d="m6 6 12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                            </span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="split-olive-button location-form-action-button"
+                                            onClick={handleSaveEdit}
+                                            disabled={loading || !hasDetailChanges}
+                                        >
+                                            <span className="split-olive-button-text">{loading ? 'Saving...' : 'Save Changes'}</span>
+                                            <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="m5 13 4 4L19 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                            </span>
+                                        </button>
+                                    </div>
                                 </div>
-                            )}
-
-                            {!isEditing && (
-                                <div className="form-actions">
-                                    <button 
-                                        type="button" 
-                                        className="cancel-button"
-                                        onClick={closeDetailModal}
-                                    >
-                                        Close
-                                    </button>
-                                </div>
-                            )}
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Dialog */}
+            {confirmDeleteId !== null && (
+                <div className="modal-overlay">
+                    <div className="confirm-delete-dialog">
+                        <h3>Delete Location</h3>
+                        <p>Are you sure you want to delete this location? This action cannot be undone.</p>
+                        <div className="confirm-delete-actions">
+                            <button
+                                type="button"
+                                className="split-olive-button confirm-cancel-button"
+                                onClick={() => setConfirmDeleteId(null)}
+                            >
+                                <span className="split-olive-button-text">Cancel</span>
+                                <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        <path d="m6 6 12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                </span>
+                            </button>
+                            <button
+                                type="button"
+                                className="split-olive-button confirm-delete-button"
+                                onClick={confirmDelete}
+                            >
+                                <span className="split-olive-button-text">Delete</span>
+                                <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3 6h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        <path d="M19 6v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                </span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
