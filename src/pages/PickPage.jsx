@@ -6,7 +6,7 @@ import { uploadEDIFile, getAllOrders } from '../utils/uploadService';
 import { getAllStores } from '../utils/storeService';
 
 function PickPage({ username, onLogout, onBack }) {
-    const importStatusTabs = ['Rejected', 'unpicked', 'Downloading', 'picking', 'partially filled', 'filled', 'complete'];
+    const importStatusTabs = ['Rejected', 'Unpicked', 'Downloading', 'Picking', 'Partially Filled', 'Filled', 'Completed'];
     const orderStatusOptions = ['pending', 'cancelled', 'outstanding', 'discarded', 'downloading', 'Picking', 'complete'];
     const poaStatusOptions = ['POA sent', 'POA not sent'];
     const carrierOptions = ['Select carrier', 'DHL', 'FedEx', 'Blue Dart', 'Delhivery'];
@@ -23,7 +23,7 @@ function PickPage({ username, onLogout, onBack }) {
     };
 
     const [orders, setOrders] = useState([]);
-    const [activeImportTab, setActiveImportTab] = useState('unpicked');
+    const [activeImportTab, setActiveImportTab] = useState('Unpicked');
     const [storesById, setStoresById] = useState({});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -143,9 +143,7 @@ function PickPage({ username, onLogout, onBack }) {
     };
 
     const handleClearOrders = () => {
-        if (window.confirm('Are you sure you want to refresh the orders list?')) {
-            fetchOrders();
-        }
+        fetchOrders();
     };
 
     const getOrderKey = (order, index = 0) => {
@@ -260,7 +258,7 @@ function PickPage({ username, onLogout, onBack }) {
     const shouldShowOrderForActiveTab = (order, index) => {
         const orderStatus = (getDisplayOrderStatus(order, index) || '').toLowerCase();
         if (orderStatus === 'pending') {
-            return activeImportTab === 'unpicked';
+            return activeImportTab === 'Unpicked';
         }
         return true;
     };
@@ -432,8 +430,7 @@ function PickPage({ username, onLogout, onBack }) {
                                 onClick={() => document.getElementById('file-input').click()}
                             >
                                 <div className="drag-drop-icon">📁</div>
-                                <p className="drag-drop-text">Drag and drop your order file here</p>
-                                <p className="drag-drop-subtext">or click to select a file</p>
+                                <p className="drag-drop-text">Drag and drop your orders file here</p>
                                 <input
                                     id="file-input"
                                     type="file"
@@ -637,23 +634,35 @@ function PickPage({ username, onLogout, onBack }) {
                         )}
 
                         <div className="order-form-actions">
-                            <button className="close-modal-button split-olive-button" onClick={closeOrderModal}>
-                                <span className="split-olive-button-text">Close</span>
+                            <button type="button" className="order-help-button split-olive-button">
+                                <span className="split-olive-button-text">Help</span>
                                 <span className="split-olive-button-icon-wrap" aria-hidden="true">
                                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                        <path d="m6 6 12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        <path d="M9.09 9a3 3 0 1 1 5.82 1c0 2-3 2-3 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        <path d="M12 17h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
                                     </svg>
                                 </span>
                             </button>
-                            <button className="save-order-button split-olive-button" onClick={handleSaveOrderChanges} disabled={!hasOrderChanges}>
-                                <span className="split-olive-button-text">Save Changes</span>
-                                <span className="split-olive-button-icon-wrap" aria-hidden="true">
-                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="m20 6-11 11-5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                </span>
-                            </button>
+                            <div className="order-form-actions-right">
+                                <button className="close-modal-button split-olive-button" onClick={closeOrderModal}>
+                                    <span className="split-olive-button-text">Close</span>
+                                    <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <path d="m6 6 12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </span>
+                                </button>
+                                <button className="save-order-button split-olive-button" onClick={handleSaveOrderChanges} disabled={!hasOrderChanges}>
+                                    <span className="split-olive-button-text">Save Changes</span>
+                                    <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="m20 6-11 11-5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
