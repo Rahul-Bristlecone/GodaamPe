@@ -45,7 +45,7 @@ function ConfigManagerPage({ onClose }) {
                         </div>
                         <div className="form-group full-width">
                             <label className="compact-label">Invoice Number Generation Method</label>
-                            <select className="compact-select">
+                            <select className="compact-select invoice-method-select">
                                 <option>ABS Generated</option>
                                 <option>User Keyed-in (duplicates not allowed)</option>
                                 <option>Import via Account Interface</option>
@@ -195,7 +195,7 @@ function ConfigManagerPage({ onClose }) {
 
     return (
         <div className="modal-overlay">
-            <div className="config-dialog">
+            <div className="config-dialog abspick-config-dialog">
                 <div className="config-dialog-header">
                     <div>
                         <h1>AbsPick Configuration</h1>
