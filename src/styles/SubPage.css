@@ -817,10 +817,16 @@
     height: 20px;
     font-size: 0.73rem;
     padding: 0.16rem 0.35rem;
+    font-family: Verdana, sans-serif;
 }
 
 .config-dialog.customer-config-dialog .customer-field select {
     height: 22px;
+}
+
+.config-dialog.customer-config-dialog input[type='text'],
+.config-dialog.customer-config-dialog select {
+    font-family: Verdana, sans-serif;
 }
 
 .config-dialog.customer-config-dialog .edi-tab-panel .customer-field input {
@@ -1008,6 +1014,24 @@
     outline: none;
     border-color: var(--theme-lavender);
     box-shadow: 0 0 0 3px var(--theme-focus);
+}
+
+.labels-tab-input {
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    background-color: #f8fafc;
+    color: #1f2937;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.labels-tab-input:focus {
+    outline: none;
+    border-color: var(--theme-lavender);
+    box-shadow: 0 0 0 3px var(--theme-focus);
+}
+
+.labels-tab-input:hover {
+    border-color: var(--theme-lavender);
 }
 
 .checkbox-row {

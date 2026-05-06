@@ -81,19 +81,78 @@ function ConfigManagerPage({ onClose }) {
             case 'PDT / Label Printer':
                 return (
                     <div className="tab-panel">
-                        <p className="section-description">PDT and label printer settings.</p>
-                        <div className="form-group full-width">
-                            <label>Printer Device</label>
-                            <input type="text" placeholder="Enter printer device" />
+                        <div style={{ marginBottom: '0px' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', marginBottom: '0', fontSize: '13px', fontWeight: '500' }}>
+                                <input type="checkbox" style={{ marginRight: '4px' }} />
+                                Display Rack Location On Pdt
+                            </label>
                         </div>
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label>Port</label>
-                                <input type="text" placeholder="COM / USB port" />
+                        <div className="separator" style={{ margin: '2px 0 0px 0' }}></div>
+                        
+                        <div style={{ marginTop: '0px', marginBottom: '1px' }}>
+                            <label style={{ display: 'block', fontWeight: '500', marginBottom: '1px', fontSize: '15px' }}>Portable Data Terminal:</label>
+                            <div className="form-row" style={{ marginBottom: '0' }}>
+                                <div className="form-group" style={{ marginBottom: '0' }}>
+                                    <label>ComPort</label>
+                                    <select style={{ width: '100%', padding: '2px', fontSize: '11px' }}>
+                                        <option>&lt;none&gt;</option>
+                                        <option>COM1</option>
+                                        <option>COM2</option>
+                                        <option>COM3</option>
+                                    </select>
+                                </div>
+                                <div className="form-group" style={{ marginBottom: '0' }}>
+                                    <label>Speed:</label>
+                                    <input type="number" defaultValue="19200" style={{ width: '100%', padding: '2px', fontSize: '11px' }} />
+                                </div>
                             </div>
-                            <div className="form-group">
-                                <label>Baud Rate</label>
-                                <input type="text" placeholder="Printer baud rate" />
+                        </div>
+                        <div className="separator" style={{ margin: '2px 0 0px 0' }}></div>
+                        
+                        <div style={{ marginTop: '0px', marginBottom: '1px' }}>
+                            <label style={{ display: 'block', fontWeight: '500', marginBottom: '1px', fontSize: '15px' }}>Label Printer:</label>
+                            <div style={{ marginBottom: '1px' }}>
+                                <label style={{ display: 'flex', alignItems: 'center', marginBottom: '0', fontSize: '13px', fontWeight: '500' }}>
+                                    <input type="checkbox" defaultChecked style={{ marginRight: '4px' }} />
+                                    Print labels as Microsoft PDF
+                                </label>
+                            </div>
+                            <div className="form-row" style={{ marginBottom: '1px' }}>
+                                <div className="form-group" style={{ marginBottom: '0' }}>
+                                    <label>Printer:</label>
+                                    <select style={{ width: '100%', padding: '2px', fontSize: '11px' }}>
+                                        <option>Intermec</option>
+                                        <option>Datamax</option>
+                                        <option>Zebra</option>
+                                    </select>
+                                </div>
+                                <div className="form-group" style={{ marginBottom: '0' }}>
+                                    <label>ComPort</label>
+                                    <select style={{ width: '100%', padding: '2px', fontSize: '11px' }}>
+                                        <option>LPT</option>
+                                        <option>COM1</option>
+                                        <option>COM2</option>
+                                        <option>USB</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="form-group full-width" style={{ marginBottom: '0' }}>
+                                <label>Name</label>
+                                <select style={{ width: '100%', padding: '2px', fontSize: '11px' }}>
+                                    <option>Datamax-O'Neil M-4206 Mark II</option>
+                                    <option>Intermec ThermaLink</option>
+                                    <option>Zebra ZPL</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="separator" style={{ margin: '2px 0 0px 0' }}></div>
+                        
+                        <div style={{ marginTop: '0px' }}>
+                            <div className="form-row" style={{ marginBottom: '0' }}>
+                                <div className="form-group" style={{ marginBottom: '0', width: '50%' }}>
+                                    <label>MC Scanner Port No</label>
+                                    <input type="number" defaultValue="8443" style={{ width: '100%', padding: '2px', fontSize: '11px' }} />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -101,54 +160,102 @@ function ConfigManagerPage({ onClose }) {
             case 'Labels':
                 return (
                     <div className="tab-panel">
-                        <p className="section-description">Label formatting and print behavior.</p>
-                        <div className="form-group full-width">
-                            <label>Label Template</label>
-                            <input type="text" placeholder="Selected label template" />
+                        <div style={{ marginBottom: '2px' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', marginBottom: '0', fontSize: '13px' }}>
+                                <input type="checkbox" style={{ marginRight: '4px' }} />
+                                SCM Preprints Required
+                            </label>
                         </div>
-                        <div className="checkbox-row">
-                            <label><input type="checkbox" /> Show Wholesale Price</label>
-                            <label><input type="checkbox" /> Print on Completion</label>
+                        <div className="separator" style={{ margin: '2px 0 0px 0' }}></div>
+
+                        <div style={{ marginTop: '0px' }}>
+                            {[
+                                { label: 'Default SCM Label Format:', value: 'SCMLabel' },
+                                { label: 'Default Price Label Format:', value: 'PriceLabel' },
+                                { label: 'Ctn Seq Label Format:', value: 'ctnseqlabel' },
+                                { label: 'RatioPack Label Format:', value: '' },
+                                { label: 'TradeUnit Label Format:', value: 'TUNLabel' },
+                                { label: 'Big TradeUnit Label Format:', value: '' },
+                                { label: 'Bulk Pallet Label Format:', value: 'BulkLabel' },
+                                { label: 'Produce Order Label Format:', value: '' },
+                            ].map(({ label, value }) => (
+                                <div key={label} style={{ display: 'flex', alignItems: 'center', marginBottom: '1px', gap: '6px' }}>
+                                    <label style={{ width: '42%', marginBottom: '0', whiteSpace: 'nowrap', fontSize: '13px' }}>{label}</label>
+                                    <input type="text" defaultValue={value} className="labels-tab-input" style={{ width: '35%', padding: '2px', fontSize: '12px' }} />
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="separator" style={{ margin: '3px 0 2px 0' }}></div>
+                        <div>
+                            <label style={{ display: 'flex', alignItems: 'center', marginBottom: '0', fontSize: '13px' }}>
+                                <input type="checkbox" defaultChecked style={{ marginRight: '4px' }} />
+                                Allow TUN Prefix values 0 and 9
+                            </label>
                         </div>
                     </div>
                 );
             case 'EDI':
                 return (
                     <div className="tab-panel">
-                        <p className="section-description">Electronic data interchange configuration.</p>
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label>EDI Endpoint</label>
-                                <input type="text" placeholder="Enter EDI URL" />
-                            </div>
-                            <div className="form-group">
-                                <label>Timeout</label>
-                                <input type="number" placeholder="Timeout seconds" />
-                            </div>
+                        <div style={{ marginBottom: '6px' }}>
+                            <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '2px' }}>Default SendMethod</label>
+                            <select style={{ width: '60%', padding: '2px', fontSize: '13px', border: '1px solid #cbd5e0', borderRadius: '4px', background: '#f8fafc' }}>
+                                <option>EDI OUT</option>
+                                <option>FTP</option>
+                                <option>Email</option>
+                            </select>
+                        </div>
+                        <div className="separator" style={{ margin: '6px 0' }}></div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <label style={{ fontSize: '13px', fontWeight: '600', whiteSpace: 'nowrap' }}>Automatic Imports every</label>
+                            <input type="number" defaultValue="15" style={{ width: '60px', padding: '2px', fontSize: '13px', border: '1px solid #cbd5e0', borderRadius: '4px', background: '#f8fafc' }} />
+                            <span style={{ fontSize: '13px', fontWeight: '600' }}>minutes.</span>
                         </div>
                     </div>
                 );
             case 'Splits':
                 return (
                     <div className="tab-panel">
-                        <p className="section-description">Split order and picking rules.</p>
-                        <div className="form-row">
-                            <div className="form-group full-width">
-                                <label>Split Threshold</label>
-                                <input type="number" placeholder="Enter split threshold" />
-                            </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', marginTop: '12px' }}>
+                            <label style={{ fontSize: '13px', fontWeight: '600', whiteSpace: 'nowrap' }}>Allow Split by Store</label>
+                            <input type="checkbox" style={{ marginBottom: '0' }} />
+                        </div>
+                        <div className="separator" style={{ margin: '4px 0 10px 0' }}></div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <label style={{ fontSize: '13px', fontWeight: '600', whiteSpace: 'nowrap' }}>Maximum Splits Per Order:</label>
+                            <input type="number" defaultValue="4" style={{ width: '60px', padding: '2px', fontSize: '13px', border: '1px solid #cbd5e0', borderRadius: '4px', background: '#f8fafc' }} />
                         </div>
                     </div>
                 );
             case 'New Orders':
                 return (
                     <div className="tab-panel">
-                        <p className="section-description">New order loading and validation settings.</p>
-                        <div className="form-row">
-                            <div className="form-group full-width">
-                                <label>Order Import Directory</label>
-                                <input type="text" placeholder="Enter import path" />
-                            </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', marginTop: '4px' }}>
+                            <label style={{ fontSize: '13px', fontWeight: '600', whiteSpace: 'nowrap' }}>New Order Action:</label>
+                            <select style={{ width: '50%', padding: '2px', fontSize: '13px', border: '1px solid #cbd5e0', borderRadius: '4px', background: '#f8fafc' }}>
+                                <option>Flag Order</option>
+                                <option>Auto Accept</option>
+                                <option>Hold</option>
+                            </select>
+                        </div>
+                        <div className="separator" style={{ margin: '3px 0' }}></div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
+                            <label style={{ fontSize: '13px', fontWeight: '600', flex: 1 }}>Display New Order Flag</label>
+                            <input type="checkbox" />
+                        </div>
+                        <div className="separator" style={{ margin: '2px 0' }}></div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1px' }}>
+                            <label style={{ fontSize: '13px', fontWeight: '600', flex: 1 }}>Clear New Order Flag on Display:</label>
+                            <input type="checkbox" />
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1px' }}>
+                            <label style={{ fontSize: '13px', fontWeight: '600', flex: 1 }}>Clear New Order Flag on Print:</label>
+                            <input type="checkbox" />
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1px' }}>
+                            <label style={{ fontSize: '13px', fontWeight: '600', flex: 1 }}>Clear New Order Flag on Command:</label>
+                            <input type="checkbox" />
                         </div>
                     </div>
                 );

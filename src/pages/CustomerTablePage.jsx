@@ -15,6 +15,7 @@ function CustomerTablePage({ username, onLogout, onBack }) {
     const [activeTab, setActiveTab] = useState('General');
     const [customerForm, setCustomerForm] = useState(initialCustomerForm);
     const [customerEntries, setCustomerEntries] = useState([]);
+    const [confirmDeleteIndex, setConfirmDeleteIndex] = useState(null);
 
     const customerTabs = ['General', 'EDI', 'Prices', 'Labels', 'RPOs', 'FA', 'POAs', 'ASNs', 'Invoice', 'Track Usage'];
 
@@ -46,6 +47,15 @@ function CustomerTablePage({ username, onLogout, onBack }) {
 
         setCustomerEntries(prev => [...prev, newEntry]);
         closeAddCustomerDialog();
+    };
+
+    const handleDeleteCustomer = (index) => {
+        setConfirmDeleteIndex(index);
+    };
+
+    const confirmDelete = () => {
+        setCustomerEntries(prev => prev.filter((_, i) => i !== confirmDeleteIndex));
+        setConfirmDeleteIndex(null);
     };
 
     const InfoDot = () => <span className="customer-info-dot" aria-hidden="true">i</span>;
@@ -438,6 +448,7 @@ function CustomerTablePage({ username, onLogout, onBack }) {
                                             <th>ABN</th>
                                             <th>EDI Address</th>
                                             <th>Shipment Days</th>
+                                            <th style={{ textAlign: 'left', width: '90px' }}>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -448,6 +459,18 @@ function CustomerTablePage({ username, onLogout, onBack }) {
                                                 <td>{entry.abn}</td>
                                                 <td>{entry.ediAddress}</td>
                                                 <td>{entry.shipmentDays}</td>
+                                                <td onClick={e => e.stopPropagation()} style={{ textAlign: 'right', width: '90px' }}>
+                                                    <button className="delete-button split-olive-button" onClick={() => handleDeleteCustomer(index)}>
+                                                        <span className="split-olive-button-text">Delete</span>
+                                                        <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                <path d="M3 6h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                                <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                                <path d="M19 6v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                            </svg>
+                                                        </span>
+                                                    </button>
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -539,6 +562,36 @@ function CustomerTablePage({ username, onLogout, onBack }) {
                                     </span>
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {confirmDeleteIndex !== null && (
+                <div className="modal-overlay">
+                    <div className="confirm-delete-dialog">
+                        <h3>Delete Customer</h3>
+                        <p>Are you sure you want to delete this customer? This action cannot be undone.</p>
+                        <div className="confirm-delete-actions">
+                            <button type="button" className="split-olive-button confirm-cancel-button" onClick={() => setConfirmDeleteIndex(null)}>
+                                <span className="split-olive-button-text">Cancel</span>
+                                <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        <path d="m6 6 12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                </span>
+                            </button>
+                            <button type="button" className="split-olive-button confirm-delete-button" onClick={confirmDelete}>
+                                <span className="split-olive-button-text">Delete</span>
+                                <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3 6h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        <path d="M19 6v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                </span>
+                            </button>
                         </div>
                     </div>
                 </div>
