@@ -9,9 +9,11 @@ import { env } from 'process';
 const USER_SERVICE_PROXY_PATH = '/user-api';
 const STORE_SERVICE_PROXY_PATH = '/store-api';
 const PRODUCT_SERVICE_PROXY_PATH = '/product-api';
+const ABS_CONFIG_SERVICE_PROXY_PATH = '/abs-config-api';
 const USER_SERVICE_FALLBACK = 'http://127.0.0.1:5001';
 const STORE_SERVICE_FALLBACK = 'http://127.0.0.1:5002';
 const PRODUCT_SERVICE_FALLBACK = 'http://127.0.0.1:5003';
+const ABS_CONFIG_SERVICE_FALLBACK = 'http://127.0.0.1:5004';
 
 export default defineConfig(({ command }) => {
   const isDev = command === 'serve';
@@ -25,6 +27,7 @@ export default defineConfig(({ command }) => {
   const userServiceTarget = env.VITE_USER_SERVICE_URL_LOCAL || USER_SERVICE_FALLBACK;
   const storeServiceTarget = env.VITE_STORE_SERVICE_URL_LOCAL || STORE_SERVICE_FALLBACK;
   const productServiceTarget = env.VITE_PRODUCT_SERVICE_URL_LOCAL || PRODUCT_SERVICE_FALLBACK;
+  const absConfigServiceTarget = env.VITE_ABS_CONFIG_SERVICE_URL_LOCAL || ABS_CONFIG_SERVICE_FALLBACK;
 
   if (isDev) {
     const baseFolder =
@@ -100,6 +103,13 @@ export default defineConfig(({ command }) => {
           secure: false,
           rewrite: (requestPath) =>
             requestPath.replace(new RegExp(`^${PRODUCT_SERVICE_PROXY_PATH}`), ''),
+        },
+        [`^${ABS_CONFIG_SERVICE_PROXY_PATH}`]: {
+          target: absConfigServiceTarget,
+          changeOrigin: true,
+          secure: false,
+          rewrite: (requestPath) =>
+            requestPath.replace(new RegExp(`^${ABS_CONFIG_SERVICE_PROXY_PATH}`), ''),
         },
       },
       port: parseInt(env.DEV_SERVER_PORT || '56875'),

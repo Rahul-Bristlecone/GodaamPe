@@ -753,6 +753,23 @@
     width: min(100%, 550px);
 }
 
+.config-text-input {
+    background-color: #f8fafc;
+    color: #1f2937;
+}
+
+.config-text-input:hover {
+    background-color: #f1f5f9;
+    border-color: #cbd5e0 !important;
+}
+
+.config-text-input:focus {
+    outline: none;
+    border-color: var(--theme-lavender) !important;
+    box-shadow: 0 0 0 2px var(--theme-focus) !important;
+    background-color: white;
+}
+
 .config-dialog-header {
     padding: 1rem 1.25rem 0.75rem;
     display: flex;
