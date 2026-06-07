@@ -19,10 +19,12 @@ const USER_SERVICE_FALLBACK = '/user-api';
 const STORE_SERVICE_FALLBACK = '/store-api';
 const PRODUCT_SERVICE_FALLBACK = '/product-api';
 const ABS_CONFIG_SERVICE_FALLBACK = '/abs-config-api';
+const COMPANY_SERVICE_FALLBACK = '/company-api';
 const USER_SERVICE_DEV_PROXY_PATH = '/user-api';
 const STORE_SERVICE_DEV_PROXY_PATH = '/store-api';
 const PRODUCT_SERVICE_DEV_PROXY_PATH = '/product-api';
 const ABS_CONFIG_SERVICE_DEV_PROXY_PATH = '/abs-config-api';
+const COMPANY_SERVICE_DEV_PROXY_PATH = '/company-api';
 
 
 export const getUserServiceUrl = () => {
@@ -82,5 +84,20 @@ export const getAbsConfigServiceUrl = () => {
         import.meta.env.VITE_ABS_CONFIG_SERVICE_URL,
         import.meta.env.VITE_ABS_CONFIG_SERVICE_URL_LOCAL,
         ABS_CONFIG_SERVICE_FALLBACK
+    );
+};
+
+export const getCompanyServiceUrl = () => {
+    if (import.meta.env.DEV) {
+        return firstDefined(
+            import.meta.env.VITE_COMPANY_SERVICE_PROXY_PATH,
+            COMPANY_SERVICE_DEV_PROXY_PATH
+        );
+    }
+
+    return firstDefined(
+        import.meta.env.VITE_COMPANY_SERVICE_URL,
+        import.meta.env.VITE_COMPANY_SERVICE_URL_LOCAL,
+        COMPANY_SERVICE_FALLBACK
     );
 };

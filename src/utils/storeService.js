@@ -119,7 +119,7 @@ export const getStoreById = async (storeId) => {
  */
 export const updateStore = async (storeId, updateData) => {
     try {
-        const response = await fetch(`${API_URL}/stores/${storeId}`, {
+        const response = await fetch(`${API_URL}/store/${storeId}`, {
             method: 'PUT',
             headers: getAuthHeader(),
             body: JSON.stringify(updateData)
@@ -145,7 +145,7 @@ export const updateStore = async (storeId, updateData) => {
  */
 export const deleteStore = async (storeId) => {
     try {
-        const response = await fetch(`${API_URL}/stores/${storeId}`, {
+        const response = await fetch(`${API_URL}/store/${storeId}`, {
             method: 'DELETE',
             headers: getAuthHeader()
         });

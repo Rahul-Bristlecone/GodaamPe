@@ -52,9 +52,10 @@ function ProductTablePage({ username, onLogout, onBack }) {
     const [showAddForm, setShowAddForm] = useState(false);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
-    const [isEditingDetail, setIsEditingDetail] = useState(false);
     const [formData, setFormData] = useState(defaultFormData);
     const [detailFormData, setDetailFormData] = useState(defaultFormData);
+    const [originalDetailFormData, setOriginalDetailFormData] = useState(null);
+    const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
     useEffect(() => {
         fetchProducts();
@@ -166,16 +167,16 @@ function ProductTablePage({ username, onLogout, onBack }) {
         setSuccess('');
 
         const payload = {
-            product_code: formData.productCode,
-            barcode: formData.barcode,
-            price: parseFloat(formData.price),
-            tax_rate: parseFloat(formData.taxRate),
-            expiry_date: formData.expiryDate,
-            pack_size: formData.packSize,
-            terminated: formData.terminated,
-            hazardous: formData.hazardous,
-            allow_pick_by_product: formData.allowPickByProduct
-        };
+                product_code: formData.productCode,
+                barcode: formData.barcode,
+                price: parseFloat(formData.price),
+                tax_rate: formData.taxRate ? parseFloat(formData.taxRate) : null,
+                expiry_date: formData.expiryDate, // ensure YYYY-MM-DD
+                pack_size: formData.packSize,
+                terminated: formData.terminated ? 1 : 0,
+                hazardous: formData.hazardous ? 1 : 0,
+                allow_pick_by_product: formData.allowPickByProduct ? 1 : 0
+                };
 
         const result = await createProduct(payload);
         if (result.success) {
@@ -191,11 +192,13 @@ function ProductTablePage({ username, onLogout, onBack }) {
         setLoading(false);
     };
 
-    const handleDeleteProduct = async (productId) => {
-        if (!window.confirm('Are you sure you want to delete this product?')) {
-            return;
-        }
+    const handleDeleteProduct = (productId) => {
+        setConfirmDeleteId(productId);
+    };
 
+    const confirmDelete = async () => {
+        const productId = confirmDeleteId;
+        setConfirmDeleteId(null);
         setLoading(true);
         setError('');
 
@@ -212,8 +215,7 @@ function ProductTablePage({ username, onLogout, onBack }) {
     };
 
     const handleRowClick = (product) => {
-        setSelectedProduct(product);
-        setDetailFormData({
+        const detailData = {
             productCode: product.productCode || '',
             barcode: product.barcode || '',
             price: product.price || '',
@@ -223,21 +225,23 @@ function ProductTablePage({ username, onLogout, onBack }) {
             terminated: !!product.terminated,
             hazardous: !!product.hazardous,
             allowPickByProduct: !!product.allowPickByProduct
-        });
-        setIsEditingDetail(false);
+        };
+        setSelectedProduct(product);
+        setDetailFormData(detailData);
+        setOriginalDetailFormData(detailData);
         setShowDetailModal(true);
     };
 
     const closeDetailModal = () => {
         setShowDetailModal(false);
         setSelectedProduct(null);
-        setIsEditingDetail(false);
+        setOriginalDetailFormData(null);
         setDetailFormData(defaultFormData);
     };
 
-    const handleEditProduct = () => {
-        setIsEditingDetail(true);
-    };
+    const hasDetailChanges = originalDetailFormData
+        ? Object.keys(originalDetailFormData).some((key) => String(detailFormData[key]) !== String(originalDetailFormData[key]))
+        : false;
 
     const handleSaveProductEdit = async () => {
         if (!selectedProduct?.id) {
@@ -259,9 +263,9 @@ function ProductTablePage({ username, onLogout, onBack }) {
             tax_rate: parseFloat(detailFormData.taxRate),
             expiry_date: detailFormData.expiryDate,
             pack_size: detailFormData.packSize,
-            terminated: detailFormData.terminated,
-            hazardous: detailFormData.hazardous,
-            allow_pick_by_product: detailFormData.allowPickByProduct
+            terminated: detailFormData.terminated ? 1 : 0,
+            hazardous: detailFormData.hazardous ? 1 : 0,
+            allow_pick_by_product: detailFormData.allowPickByProduct ? 1 : 0
         };
 
         const result = await updateProduct(selectedProduct.id, payload);
@@ -316,25 +320,44 @@ function ProductTablePage({ username, onLogout, onBack }) {
                                 <div className="products-header-right">
                                     <div className="products-header-actions">
                                         <button
-                                            className="file-select-button"
+                                            className="file-select-button split-olive-button"
                                             disabled={loading}
                                             onClick={() => document.getElementById('file-input-product').click()}
                                         >
-                                            {loading ? 'Uploading...' : '📁 Import Product Data'}
+                                            <span className="split-olive-button-text">{loading ? 'Uploading...' : 'Import Product Data'}</span>
+                                            <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M12 16V4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                    <path d="m7 9 5-5 5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                    <path d="M20 16.5V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-2.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                            </span>
                                         </button>
                                         <button
-                                            className="add-product-button"
+                                            className="add-product-button split-olive-button"
                                             onClick={handleAddProduct}
                                             disabled={loading}
                                         >
-                                            ➕ Add Product
+                                            <span className="split-olive-button-text">Add Product</span>
+                                            <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M12 5v14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                    <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                            </span>
                                         </button>
                                         <button
-                                            className="refresh-button"
+                                            className="refresh-button split-olive-button"
                                             onClick={fetchProducts}
                                             disabled={loading}
                                         >
-                                            🔄 Refresh
+                                            <span className="split-olive-button-text">Refresh</span>
+                                            <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M21 12a9 9 0 1 1-2.64-6.36" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                    <path d="M21 3v6h-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                            </span>
                                         </button>
                                         <input
                                             id="file-input-product"
@@ -387,11 +410,18 @@ function ProductTablePage({ username, onLogout, onBack }) {
                                                     <td>{product.allowPickByProduct ? '✓' : '✗'}</td>
                                                     <td onClick={(e) => e.stopPropagation()}>
                                                         <button
-                                                            className="product-delete-button"
+                                                            className="product-delete-button split-olive-button"
                                                             onClick={() => handleDeleteProduct(product.id)}
                                                             disabled={loading}
                                                         >
-                                                            Delete
+                                                            <span className="split-olive-button-text">Delete</span>
+                                                            <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M3 6h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                                    <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                                    <path d="M19 6v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                                </svg>
+                                                            </span>
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -686,27 +716,15 @@ function ProductTablePage({ username, onLogout, onBack }) {
                 <div className="modal-overlay">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h2>Product Details</h2>
-                            <div className="modal-header-actions">
-                                {!isEditingDetail && (
-                                    <button
-                                        type="button"
-                                        className="product-modify-button"
-                                        onClick={handleEditProduct}
-                                        disabled={loading}
-                                    >
-                                        ✏️ Modify
-                                    </button>
-                                )}
-                                <button
-                                    type="button"
-                                    className="modal-close-button"
-                                    onClick={closeDetailModal}
-                                    aria-label="Close product details"
-                                >
-                                    ×
-                                </button>
-                            </div>
+                            <h2>Modify Product details</h2>
+                            <button
+                                type="button"
+                                className="modal-close-button product-add-close-button"
+                                onClick={closeDetailModal}
+                                aria-label="Close product details"
+                            >
+                                ×
+                            </button>
                         </div>
                         {error && <div className="alert alert-error">{error}</div>}
                         {success && <div className="alert alert-success">{success}</div>}
@@ -735,7 +753,7 @@ function ProductTablePage({ username, onLogout, onBack }) {
                                             value={detailFormData.barcode}
                                             onChange={handleDetailInputChange}
                                             required
-                                            disabled={!isEditingDetail || loading}
+                                            disabled={loading}
                                         />
                                     </div>
                                 </div>
@@ -755,7 +773,7 @@ function ProductTablePage({ username, onLogout, onBack }) {
                                             step="0.01"
                                             min="0"
                                             required
-                                            disabled={!isEditingDetail || loading}
+                                            disabled={loading}
                                         />
                                     </div>
                                     <div className="form-group">
@@ -770,7 +788,7 @@ function ProductTablePage({ username, onLogout, onBack }) {
                                             min="0"
                                             max="100"
                                             required
-                                            disabled={!isEditingDetail || loading}
+                                            disabled={loading}
                                         />
                                     </div>
                                 </div>
@@ -788,7 +806,7 @@ function ProductTablePage({ username, onLogout, onBack }) {
                                             value={detailFormData.packSize}
                                             onChange={handleDetailInputChange}
                                             required
-                                            disabled={!isEditingDetail || loading}
+                                            disabled={loading}
                                         />
                                     </div>
                                     <div className="form-group">
@@ -800,7 +818,7 @@ function ProductTablePage({ username, onLogout, onBack }) {
                                             value={detailFormData.expiryDate}
                                             onChange={handleDetailInputChange}
                                             required
-                                            disabled={!isEditingDetail || loading}
+                                            disabled={loading}
                                         />
                                     </div>
                                 </div>
@@ -815,7 +833,7 @@ function ProductTablePage({ username, onLogout, onBack }) {
                                             name="terminated"
                                             checked={detailFormData.terminated}
                                             onChange={handleDetailInputChange}
-                                            disabled={!isEditingDetail || loading}
+                                            disabled={loading}
                                         />
                                         <span>Terminated</span>
                                     </label>
@@ -825,7 +843,7 @@ function ProductTablePage({ username, onLogout, onBack }) {
                                             name="hazardous"
                                             checked={detailFormData.hazardous}
                                             onChange={handleDetailInputChange}
-                                            disabled={!isEditingDetail || loading}
+                                            disabled={loading}
                                         />
                                         <span>Hazardous</span>
                                     </label>
@@ -835,34 +853,93 @@ function ProductTablePage({ username, onLogout, onBack }) {
                                             name="allowPickByProduct"
                                             checked={detailFormData.allowPickByProduct}
                                             onChange={handleDetailInputChange}
-                                            disabled={!isEditingDetail || loading}
+                                            disabled={loading}
                                         />
                                         <span>Allow Pick by Product</span>
                                     </label>
                                 </div>
                             </div>
 
-                            {isEditingDetail && (
-                                <div className="form-actions">
+                            <div className="form-actions add-product-form-actions">
+                                <button type="button" className="split-olive-button product-form-action-button product-form-help-button">
+                                    <span className="split-olive-button-text">Help</span>
+                                    <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M9.09 9a3 3 0 1 1 5.82 1c0 2-3 2-3 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <path d="M12 17h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                                        </svg>
+                                    </span>
+                                </button>
+                                <div className="add-product-form-actions-right">
                                     <button
                                         type="button"
-                                        className="cancel-button"
+                                        className="split-olive-button product-form-action-button"
                                         onClick={closeDetailModal}
                                         disabled={loading}
                                     >
-                                        Cancel
+                                        <span className="split-olive-button-text">Close</span>
+                                        <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                <path d="m6 6 12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        </span>
                                     </button>
                                     <button
                                         type="button"
-                                        className="save-button"
+                                        className="split-olive-button product-form-action-button"
                                         onClick={handleSaveProductEdit}
-                                        disabled={loading}
+                                        disabled={loading || !hasDetailChanges}
                                     >
-                                        {loading ? 'Saving...' : 'Save Changes'}
+                                        <span className="split-olive-button-text">{loading ? 'Saving...' : 'Save Changes'}</span>
+                                        <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="m5 13 4 4L19 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        </span>
                                     </button>
                                 </div>
-                            )}
+                            </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {confirmDeleteId !== null && (
+                <div className="modal-overlay">
+                    <div className="confirm-delete-dialog">
+                        <h3>Delete Product</h3>
+                        <p>Are you sure you want to delete this product? This action cannot be undone.</p>
+                        <div className="confirm-delete-actions">
+                            <button
+                                type="button"
+                                className="split-olive-button confirm-cancel-button"
+                                onClick={() => setConfirmDeleteId(null)}
+                            >
+                                <span className="split-olive-button-text">Cancel</span>
+                                <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        <path d="m6 6 12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                </span>
+                            </button>
+                            <button
+                                type="button"
+                                className="split-olive-button confirm-delete-button"
+                                onClick={confirmDelete}
+                            >
+                                <span className="split-olive-button-text">Delete</span>
+                                <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3 6h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        <path d="M19 6v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                </span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

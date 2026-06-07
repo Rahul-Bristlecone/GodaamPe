@@ -85,7 +85,7 @@ export const getAllProducts = async () => {
 
 export const updateProduct = async (productId, updateData) => {
     try {
-        const response = await fetch(`${API_URL}/products/${productId}`, {
+        const response = await fetch(`${API_URL}/product/${productId}`, {
             method: 'PUT',
             headers: getAuthHeader(),
             body: JSON.stringify(updateData)
@@ -106,7 +106,7 @@ export const updateProduct = async (productId, updateData) => {
 
 export const deleteProduct = async (productId) => {
     try {
-        const response = await fetch(`${API_URL}/products/${productId}`, {
+        const response = await fetch(`${API_URL}/product/${productId}`, {
             method: 'DELETE',
             headers: getAuthHeader()
         });
