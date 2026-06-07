@@ -104,8 +104,8 @@ function LocationsTablePage({ username, onLogout, onBack }) {
             store_name: formData.storeName,
             customer_id: parseInt(formData.customerId, 10),
             address_line1: formData.addressLine1,
-            address_line2: formData.addressLine2 || '',
-            address_line3: formData.addressLine3 || '',
+            ...(formData.addressLine2 ? { address_line2: formData.addressLine2 } : {}),
+            ...(formData.addressLine3 ? { address_line3: formData.addressLine3 } : {}),
             pin_code: formData.pinCode,
             state_code: formData.stateCode,
             country_code: formData.countryCode,
@@ -232,8 +232,8 @@ function LocationsTablePage({ username, onLogout, onBack }) {
             store_name: formData.storeName,
             customer_id: parseInt(formData.customerId, 10),
             address_line1: formData.addressLine1,
-            address_line2: formData.addressLine2 || '',
-            address_line3: formData.addressLine3 || '',
+            ...(formData.addressLine2 ? { address_line2: formData.addressLine2 } : {}),
+            ...(formData.addressLine3 ? { address_line3: formData.addressLine3 } : {}),
             pin_code: formData.pinCode,
             state_code: formData.stateCode,
             country_code: formData.countryCode,
@@ -437,7 +437,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                             <td onClick={(e) => e.stopPropagation()}>
                                                 <button 
                                                     className="delete-button split-olive-button"
-                                                    onClick={() => handleDeleteLocation(location.id || location.location_id)}
+                                                    onClick={() => handleDeleteLocation(location.store_id || location.id)}
                                                     disabled={loading}
                                                 >
                                                     <span className="split-olive-button-text">Delete</span>

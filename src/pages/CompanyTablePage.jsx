@@ -1,5 +1,6 @@
 import Header from '../components/Header';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getAllCompanies, createCompany, updateCompany, deleteCompany, normalizeCompany } from '../utils/companyService';
 import '../styles/SubPage.css';
 
 const initialCompanyForm = {
@@ -40,6 +41,28 @@ function CompanyTablePage({ username, onLogout, onBack }) {
     const [selectedCompanyIndex, setSelectedCompanyIndex] = useState(null);
     const [confirmDeleteIndex, setConfirmDeleteIndex] = useState(null);
     const [formErrors, setFormErrors] = useState({});
+    const [saveError, setSaveError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+
+    useEffect(() => {
+        fetchCompanies();
+    }, []);
+
+    const fetchCompanies = async () => {
+        setLoading(true);
+        setError('');
+        const result = await getAllCompanies();
+        if (result.success) {
+            const data = Array.isArray(result.data) ? result.data : (result.data?.companies || []);
+            setCompanyEntries(data.map(normalizeCompany));
+        } else {
+            setError(result.error || 'Failed to fetch companies');
+            setCompanyEntries([]);
+        }
+        setLoading(false);
+    };
 
     const handleAddCompany = () => {
         setSelectedCompanyIndex(null);
@@ -60,6 +83,8 @@ function CompanyTablePage({ username, onLogout, onBack }) {
         setCompanyForm(initialCompanyForm);
         setSelectedCompanyIndex(null);
         setFormErrors({});
+        setSaveError(null);
+        setError('');
     };
 
     const handleFieldChange = (field, value) => {
@@ -82,28 +107,75 @@ function CompanyTablePage({ username, onLogout, onBack }) {
         return errors;
     };
 
-    const handleUpdateCompany = () => {
+    const handleUpdateCompany = async () => {
         const errors = validateForm();
         if (Object.keys(errors).length > 0) {
             setFormErrors(errors);
             setActiveTab('General');
             return;
         }
-        if (selectedCompanyIndex !== null) {
-            setCompanyEntries(prev => prev.map((e, i) => i === selectedCompanyIndex ? { ...companyForm } : e));
-        } else {
-            setCompanyEntries(prev => [...prev, { ...companyForm }]);
+        setSaveError(null);
+        setSuccess('');
+        const isUpdate = selectedCompanyIndex !== null;
+        const payload = {
+            ...(!isUpdate && { company_no: companyForm.companyNo }),
+            edi_address: companyForm.ediAddress,
+            ean_prefix: companyForm.eanPrefix,
+            gs03_address: companyForm.gs03Address,
+            name: companyForm.companyName,
+            explicit_ext_ref: companyForm.externalReference,
+            abn: companyForm.abn,
+            tax_registration_number: companyForm.taxRegistrationNumber,
+            bank_account_name: companyForm.bankAccountName,
+            bank_account_number: companyForm.bankAccountNumber,
+            supplier_purchasing_info: companyForm.supplierPurchasingInfo,
+            create_stock_adj: companyForm.createStockAdjustment ? 1 : 0,
+            stock_adj_send_method_key: companyForm.stockAdjSendMethod,
+            supplier_certificate_no: companyForm.supplierCertificateNo,
+            address1: companyForm.shopLevel,
+            street_no: companyForm.streetNo,
+            street_name: companyForm.streetName,
+            suburb: companyForm.suburb,
+            state: companyForm.state,
+            postcode: companyForm.postCode,
+            country_code: companyForm.countryCode,
+            user_supplied_shipment_no: companyForm.userSuppliedShipmentNo ? 1 : 0,
+            contact_name: companyForm.contactName,
+            contact_phone_no: companyForm.contactPhone,
+            contact_email_address: companyForm.contactEmail
+        };
+        const result = isUpdate
+            ? await updateCompany(companyForm.id, payload)
+            : await createCompany(payload);
+        if (!result.success) {
+            setSaveError(result.error || 'Failed to save company. Please try again.');
+            return;
         }
+        await fetchCompanies();
         closeAddCompanyDialog();
+        setSuccess(isUpdate ? 'Company updated successfully!' : 'Company created successfully!');
+        setTimeout(() => setSuccess(''), 3000);
     };
 
     const handleDeleteCompany = (index) => {
         setConfirmDeleteIndex(index);
     };
 
-    const confirmDelete = () => {
-        setCompanyEntries(prev => prev.filter((_, i) => i !== confirmDeleteIndex));
+    const confirmDelete = async () => {
+        const entry = companyEntries[confirmDeleteIndex];
         setConfirmDeleteIndex(null);
+        setLoading(true);
+        setError('');
+        setSuccess('');
+        const result = await deleteCompany(entry.id);
+        if (result.success) {
+            await fetchCompanies();
+            setSuccess('Company deleted successfully!');
+            setTimeout(() => setSuccess(''), 3000);
+        } else {
+            setError(result.error || 'Failed to delete company.');
+        }
+        setLoading(false);
     };
 
     const renderTabContent = () => {
@@ -263,7 +335,14 @@ function CompanyTablePage({ username, onLogout, onBack }) {
                     <h1>🏢 Company Table</h1>
                 </div>
                 <div className="content-area">
-                    {companyEntries.length > 0 ? (
+                    {success && <div className="alert alert-success">{success}</div>}
+                    {loading ? (
+                        <div style={{ textAlign: 'center', padding: '40px', color: '#718096', fontSize: '14px' }}>Loading companies...</div>
+                    ) : error ? (
+                        <div style={{ padding: '16px', color: '#e53e3e', background: '#fff5f5', border: '1px solid #fed7d7', borderRadius: '6px', fontSize: '13px', marginBottom: '12px' }}>
+                            {error}
+                        </div>
+                    ) : companyEntries.length > 0 ? (
                         <>
                             <div className="customers-header">
                                 <div className="customers-header-left">
@@ -292,7 +371,8 @@ function CompanyTablePage({ username, onLogout, onBack }) {
                                             <th>EDI Address</th>
                                             <th>ABN</th>
                                             <th>Bank Account Name</th>
-                                            <th>Tax Registration Number</th>
+                                            <th>Email Address</th>
+                                            <th>Phone Number</th>
                                             <th style={{ textAlign: 'left', width: '90px' }}>Actions</th>
                                         </tr>
                                     </thead>
@@ -304,7 +384,18 @@ function CompanyTablePage({ username, onLogout, onBack }) {
                                                 <td>{entry.ediAddress}</td>
                                                 <td>{entry.abn}</td>
                                                 <td>{entry.bankAccountName}</td>
-                                                <td>{entry.taxRegistrationNumber}</td>
+                                                <td>
+                                                    {entry.contactEmail ? (
+                                                        <a
+                                                            href={`mailto:${entry.contactEmail}`}
+                                                            onClick={e => e.stopPropagation()}
+                                                            style={{ color: '#2b6cb0', textDecoration: 'underline' }}
+                                                        >
+                                                            {entry.contactEmail}
+                                                        </a>
+                                                    ) : '-'}
+                                                </td>
+                                                <td>{entry.contactPhone || '-'}</td>
                                                 <td onClick={e => e.stopPropagation()} style={{ textAlign: 'right', width: '90px' }}>
                                                     <button className="delete-button split-olive-button" onClick={() => handleDeleteCompany(index)}>
                                                         <span className="split-olive-button-text">Delete</span>
@@ -374,6 +465,11 @@ function CompanyTablePage({ username, onLogout, onBack }) {
                             </div>
                         </div>
                         <div className="config-dialog-footer">
+                            {saveError && (
+                                <div style={{ color: '#e53e3e', fontSize: '11px', marginBottom: '6px', padding: '4px 8px', background: '#fff5f5', border: '1px solid #fed7d7', borderRadius: '4px' }}>
+                                    {saveError}
+                                </div>
+                            )}
                             <div className="dialog-actions">
                                 <button type="button" className="config-action-button help-action-button">
                                     <span className="config-action-button-text">Help</span>
