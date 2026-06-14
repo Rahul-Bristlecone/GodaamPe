@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import '../styles/SubPage.css';
 import '../styles/PickPage.css';
-import { uploadEDIFile, getAllOrders } from '../utils/uploadService';
+import { uploadEDIFile, getAllOrders } from '../utils/orderService';
 import { getAllStores } from '../utils/storeService';
 
 function PickPage({ username, onLogout, onBack }) {
@@ -44,12 +44,6 @@ function PickPage({ username, onLogout, onBack }) {
         consignmentNoteNumber: ''
     });
 
-    // Fetch orders on component mount
-    useEffect(() => {
-        fetchOrders();
-        fetchStoresForLookup();
-    }, []);
-
     const fetchStoresForLookup = async () => {
         const result = await getAllStores();
         if (!result.success) {
@@ -82,6 +76,54 @@ function PickPage({ username, onLogout, onBack }) {
         }
         setLoading(false);
     };
+
+    // Fetch orders on component mount
+    useEffect(() => {
+        let isMounted = true;
+
+        const loadInitialData = async () => {
+            setLoading(true);
+            setError('');
+
+            const [ordersResult, storesResult] = await Promise.all([
+                getAllOrders(),
+                getAllStores()
+            ]);
+
+            if (!isMounted) {
+                return;
+            }
+
+            if (ordersResult.success) {
+                const ordersList = Array.isArray(ordersResult.data) ? ordersResult.data : (ordersResult.data?.orders || []);
+                setOrders(ordersList);
+            } else {
+                setError(ordersResult.error || 'Failed to fetch orders');
+                setOrders([]);
+            }
+
+            if (storesResult.success) {
+                const storesList = Array.isArray(storesResult.data) ? storesResult.data : (storesResult.data?.stores || []);
+                const nextStoresById = storesList.reduce((accumulator, store) => {
+                    const storeId = store.store_id || store.id;
+                    if (storeId) {
+                        accumulator[storeId] = store.store_name || store.name || '';
+                    }
+                    return accumulator;
+                }, {});
+
+                setStoresById(nextStoresById);
+            }
+
+            setLoading(false);
+        };
+
+        loadInitialData();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
 
     const handleDragOver = (e) => {
         e.preventDefault();
@@ -144,6 +186,7 @@ function PickPage({ username, onLogout, onBack }) {
 
     const handleClearOrders = () => {
         fetchOrders();
+        fetchStoresForLookup();
     };
 
     const getOrderKey = (order, index = 0) => {

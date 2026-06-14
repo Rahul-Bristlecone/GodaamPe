@@ -127,7 +127,8 @@ export const updateStore = async (storeId, updateData) => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
-            throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
+            const details = errorData?.errors ? ` - ${JSON.stringify(errorData.errors)}` : '';
+            throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}${details}`);
         }
 
         const data = await parseJsonResponse(response);
