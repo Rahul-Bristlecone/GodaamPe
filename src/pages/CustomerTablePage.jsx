@@ -1,13 +1,23 @@
 import Header from '../components/Header';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createCustomer, deleteCustomer, getAllCustomers, normalizeCustomer, updateCustomer } from '../utils/customerService';
 import '../styles/SubPage.css';
 
 const initialCustomerForm = {
-    customerNumber: 'ALDI_ACT',
-    customerName: 'ALDI CAPITAL TERRITORY',
-    abn: '78393699234',
-    ediAddress: '4099200007526',
-    shipmentDays: '7',
+    customerNumber: '',
+    customerName: '',
+    externalReference: '',
+    abn: '',
+    ediAddress: '',
+    orderNoRecycleDays: '270',
+    shipmentDays: '',
+    cancelOrderDays: '',
+    gs02Address: '',
+    gs03Address: '',
+    rpoGs03Address: '',
+    sendMethod: 'SendPath',
+    messageReleaseNumber: '',
+    x12LineTerminator: '',
 };
 
 function CustomerTablePage({ username, onLogout, onBack }) {
@@ -15,11 +25,77 @@ function CustomerTablePage({ username, onLogout, onBack }) {
     const [activeTab, setActiveTab] = useState('General');
     const [customerForm, setCustomerForm] = useState(initialCustomerForm);
     const [customerEntries, setCustomerEntries] = useState([]);
-    const [confirmDeleteIndex, setConfirmDeleteIndex] = useState(null);
+    const [selectedCustomerId, setSelectedCustomerId] = useState(null);
+    const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+    const [formErrors, setFormErrors] = useState({});
+    const [saveError, setSaveError] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     const customerTabs = ['General', 'EDI', 'Prices', 'Labels', 'RPOs', 'FA', 'POAs', 'ASNs', 'Invoice', 'Track Usage'];
 
+    const fetchCustomers = async () => {
+        setLoading(true);
+        setError('');
+
+        const result = await getAllCustomers();
+        if (result.success) {
+            const data = Array.isArray(result.data) ? result.data : (result.data?.customers || []);
+            setCustomerEntries(data.map((customer, index) => normalizeCustomer(customer, index)));
+        } else {
+            setError(result.error || 'Failed to fetch customers');
+            setCustomerEntries([]);
+        }
+
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const loadCustomers = async () => {
+            const result = await getAllCustomers();
+            if (!isMounted) {
+                return;
+            }
+
+            if (result.success) {
+                const data = Array.isArray(result.data) ? result.data : (result.data?.customers || []);
+                setCustomerEntries(data.map((customer, index) => normalizeCustomer(customer, index)));
+            } else {
+                setError(result.error || 'Failed to fetch customers');
+                setCustomerEntries([]);
+            }
+
+            setLoading(false);
+        };
+
+        loadCustomers();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
     const handleAddCustomer = () => {
+        setSelectedCustomerId(null);
+        setCustomerForm(initialCustomerForm);
+        setFormErrors({});
+        setSaveError('');
+        setActiveTab('General');
+        setShowAddCustomerDialog(true);
+    };
+
+    const handleRowClick = (entry) => {
+        setSelectedCustomerId(entry.id);
+        setCustomerForm({
+            ...initialCustomerForm,
+            ...entry,
+        });
+        setFormErrors({});
+        setSaveError('');
+        setActiveTab('General');
         setShowAddCustomerDialog(true);
     };
 
@@ -27,6 +103,9 @@ function CustomerTablePage({ username, onLogout, onBack }) {
         setShowAddCustomerDialog(false);
         setActiveTab('General');
         setCustomerForm(initialCustomerForm);
+        setSelectedCustomerId(null);
+        setFormErrors({});
+        setSaveError('');
     };
 
     const handleCustomerFieldChange = (field, value) => {
@@ -34,28 +113,99 @@ function CustomerTablePage({ username, onLogout, onBack }) {
             ...prev,
             [field]: value,
         }));
+        setFormErrors(prev => ({
+            ...prev,
+            [field]: undefined,
+        }));
     };
 
-    const handleUpdateCustomer = () => {
-        const newEntry = {
-            customerNumber: customerForm.customerNumber,
-            customerName: customerForm.customerName,
-            abn: customerForm.abn,
-            ediAddress: customerForm.ediAddress,
-            shipmentDays: customerForm.shipmentDays,
+    const validateForm = () => {
+        const nextErrors = {};
+
+        if (!customerForm.customerNumber.trim()) {
+            nextErrors.customerNumber = 'Customer Number is required.';
+        }
+
+        if (!customerForm.customerName.trim()) {
+            nextErrors.customerName = 'Customer Name is required.';
+        }
+
+        if (customerForm.abn.trim() && !/^\d+$/.test(customerForm.abn.trim())) {
+            nextErrors.abn = 'ABN must be numeric.';
+        }
+
+        return nextErrors;
+    };
+
+    const handleUpdateCustomer = async () => {
+        const nextErrors = validateForm();
+        if (Object.keys(nextErrors).length > 0) {
+            setFormErrors(nextErrors);
+            setActiveTab('General');
+            return;
+        }
+
+        setSaveError('');
+        setError('');
+        setSuccess('');
+        setLoading(true);
+
+        const isUpdate = selectedCustomerId !== null;
+        const payload = {
+            ...(!isUpdate && { customer_no: customerForm.customerNumber.trim() }),
+            name: customerForm.customerName.trim(),
+            explicit_ext_ref: customerForm.externalReference.trim() || null,
+            abn: customerForm.abn.trim() || null,
+            edi_address: customerForm.ediAddress.trim() || null,
+            order_no_recycle_days: customerForm.orderNoRecycleDays ? Number(customerForm.orderNoRecycleDays) : null,
+            shipment_days: customerForm.shipmentDays.trim() || null,
+            cancel_order_days: customerForm.cancelOrderDays ? Number(customerForm.cancelOrderDays) : null,
+            gs02_address: customerForm.gs02Address.trim() || null,
+            gs03_address: customerForm.gs03Address.trim() || null,
+            rpo_gs03_address: customerForm.rpoGs03Address.trim() || null,
+            send_method_key: customerForm.sendMethod.trim() || null,
+            message_release_number: customerForm.messageReleaseNumber.trim() || null,
+            x12_line_terminator: customerForm.x12LineTerminator.trim() || null,
         };
 
-        setCustomerEntries(prev => [...prev, newEntry]);
+        const result = isUpdate
+            ? await updateCustomer(selectedCustomerId, payload)
+            : await createCustomer(payload);
+
+        if (!result.success) {
+            setSaveError(result.error || 'Failed to save customer. Please try again.');
+            setLoading(false);
+            return;
+        }
+
+        await fetchCustomers();
         closeAddCustomerDialog();
+        setSuccess(isUpdate ? 'Customer updated successfully!' : 'Customer created successfully!');
+        setTimeout(() => setSuccess(''), 3000);
+        setLoading(false);
     };
 
-    const handleDeleteCustomer = (index) => {
-        setConfirmDeleteIndex(index);
+    const handleDeleteCustomer = (customerId) => {
+        setConfirmDeleteId(customerId);
     };
 
-    const confirmDelete = () => {
-        setCustomerEntries(prev => prev.filter((_, i) => i !== confirmDeleteIndex));
-        setConfirmDeleteIndex(null);
+    const confirmDelete = async () => {
+        const customerId = confirmDeleteId;
+        setConfirmDeleteId(null);
+        setLoading(true);
+        setError('');
+        setSuccess('');
+
+        const result = await deleteCustomer(customerId);
+        if (result.success) {
+            await fetchCustomers();
+            setSuccess('Customer deleted successfully!');
+            setTimeout(() => setSuccess(''), 3000);
+        } else {
+            setError(result.error || 'Failed to delete customer.');
+        }
+
+        setLoading(false);
     };
 
     const InfoDot = () => <span className="customer-info-dot" aria-hidden="true">i</span>;
@@ -72,7 +222,10 @@ function CustomerTablePage({ username, onLogout, onBack }) {
                                     type="text"
                                     value={customerForm.customerNumber}
                                     onChange={e => handleCustomerFieldChange('customerNumber', e.target.value)}
+                                    readOnly={selectedCustomerId !== null}
+                                    style={selectedCustomerId !== null ? { backgroundColor: '#e9ecef', cursor: 'not-allowed', color: '#6c757d' } : undefined}
                                 />
+                                {formErrors.customerNumber && <span style={{ fontSize: '10px', color: '#e53e3e' }}>{formErrors.customerNumber}</span>}
                             </div>
                             <div className="customer-field">
                                 <label>Customer Name</label>
@@ -81,11 +234,12 @@ function CustomerTablePage({ username, onLogout, onBack }) {
                                     value={customerForm.customerName}
                                     onChange={e => handleCustomerFieldChange('customerName', e.target.value)}
                                 />
+                                {formErrors.customerName && <span style={{ fontSize: '10px', color: '#e53e3e' }}>{formErrors.customerName}</span>}
                             </div>
 
                             <div className="customer-field">
                                 <label>External Reference</label>
-                                <input type="text" defaultValue="" />
+                                <input type="text" value={customerForm.externalReference} onChange={e => handleCustomerFieldChange('externalReference', e.target.value)} />
                             </div>
                             <div className="customer-field">
                                 <label>ABN</label>
@@ -94,11 +248,12 @@ function CustomerTablePage({ username, onLogout, onBack }) {
                                     value={customerForm.abn}
                                     onChange={e => handleCustomerFieldChange('abn', e.target.value)}
                                 />
+                                {formErrors.abn && <span style={{ fontSize: '10px', color: '#e53e3e' }}>{formErrors.abn}</span>}
                             </div>
 
                             <div className="customer-field">
                                 <label>Order No Recycle Days</label>
-                                <input type="text" defaultValue="270" />
+                                <input type="text" value={customerForm.orderNoRecycleDays} onChange={e => handleCustomerFieldChange('orderNoRecycleDays', e.target.value)} />
                             </div>
                             <div className="customer-field">
                                 <label>
@@ -114,7 +269,7 @@ function CustomerTablePage({ username, onLogout, onBack }) {
 
                         <div className="customer-inline-line due-date-inline-row">
                             <label>Don't Cancel Order After Due Date For</label>
-                            <input type="text" defaultValue="" className="small-inline-input due-date-days-input" />
+                            <input type="text" value={customerForm.cancelOrderDays} onChange={e => handleCustomerFieldChange('cancelOrderDays', e.target.value)} className="small-inline-input due-date-days-input" />
                             <span>Days</span>
                         </div>
 
@@ -194,12 +349,12 @@ function CustomerTablePage({ username, onLogout, onBack }) {
                                     onChange={e => handleCustomerFieldChange('ediAddress', e.target.value)}
                                 />
                             </div>
-                            <div className="customer-field"><label>Incoming GS02 Address</label><input type="text" defaultValue="" /></div>
-                            <div className="customer-field"><label>GS03 Address</label><input type="text" defaultValue="" /></div>
-                            <div className="customer-field"><label>RPO GS03 Address</label><input type="text" defaultValue="" /></div>
-                            <div className="customer-field"><label>Send Method</label><input type="text" defaultValue="SendPath" /></div>
-                            <div className="customer-field"><label>Message Release Number</label><input type="text" defaultValue="" /></div>
-                            <div className="customer-field"><label>X12 Line Terminator (if non-standard)</label><input type="text" defaultValue="" /></div>
+                            <div className="customer-field"><label>Incoming GS02 Address</label><input type="text" value={customerForm.gs02Address} onChange={e => handleCustomerFieldChange('gs02Address', e.target.value)} /></div>
+                            <div className="customer-field"><label>GS03 Address</label><input type="text" value={customerForm.gs03Address} onChange={e => handleCustomerFieldChange('gs03Address', e.target.value)} /></div>
+                            <div className="customer-field"><label>RPO GS03 Address</label><input type="text" value={customerForm.rpoGs03Address} onChange={e => handleCustomerFieldChange('rpoGs03Address', e.target.value)} /></div>
+                            <div className="customer-field"><label>Send Method</label><input type="text" value={customerForm.sendMethod} onChange={e => handleCustomerFieldChange('sendMethod', e.target.value)} /></div>
+                            <div className="customer-field"><label>Message Release Number</label><input type="text" value={customerForm.messageReleaseNumber} onChange={e => handleCustomerFieldChange('messageReleaseNumber', e.target.value)} /></div>
+                            <div className="customer-field"><label>X12 Line Terminator (if non-standard)</label><input type="text" value={customerForm.x12LineTerminator} onChange={e => handleCustomerFieldChange('x12LineTerminator', e.target.value)} /></div>
                         </div>
 
                         <div className="customer-block-title">Order Change before Picking</div>
@@ -415,6 +570,9 @@ function CustomerTablePage({ username, onLogout, onBack }) {
                     <h1>👥 Customer Table</h1>
                 </div>
                 <div className="content-area">
+                    {loading && <div className="upload-message upload-info">Loading customers...</div>}
+                    {error && <div className="upload-message upload-error">{error}</div>}
+                    {success && <div className="upload-message upload-success">{success}</div>}
                     {customerEntries.length > 0 ? (
                         <>
                             <div className="customers-header">
@@ -443,24 +601,28 @@ function CustomerTablePage({ username, onLogout, onBack }) {
                                 <table className="customer-grid-table">
                                     <thead>
                                         <tr>
-                                            <th>Customer Number</th>
+                                            <th>Customer No.</th>
                                             <th>Customer Name</th>
-                                            <th>ABN</th>
                                             <th>EDI Address</th>
+                                            <th>ABN</th>
                                             <th>Shipment Days</th>
+                                            <th>Contract Price Group</th>
+                                            <th>Shipment Labelling</th>
                                             <th style={{ textAlign: 'left', width: '90px' }}>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {customerEntries.map((entry, index) => (
-                                            <tr key={`${entry.customerNumber}-${index}`}>
+                                            <tr key={entry.id || `${entry.customerNumber}-${index}`} onClick={() => handleRowClick(entry)} style={{ cursor: 'pointer' }}>
                                                 <td>{entry.customerNumber}</td>
                                                 <td>{entry.customerName}</td>
-                                                <td>{entry.abn}</td>
                                                 <td>{entry.ediAddress}</td>
+                                                <td>{entry.abn}</td>
                                                 <td>{entry.shipmentDays}</td>
+                                                <td>{entry.contractPriceGroup}</td>
+                                                <td>{entry.shipmentLabelling}</td>
                                                 <td onClick={e => e.stopPropagation()} style={{ textAlign: 'right', width: '90px' }}>
-                                                    <button className="delete-button split-olive-button" onClick={() => handleDeleteCustomer(index)}>
+                                                    <button className="delete-button split-olive-button" onClick={() => handleDeleteCustomer(entry.id)}>
                                                         <span className="split-olive-button-text">Delete</span>
                                                         <span className="split-olive-button-icon-wrap" aria-hidden="true">
                                                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -502,7 +664,7 @@ function CustomerTablePage({ username, onLogout, onBack }) {
                     <div className="config-dialog customer-config-dialog">
                         <div className="config-dialog-header">
                             <div>
-                                <h1>Add Customer</h1>
+                                <h1>{selectedCustomerId !== null ? 'Edit Customer' : 'Add Customer'}</h1>
                                 <div className="dialog-tabs">
                                     {customerTabs.map(tab => (
                                         <button
@@ -527,6 +689,7 @@ function CustomerTablePage({ username, onLogout, onBack }) {
                         </div>
 
                         <div className="config-dialog-body">
+                            {saveError && <div className="upload-message upload-error">{saveError}</div>}
                             <div className="tab-content">
                                 {renderTabContent()}
                             </div>
@@ -553,8 +716,8 @@ function CustomerTablePage({ username, onLogout, onBack }) {
                                         </svg>
                                     </span>
                                 </button>
-                                <button type="button" className="config-action-button" onClick={handleUpdateCustomer}>
-                                    <span className="config-action-button-text">Update</span>
+                                <button type="button" className="config-action-button" onClick={handleUpdateCustomer} disabled={loading}>
+                                    <span className="config-action-button-text">{selectedCustomerId !== null ? 'Update' : 'Create'}</span>
                                     <span className="config-action-button-icon-wrap" aria-hidden="true">
                                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="m5 13 4 4L19 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -567,13 +730,13 @@ function CustomerTablePage({ username, onLogout, onBack }) {
                 </div>
             )}
 
-            {confirmDeleteIndex !== null && (
+            {confirmDeleteId !== null && (
                 <div className="modal-overlay">
                     <div className="confirm-delete-dialog">
                         <h3>Delete Customer</h3>
                         <p>Are you sure you want to delete this customer? This action cannot be undone.</p>
                         <div className="confirm-delete-actions">
-                            <button type="button" className="split-olive-button confirm-cancel-button" onClick={() => setConfirmDeleteIndex(null)}>
+                            <button type="button" className="split-olive-button confirm-cancel-button" onClick={() => setConfirmDeleteId(null)}>
                                 <span className="split-olive-button-text">Cancel</span>
                                 <span className="split-olive-button-icon-wrap" aria-hidden="true">
                                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
