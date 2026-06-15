@@ -1,5 +1,6 @@
 # GodaamPe Frontend (ABS Suite)
 
+**This ReadMe will be updated as the project evolves**
 GodaamPe is a React + Vite frontend for the ABS Suite workflow. It provides a login experience, a dashboard launcher, and multiple operations pages such as pick, stock, pricing, alias management, and table/config management.
 
 ## Tech Stack
