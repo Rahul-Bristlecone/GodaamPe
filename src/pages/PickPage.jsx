@@ -211,6 +211,7 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
                 setCompaniesByCode(nextCompaniesByCode);
             }
 
+
             setLoading(false);
         };
 
@@ -245,6 +246,7 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, [contextMenu]);
+
 
     const handleDragOver = (e) => {
         e.preventDefault();

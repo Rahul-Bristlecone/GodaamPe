@@ -89,27 +89,6 @@ export const getAllOrders = async () => {
         const data = await parseJsonResponse(response);
         return { success: true, data };
     } catch (err) {
-        console.error('Error fetching orders:', err);
-        return { success: false, error: err.message };
-    }
-};
-
-export const getOrderById = async (orderId) => {
-    try {
-        const response = await fetch(`${API_URL}/order/${orderId}`, {
-            method: 'GET',
-            headers: getAuthHeader()
-        });
-
-        if (!response.ok) {
-            const errorData = await parseJsonResponse(response);
-            handleAuthExpiry(response, errorData);
-            throw new Error(errorData?.message || errorData?.msg || `Error: ${response.status} ${response.statusText}`);
-        }
-
-        const data = await parseJsonResponse(response);
-        return { success: true, data };
-    } catch (err) {
         console.error('Error fetching order:', err);
         return { success: false, error: err.message };
     }
