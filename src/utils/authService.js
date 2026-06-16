@@ -6,6 +6,7 @@ import { getUserServiceUrl } from './apiConfig';
 
 const AUTH_TOKEN_KEY = 'authToken';
 const USERNAME_KEY = 'username';
+const CURRENT_PAGE_KEY = 'currentPage';
 
 /**
  * Store JWT token in localStorage
@@ -111,4 +112,32 @@ export const authenticatedFetch = async (url, options = {}) => {
         ...options,
         headers
     });
+};
+
+/**
+ * Clears auth and redirects to login when backend indicates token expiry/invalid auth.
+ */
+export const handleAuthExpiry = (response, errorData) => {
+    const status = response?.status;
+    const message = String(
+        errorData?.message || errorData?.msg || errorData?.detail || ''
+    ).toLowerCase();
+
+    const isAuthStatus = status === 401 || status === 403;
+    const isJwtStyle422 = status === 422 && (
+        message.includes('token') ||
+        message.includes('jwt') ||
+        message.includes('not enough segments') ||
+        message.includes('signature has expired') ||
+        message.includes('missing authorization header')
+    );
+
+    if (isAuthStatus || isJwtStyle422) {
+        clearAuth();
+        localStorage.removeItem(CURRENT_PAGE_KEY);
+        window.location.reload();
+        return true;
+    }
+
+    return false;
 };

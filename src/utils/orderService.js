@@ -2,7 +2,7 @@
  * Order Service - Handles all order API calls
  */
 
-import { getAuthToken } from './authService';
+import { getAuthToken, handleAuthExpiry } from './authService';
 import { getOrderServiceUrl } from './apiConfig';
 
 const API_URL = getOrderServiceUrl();
@@ -55,14 +55,21 @@ export const uploadEDIFile = async (file) => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
-            throw new Error(errorData?.message || errorData?.msg || `Error: ${response.status} ${response.statusText}`);
+            handleAuthExpiry(response, errorData);
+            const error = new Error(errorData?.message || errorData?.msg || `Error: ${response.status} ${response.statusText}`);
+            error.errorData = errorData;
+            throw error;
         }
 
         const data = await parseJsonResponse(response);
         return { success: true, data };
     } catch (err) {
         console.error('Error uploading EDI file:', err);
-        return { success: false, error: err.message };
+        return {
+            success: false,
+            error: err.message,
+            errorData: err.errorData || null,
+        };
     }
 };
 
@@ -75,6 +82,7 @@ export const getAllOrders = async () => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || errorData?.msg || `Error: ${response.status} ${response.statusText}`);
         }
 
@@ -95,6 +103,7 @@ export const getOrderById = async (orderId) => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || errorData?.msg || `Error: ${response.status} ${response.statusText}`);
         }
 
@@ -116,6 +125,7 @@ export const createOrder = async (orderData) => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || errorData?.msg || `Error: ${response.status} ${response.statusText}`);
         }
 
@@ -123,6 +133,28 @@ export const createOrder = async (orderData) => {
         return { success: true, data };
     } catch (err) {
         console.error('Error creating order:', err);
+        return { success: false, error: err.message };
+    }
+};
+
+export const updateOrder = async (orderId, updateData) => {
+    try {
+        const response = await fetch(`${API_URL}/order/${orderId}`, {
+            method: 'PATCH',
+            headers: getJsonAuthHeader(),
+            body: JSON.stringify(updateData)
+        });
+
+        if (!response.ok) {
+            const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
+            throw new Error(errorData?.message || errorData?.msg || `Error: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await parseJsonResponse(response);
+        return { success: true, data };
+    } catch (err) {
+        console.error('Error updating order:', err);
         return { success: false, error: err.message };
     }
 };

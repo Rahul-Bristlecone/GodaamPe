@@ -2,7 +2,7 @@
  * Company Service - Handles all company API calls
  */
 
-import { getAuthToken } from './authService';
+import { getAuthToken, handleAuthExpiry } from './authService';
 import { getCompanyServiceUrl } from './apiConfig';
 
 const API_URL = getCompanyServiceUrl();
@@ -71,6 +71,7 @@ export const getAllCompanies = async () => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 
@@ -92,6 +93,7 @@ export const createCompany = async (companyData) => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 
@@ -113,6 +115,7 @@ export const updateCompany = async (companyId, companyData) => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 
@@ -133,6 +136,7 @@ export const deleteCompany = async (companyId) => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 

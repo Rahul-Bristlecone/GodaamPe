@@ -2,7 +2,7 @@
  * Product Service - Handles all product API calls
  */
 
-import { getAuthToken } from './authService';
+import { getAuthToken, handleAuthExpiry } from './authService';
 import { getProductServiceUrl } from './apiConfig';
 
 const API_URL = getProductServiceUrl();
@@ -52,6 +52,7 @@ export const createProduct = async (productData) => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 
@@ -72,6 +73,7 @@ export const getAllProducts = async () => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 
@@ -93,6 +95,7 @@ export const updateProduct = async (productId, updateData) => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 
@@ -113,6 +116,7 @@ export const deleteProduct = async (productId) => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 
@@ -144,6 +148,7 @@ export const uploadProductFile = async (file) => {
                 }
 
                 const errorData = await parseJsonResponse(response);
+                handleAuthExpiry(response, errorData);
                 throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
             }
 

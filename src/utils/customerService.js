@@ -2,7 +2,7 @@
  * Customer Service - Handles all customer API calls
  */
 
-import { getAuthToken } from './authService';
+import { getAuthToken, handleAuthExpiry } from './authService';
 import { getCustomerServiceUrl } from './apiConfig';
 
 const API_URL = getCustomerServiceUrl();
@@ -64,6 +64,7 @@ export const getAllCustomers = async () => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || errorData?.msg || `Error: ${response.status} ${response.statusText}`);
         }
 
@@ -85,6 +86,7 @@ export const createCustomer = async (customerData) => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || errorData?.msg || `Error: ${response.status} ${response.statusText}`);
         }
 
@@ -106,6 +108,7 @@ export const updateCustomer = async (customerId, customerData) => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || errorData?.msg || `Error: ${response.status} ${response.statusText}`);
         }
 
@@ -126,6 +129,7 @@ export const deleteCustomer = async (customerId) => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || errorData?.msg || `Error: ${response.status} ${response.statusText}`);
         }
 

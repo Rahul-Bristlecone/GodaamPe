@@ -142,7 +142,7 @@ export default defineConfig(({ command }) => {
             requestPath.replace(new RegExp(`^${ORDER_SERVICE_PROXY_PATH}`), ''),
         },
       },
-      port: parseInt(env.DEV_SERVER_PORT || '56875'),
+      port: parseInt(env.DEV_SERVER_PORT || '5173'),
       https: httpsConfig,
     },
     build: {
