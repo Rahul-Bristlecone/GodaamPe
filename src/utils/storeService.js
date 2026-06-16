@@ -2,7 +2,7 @@
  * Store Service - Handles all store/location API calls
  */
 
-import { getAuthToken } from './authService';
+import { getAuthToken, handleAuthExpiry } from './authService';
 import { getStoreServiceUrl } from './apiConfig';
 
 const API_URL = getStoreServiceUrl();
@@ -51,6 +51,7 @@ export const createStore = async (storeData) => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 
@@ -75,6 +76,7 @@ export const getAllStores = async () => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 
@@ -100,6 +102,7 @@ export const getStoreById = async (storeId) => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 
@@ -127,6 +130,7 @@ export const updateStore = async (storeId, updateData) => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             const details = errorData?.errors ? ` - ${JSON.stringify(errorData.errors)}` : '';
             throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}${details}`);
         }
@@ -153,6 +157,7 @@ export const deleteStore = async (storeId) => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 

@@ -2,7 +2,7 @@
  * Upload Service - Handles file upload and order import API calls
  */
 
-import { getAuthToken } from './authService';
+import { getAuthToken, handleAuthExpiry } from './authService';
 import { getStoreServiceUrl } from './apiConfig';
 
 const API_URL = getStoreServiceUrl();
@@ -50,6 +50,7 @@ export const uploadEDIFile = async (file) => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 
@@ -74,6 +75,7 @@ export const getAllOrders = async () => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
         }
 

@@ -3,6 +3,7 @@ import Header from '../components/Header';
 import '../styles/SubPage.css';
 import '../styles/LocationsTablePage.css';
 import { createStore, getAllStores, updateStore, deleteStore } from '../utils/storeService';
+import { getAllCustomers } from '../utils/customerService';
 
 // this page will consume all "store" backend apis
 function LocationsTablePage({ username, onLogout, onBack }) {
@@ -18,6 +19,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
     const [success, setSuccess] = useState('');
     const [dragOver, setDragOver] = useState(false);
     const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+    const [customerOptions, setCustomerOptions] = useState([]);
 
     const handleDragOver = (e) => { e.preventDefault(); setDragOver(true); };
     const handleDragLeave = () => setDragOver(false);
@@ -54,7 +56,37 @@ function LocationsTablePage({ username, onLogout, onBack }) {
     // Fetch locations on component mount
     useEffect(() => {
         fetchLocations();
+        fetchCustomersForDropdown();
     }, []);
+
+    const fetchCustomersForDropdown = async () => {
+        const result = await getAllCustomers();
+        if (!result.success) {
+            setCustomerOptions([]);
+            return;
+        }
+
+        const customers = Array.isArray(result.data) ? result.data : (result.data?.customers || []);
+        const options = customers
+            .map((customer, index) => {
+                const id = customer.customer_id || customer.id;
+                const name = customer.name || customer.customerName || customer.customer_name;
+                const customerNo = customer.customer_no || customer.customerNumber;
+                const displayName = name || customerNo || `Customer ${index + 1}`;
+
+                if (!id) {
+                    return null;
+                }
+
+                return {
+                    id: String(id),
+                    label: customerNo ? `${displayName} (${customerNo})` : displayName
+                };
+            })
+            .filter(Boolean);
+
+        setCustomerOptions(options);
+    };
 
     const fetchLocations = async () => {
         setLoading(true);
@@ -100,7 +132,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
         // Prepare payload - adjust field names to match backend schema
         // Convert numeric fields to proper types
         const payload = {
-            user_store_number: parseInt(formData.userStoreNumber, 10),
+            store_number: parseInt(formData.userStoreNumber, 10),
             store_name: formData.storeName,
             customer_id: parseInt(formData.customerId, 10),
             address_line1: formData.addressLine1,
@@ -169,9 +201,9 @@ function LocationsTablePage({ username, onLogout, onBack }) {
 
     const handleRowClick = (location) => {
         const data = {
-            userStoreNumber: location.user_store_number || '',
+            userStoreNumber: location.store_number || location.user_store_number || '',
             storeName: location.store_name || '',
-            customerId: location.customer_id || '',
+            customerId: location.customer_id ? String(location.customer_id) : '',
             addressLine1: location.address_line1 || '',
             addressLine2: location.address_line2 || '',
             addressLine3: location.address_line3 || '',
@@ -228,7 +260,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
 
         // Prepare payload
         const payload = {
-            user_store_number: parseInt(formData.userStoreNumber, 10),
+            store_number: parseInt(formData.userStoreNumber, 10),
             store_name: formData.storeName,
             customer_id: parseInt(formData.customerId, 10),
             address_line1: formData.addressLine1,
@@ -420,7 +452,7 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                             onClick={() => handleRowClick(location)}
                                             style={{ cursor: 'pointer' }}
                                         >
-                                            <td>{location.user_store_number || '-'}</td>
+                                            <td>{location.store_number || location.user_store_number || '-'}</td>
                                             <td>{location.store_name || '-'}</td>
                                             <td>{location.customer_id || '-'}</td>
                                             <td>
@@ -504,17 +536,22 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="customerId">Customer ID *</label>
-                                    <input
-                                        type="number"
+                                    <label htmlFor="customerId">Customer Name *</label>
+                                    <select
                                         id="customerId"
                                         name="customerId"
                                         value={formData.customerId}
                                         onChange={handleInputChange}
-                                        placeholder="Enter Customer ID"
                                         required
                                         disabled={loading}
-                                    />
+                                    >
+                                        <option value="">Select customer</option>
+                                        {customerOptions.map((customer) => (
+                                            <option key={customer.id} value={customer.id}>
+                                                {customer.label}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                             </div>
 
@@ -757,17 +794,22 @@ function LocationsTablePage({ username, onLogout, onBack }) {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="customerId">Customer ID *</label>
-                                    <input
-                                        type="number"
+                                    <label htmlFor="customerId">Customer Name *</label>
+                                    <select
                                         id="customerId"
                                         name="customerId"
                                         value={formData.customerId}
                                         onChange={handleInputChange}
-                                        placeholder="Enter Customer ID"
                                         required
                                         disabled={loading}
-                                    />
+                                    >
+                                        <option value="">Select customer</option>
+                                        {customerOptions.map((customer) => (
+                                            <option key={customer.id} value={customer.id}>
+                                                {customer.label}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                             </div>
 

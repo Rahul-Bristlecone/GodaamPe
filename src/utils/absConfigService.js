@@ -2,7 +2,7 @@
  * Abs Configuration Service - Handles global configuration API calls
  */
 
-import { getAuthToken } from './authService';
+import { getAuthToken, handleAuthExpiry } from './authService';
 import { getAbsConfigServiceUrl } from './apiConfig';
 
 const API_URL = getAbsConfigServiceUrl();
@@ -76,6 +76,7 @@ export const getAbsConfiguration = async () => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(buildApiErrorMessage(response, errorData));
         }
 
@@ -121,6 +122,7 @@ export const saveAbsConfiguration = async (payload) => {
 
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
+            handleAuthExpiry(response, errorData);
             throw new Error(buildApiErrorMessage(response, errorData));
         }
 

@@ -76,7 +76,8 @@ function App() {
         const pageProps = {
             username: loggedInUser,
             onLogout: handleLogout,
-            onBack: handleBackToDashboard
+            onBack: handleBackToDashboard,
+            onNavigate: handleNavigate
         };
 
         switch (currentPage) {
