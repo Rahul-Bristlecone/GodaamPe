@@ -1,19 +1,18 @@
-name: Godaampe CI
+name: Godaampe UI (Build and Package)
 on:
   push:
     branches: [main]
 
-  input:
-    # Define the input parameters for the workflow
-    # For example, you can specify a parameter for the environment to deploy to
-    environment:
-      description: 'The environment to deploy to (e.g., staging, production)'
-      required: true
-      default: 'staging'
-      type: choice
-      options:
-        - staging
-        - production
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: The environment to deploy to (e.g., staging, production)
+        required: true
+        default: staging
+        type: choice
+        options:
+          - staging
+          - production
 
 jobs:
   build-image:
@@ -22,24 +21,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      -name: setup node.js
-        uses: actions/setup-node@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: npm
 
-      -name: Install dependencies
-        uses: npm install
-      
-      # -name: Run tests
+      - name: Install dependencies
+        run: npm ci
+
+      # - name: Run tests
       #   run: npm test
 
-      -name: build the application
+      - name: Build the application
         run: npm run build
 
-      -name: Package the application
+      - name: Package the application
         run: npm pack
-      
-      -name: Store the packaged application as an artifact
+
+      - name: Store the packaged application as an artifact
         uses: actions/upload-artifact@v3
         with:
           name: godaampe-UI-package
@@ -47,5 +47,5 @@ jobs:
               package*
           retention-days: 1
 
-      -name: Proceed with deployment
-        run: echo "Proceeding with deployment steps..."
+      - name: Proceed with deployment
+        run: echo "Proceeding with deployment steps for ${{ github.event.inputs.environment || 'staging' }}..."
