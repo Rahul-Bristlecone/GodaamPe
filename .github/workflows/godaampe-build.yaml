@@ -55,3 +55,4 @@ jobs:
 
       - name: Proceed with deployment
         run: echo "Proceeding with deployment steps for ${{ github.event.inputs.environment || 'staging' }}..."
+        run: echo "Proceeding with deployment steps for ${{ github.event.inputs.environment || 'staging' }}..."
