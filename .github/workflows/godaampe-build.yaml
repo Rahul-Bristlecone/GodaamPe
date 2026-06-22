@@ -42,7 +42,10 @@ jobs:
       -name: Store the packaged application as an artifact
         uses: actions/upload-artifact@v3
         with:
-          name: myapp-package
+          name: godaampe-UI-package
+          path: |
+              package*
+          retention-days: 1
 
       -name: Proceed with deployment
         run: echo "Proceeding with deployment steps..."
