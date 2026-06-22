@@ -1,0 +1,36 @@
+name: Godaampe CI
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs every day at midnight
+  push:
+    branches: [main]
+
+# when I say deploy - it means deploying docker image to docker hub 
+# and then deploying to kubernetes cluster using helm charts.
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      -name: setup node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '18'
+
+      -name: Install dependencies
+        uses: npm install
+      
+      -name: Run tests
+        run: npm test
+
+      - name: create an issue using the GitHub CLI
+          env:
+            GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io docker-compose
+
+      - name: Build Docker image (CI tag)
+        run: docker build -t myapp:ci --target test -f Dockerfile_multi_stage .

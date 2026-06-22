@@ -1,0 +1,51 @@
+name: Godaampe CI
+on:
+  push:
+    branches: [main]
+
+  input:
+    # Define the input parameters for the workflow
+    # For example, you can specify a parameter for the environment to deploy to
+    environment:
+      description: 'The environment to deploy to (e.g., staging, production)'
+      required: true
+      default: 'staging'
+      type: choice
+      options:
+        - staging
+        - production
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      -name: setup node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '18'
+
+      -name: Install dependencies
+        uses: npm install
+      
+      # -name: Run tests
+      #   run: npm test
+
+      -name: build the application
+        run: npm run build
+
+      -name: Package the application
+        run: npm pack
+      
+      -name: Store the packaged application as an artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: godaampe-UI-package
+          path: |
+              package*
+          retention-days: 1
+
+      -name: Proceed with deployment
+        run: echo "Proceeding with deployment steps..."
