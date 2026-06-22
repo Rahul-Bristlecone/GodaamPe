@@ -43,6 +43,25 @@ const normalizeProduct = (product, index = 0) => ({
     allowPickByProduct: toBoolean(product.allow_pick_by_product ?? product.allowPickByProduct)
 });
 
+const normalizeKey = (value) => String(value || '').trim().toLowerCase();
+
+const getProductErrorMessage = (rawError, fallbackMessage) => {
+    const errorText = String(rawError || '').trim();
+    const normalized = errorText.toLowerCase();
+
+    const barcodeDuplicatePattern = /(duplicate|already\s+exists|exists|unique)/;
+    if (normalized.includes('barcode') && barcodeDuplicatePattern.test(normalized)) {
+        return 'Duplicate barcodes not allowed';
+    }
+
+    const productCodeDuplicatePattern = /(duplicate|already\s+exists|exists|unique)/;
+    if ((normalized.includes('product code') || normalized.includes('product_code')) && productCodeDuplicatePattern.test(normalized)) {
+        return 'Product code already exists';
+    }
+
+    return errorText || fallbackMessage;
+};
+
 function ProductTablePage({ username, onLogout, onBack }) {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -115,7 +134,7 @@ function ProductTablePage({ username, onLogout, onBack }) {
             setSuccess('File uploaded successfully! Product list refreshed.');
             setTimeout(() => setSuccess(''), 3500);
         } else {
-            setError(result.error || 'Failed to upload product file. Please try again.');
+            setError(getProductErrorMessage(result.error, 'Failed to upload product file. Please try again.'));
         }
 
         setLoading(false);
@@ -162,6 +181,22 @@ function ProductTablePage({ username, onLogout, onBack }) {
             return;
         }
 
+        const productCodeExists = products.some(
+            (product) => normalizeKey(product.productCode) === normalizeKey(formData.productCode)
+        );
+        if (productCodeExists) {
+            setError('Product code already exists');
+            return;
+        }
+
+        const barcodeExists = products.some(
+            (product) => normalizeKey(product.barcode) === normalizeKey(formData.barcode)
+        );
+        if (barcodeExists) {
+            setError('Duplicate barcodes not allowed');
+            return;
+        }
+
         setLoading(true);
         setError('');
         setSuccess('');
@@ -186,7 +221,7 @@ function ProductTablePage({ username, onLogout, onBack }) {
             setShowAddForm(false);
             setTimeout(() => setSuccess(''), 3000);
         } else {
-            setError(result.error || 'Failed to add product. Please try again.');
+            setError(getProductErrorMessage(result.error, 'Failed to add product. Please try again.'));
         }
 
         setLoading(false);
@@ -253,6 +288,14 @@ function ProductTablePage({ username, onLogout, onBack }) {
             return;
         }
 
+        const duplicateBarcode = products.some(
+            (product) => product.id !== selectedProduct.id && normalizeKey(product.barcode) === normalizeKey(detailFormData.barcode)
+        );
+        if (duplicateBarcode) {
+            setError('Duplicate barcodes not allowed');
+            return;
+        }
+
         setLoading(true);
         setError('');
         setSuccess('');
@@ -277,7 +320,7 @@ function ProductTablePage({ username, onLogout, onBack }) {
                 setSuccess('');
             }, 1800);
         } else {
-            setError(result.error || 'Failed to update product.');
+            setError(getProductErrorMessage(result.error, 'Failed to update product.'));
         }
 
         setLoading(false);
