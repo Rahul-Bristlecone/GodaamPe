@@ -1,3 +1,4 @@
+# This should not run, this is for deployment
 name: Godaampe CI
 on:
   schedule:
