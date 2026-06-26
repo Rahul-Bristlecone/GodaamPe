@@ -9,7 +9,7 @@ import { env } from 'process';
 const USER_SERVICE_PROXY_PATH = '/user-api';
 const STORE_SERVICE_PROXY_PATH = '/store-api';
 const PRODUCT_SERVICE_PROXY_PATH = '/product-api';
-const ABS_CONFIG_SERVICE_PROXY_PATH = '/abs-config-api';
+const ABS_CONFIG_SERVICE_PROXY_PATH = '/config-api';
 const COMPANY_SERVICE_PROXY_PATH = '/company-api';
 const CUSTOMER_SERVICE_PROXY_PATH = '/customer-api';
 const ORDER_SERVICE_PROXY_PATH = '/order-api';
