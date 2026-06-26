@@ -126,8 +126,14 @@ function ConfigManagerPage({ onClose }) {
                 ...prev,
                 __fetched: sanitizeAbsConfigPayload(fetchedData)
             }));
+            setUpdateStatus('idle');
+            setUpdateMessage('');
         } else {
-            console.warn('Failed to fetch ABS configuration:', result.error);
+            const errorMessage = result.error || 'Failed to fetch configuration.';
+            console.warn('Failed to fetch ABS configuration:', errorMessage);
+            setUpdateStatus('error');
+            setUpdateMessage(errorMessage);
+            setShowSuccessDialog(false);
         }
     };
 
@@ -677,6 +683,9 @@ function ConfigManagerPage({ onClose }) {
                 </div>
 
                 <div className="config-dialog-footer">
+                    {updateStatus === 'error' && updateMessage && (
+                        <div className="alert alert-error" style={{ marginBottom: '12px' }}>{updateMessage}</div>
+                    )}
                     <div className="dialog-actions">
                         <button type="button" className="config-action-button help-action-button">
                             <span className="config-action-button-text">Help</span>
@@ -706,11 +715,6 @@ function ConfigManagerPage({ onClose }) {
                             </span>
                         </button>
                     </div>
-                    {updateStatus === 'error' && updateMessage && (
-                        <p className={`dialog-note ${updateStatus === 'error' ? 'error-text' : ''}`} style={{ marginTop: '8px' }}>
-                            {updateMessage}
-                        </p>
-                    )}
                 </div>
             </div>
 

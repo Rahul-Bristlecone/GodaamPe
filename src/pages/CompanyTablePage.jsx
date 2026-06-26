@@ -335,14 +335,10 @@ function CompanyTablePage({ username, onLogout, onBack }) {
                     <h1>🏢 Company Table</h1>
                 </div>
                 <div className="content-area">
+                    {loading && <div style={{ textAlign: 'center', padding: '40px', color: '#718096', fontSize: '14px' }}>Loading companies...</div>}
+                    {error && <div className="alert alert-error">{error}</div>}
                     {success && <div className="alert alert-success">{success}</div>}
-                    {loading ? (
-                        <div style={{ textAlign: 'center', padding: '40px', color: '#718096', fontSize: '14px' }}>Loading companies...</div>
-                    ) : error ? (
-                        <div style={{ padding: '16px', color: '#e53e3e', background: '#fff5f5', border: '1px solid #fed7d7', borderRadius: '6px', fontSize: '13px', marginBottom: '12px' }}>
-                            {error}
-                        </div>
-                    ) : companyEntries.length > 0 ? (
+                    {companyEntries.length > 0 ? (
                         <>
                             <div className="customers-header">
                                 <div className="customers-header-left">

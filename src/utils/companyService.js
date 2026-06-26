@@ -33,6 +33,23 @@ const parseJsonResponse = async (response) => {
     }
 };
 
+const normalizeNetworkErrorMessage = (err) => {
+    const message = String(err?.message || '').trim();
+    if (!message) {
+        return 'Error: 502 Bad Gateway';
+    }
+
+    const normalized = message.toLowerCase();
+    const isNetworkFailure =
+        normalized === 'failed to fetch'
+        || normalized.includes('networkerror')
+        || normalized.includes('network request failed')
+        || normalized.includes('fetch failed')
+        || normalized.includes('load failed');
+
+    return isNetworkFailure ? 'Error: 502 Bad Gateway' : message;
+};
+
 export const normalizeCompany = (company) => ({
     id: company.company_id || company.id,
     companyNo: company.company_no || company.companyNo || '',
@@ -79,7 +96,7 @@ export const getAllCompanies = async () => {
         return { success: true, data };
     } catch (err) {
         console.error('Error fetching companies:', err);
-        return { success: false, error: err.message };
+        return { success: false, error: normalizeNetworkErrorMessage(err) };
     }
 };
 
@@ -101,7 +118,7 @@ export const createCompany = async (companyData) => {
         return { success: true, data };
     } catch (err) {
         console.error('Error creating company:', err);
-        return { success: false, error: err.message };
+        return { success: false, error: normalizeNetworkErrorMessage(err) };
     }
 };
 
@@ -123,7 +140,7 @@ export const updateCompany = async (companyId, companyData) => {
         return { success: true, data };
     } catch (err) {
         console.error('Error updating company:', err);
-        return { success: false, error: err.message };
+        return { success: false, error: normalizeNetworkErrorMessage(err) };
     }
 };
 
@@ -143,6 +160,6 @@ export const deleteCompany = async (companyId) => {
         return { success: true, message: 'Company deleted successfully' };
     } catch (err) {
         console.error('Error deleting company:', err);
-        return { success: false, error: err.message };
+        return { success: false, error: normalizeNetworkErrorMessage(err) };
     }
 };

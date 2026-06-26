@@ -66,6 +66,23 @@ const buildApiErrorMessage = (response, errorData) => {
     return `Error: ${response.status} ${response.statusText}`;
 };
 
+const normalizeNetworkErrorMessage = (err) => {
+    const message = String(err?.message || '').trim();
+    if (!message) {
+        return 'Error: 502 Bad Gateway';
+    }
+
+    const normalized = message.toLowerCase();
+    const isNetworkFailure =
+        normalized === 'failed to fetch'
+        || normalized.includes('networkerror')
+        || normalized.includes('network request failed')
+        || normalized.includes('fetch failed')
+        || normalized.includes('load failed');
+
+    return isNetworkFailure ? 'Error: 502 Bad Gateway' : message;
+};
+
 export const getAbsConfiguration = async () => {
     try {
         const endpoint = `${API_URL}/glbconfig`;
@@ -84,7 +101,7 @@ export const getAbsConfiguration = async () => {
         return { success: true, data };
     } catch (err) {
         console.error('Error fetching ABS configuration:', err);
-        return { success: false, error: err.message };
+        return { success: false, error: normalizeNetworkErrorMessage(err) };
     }
 };
 
@@ -130,6 +147,6 @@ export const saveAbsConfiguration = async (payload) => {
         return { success: true, data };
     } catch (err) {
         console.error('Error saving ABS configuration:', err);
-        return { success: false, error: err.message };
+        return { success: false, error: normalizeNetworkErrorMessage(err) };
     }
 };

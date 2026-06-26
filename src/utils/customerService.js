@@ -35,6 +35,23 @@ const parseJsonResponse = async (response) => {
     }
 };
 
+const normalizeNetworkErrorMessage = (err) => {
+    const message = String(err?.message || '').trim();
+    if (!message) {
+        return 'Error: 502 Bad Gateway';
+    }
+
+    const normalized = message.toLowerCase();
+    const isNetworkFailure =
+        normalized === 'failed to fetch'
+        || normalized.includes('networkerror')
+        || normalized.includes('network request failed')
+        || normalized.includes('fetch failed')
+        || normalized.includes('load failed');
+
+    return isNetworkFailure ? 'Error: 502 Bad Gateway' : message;
+};
+
 export const normalizeCustomer = (customer, index = 0) => ({
     id: customer.customer_id || customer.id || `customer-${index}`,
     customerNumber: customer.customer_no || customer.customerNumber || '',
@@ -72,7 +89,7 @@ export const getAllCustomers = async () => {
         return { success: true, data };
     } catch (err) {
         console.error('Error fetching customers:', err);
-        return { success: false, error: err.message };
+        return { success: false, error: normalizeNetworkErrorMessage(err) };
     }
 };
 
@@ -94,7 +111,7 @@ export const createCustomer = async (customerData) => {
         return { success: true, data };
     } catch (err) {
         console.error('Error creating customer:', err);
-        return { success: false, error: err.message };
+        return { success: false, error: normalizeNetworkErrorMessage(err) };
     }
 };
 
@@ -116,7 +133,7 @@ export const updateCustomer = async (customerId, customerData) => {
         return { success: true, data };
     } catch (err) {
         console.error('Error updating customer:', err);
-        return { success: false, error: err.message };
+        return { success: false, error: normalizeNetworkErrorMessage(err) };
     }
 };
 
@@ -136,6 +153,6 @@ export const deleteCustomer = async (customerId) => {
         return { success: true, message: 'Customer deleted successfully' };
     } catch (err) {
         console.error('Error deleting customer:', err);
-        return { success: false, error: err.message };
+        return { success: false, error: normalizeNetworkErrorMessage(err) };
     }
 };

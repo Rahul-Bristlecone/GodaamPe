@@ -1,0 +1,114 @@
+name: CI-CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: ap-south-1
+  ECR_REPOSITORY: product-service
+  IMAGE_TAG: ${{ github.sha }}
+
+permissions:
+  contents: write
+
+jobs:
+
+  # -----------------------------------
+  # Build & Test
+  # -----------------------------------
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Run Unit Tests
+        run: |
+          pytest tests/
+
+  # -----------------------------------
+  # Build & Push Image
+  # -----------------------------------
+  docker-build-push:
+    needs: build-test
+    runs-on: ubuntu-latest
+
+    outputs:
+      image_tag: ${{ env.IMAGE_TAG }}
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker Image
+        run: |
+          docker build \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
+            .
+
+      - name: Push Docker Image
+        run: |
+          docker push \
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+
+  # -----------------------------------
+  # Update GitOps Repo
+  # -----------------------------------
+  update-gitops:
+    needs: docker-build-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout GitOps Repository
+        uses: actions/checkout@v4
+        with:
+          repository: your-org/gitops-repo
+          token: ${{ secrets.GITOPS_TOKEN }}
+          path: gitops
+
+      - name: Update Helm Values
+        run: |
+
+          cd gitops
+
+          sed -i "s|tag:.*|tag: \"${{ github.sha }}\"|g" \
+            environments/dev/product-service/values.yaml
+
+      - name: Commit Changes
+        run: |
+          cd gitops
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add .
+
+          git commit -m \
+            "Update product-service image to ${{ github.sha }}" \
+            || echo "No changes detected"
+
+          git push

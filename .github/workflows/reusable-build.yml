@@ -1,0 +1,21 @@
+# This is a reusable workflow for Godaampe that can be called from other workflows.
+# Even from other repositories.
+name: Godaampe Reusable Workflow
+on:
+  workflow_call:
+    inputs:
+      target-environment:
+        description: The environment to deploy to (e.g., staging, production)
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+      - run: pip install -r requirements.txt
+      - run: pytest

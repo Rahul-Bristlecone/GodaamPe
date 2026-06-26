@@ -1,0 +1,35 @@
+# This is a master pipeline that will trigger downstream pipelines for build and deploy
+# This one also behaves as an orchestration pipeline (orchestrator)
+name: Centralized Godaampe Integration Pipeline
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  trigger-services:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Customer Service
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: build.yml
+          repo: myorg/customer-service
+          ref: main
+
+      - name: Trigger Order Service
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: build.yml
+          repo: myorg/order-service
+          ref: main
+
+  integration-tests:
+    needs: trigger-services
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Integration Cluster
+        run: kubectl apply -f k8s/integration/
+      - name: Run End-to-End Tests
+        run: pytest tests/integration/

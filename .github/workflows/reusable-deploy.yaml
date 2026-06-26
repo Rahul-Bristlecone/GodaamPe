@@ -1,0 +1,64 @@
+name: Reusable Deploy Workflow
+
+on:
+  workflow_call:
+    inputs:
+      image-name:
+        required: true
+        type: string
+      image-tag:
+        required: true
+        type: string
+      kube-config-secret:
+        required: true
+        type: string
+      namespace:
+        required: false
+        type: string
+        default: default
+    secrets:
+      registry-username:
+        required: true
+      registry-password:
+        required: true
+
+concurrency:
+  group: ci-main
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+  timeout-minutes: 15   # Job will be killed if it runs longer than 15 minutes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Docker login
+        run: |
+          echo "${{ secrets.registry-password }}" | docker login -u "${{ secrets.registry-username }}" --password-stdin
+
+      - name: Build and Push Image
+        run: |
+          docker build -t ${{ inputs.image-name }}:${{ inputs.image-tag }} .
+          docker push ${{ inputs.image-name }}:${{ inputs.image-tag }}
+
+      - name: Configure kubectl
+        run: |
+          echo "${{ inputs.kube-config-secret }}" > kubeconfig.yaml
+          export KUBECONFIG=kubeconfig.yaml
+
+      - name: Deploy new image
+        run: |
+          kubectl set image deployment/${{ inputs.image-name }} \
+            ${{ inputs.image-name }}=${{ inputs.image-name }}:${{ inputs.image-tag }} \
+            -n ${{ inputs.namespace }}
+
+      - name: Verify rollout
+        run: |
+          set -e
+          if ! kubectl rollout status deployment/${{ inputs.image-name }} -n ${{ inputs.namespace }} --timeout=60s; then
+            echo "❌ Deployment failed. Rolling back..."
+            kubectl rollout undo deployment/${{ inputs.image-name }} -n ${{ inputs.namespace }}
+            exit 1
+          fi
