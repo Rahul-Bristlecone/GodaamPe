@@ -571,7 +571,7 @@ function CustomerTablePage({ username, onLogout, onBack }) {
                 </div>
                 <div className="content-area">
                     {loading && <div className="upload-message upload-info">Loading customers...</div>}
-                    {error && <div className="upload-message upload-error">{error}</div>}
+                    {error && <div className="alert alert-error">{error}</div>}
                     {success && <div className="upload-message upload-success">{success}</div>}
                     {customerEntries.length > 0 ? (
                         <>
