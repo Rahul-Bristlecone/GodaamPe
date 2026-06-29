@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import '../styles/SubPage.css';
 import '../styles/PickPage.css';
-import { uploadEDIFile, getAllOrders, updateOrder } from '../utils/orderService';
+import { uploadEDIFile, getAllOrders, updateOrder, rejectOrderWithValidationErrors } from '../utils/orderService';
 import { getAllStores } from '../utils/storeService';
 import { getAllProducts } from '../utils/productService';
 import { getAllCustomers } from '../utils/customerService';
@@ -49,6 +49,9 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
     const [showImportErrorDialog, setShowImportErrorDialog] = useState(false);
     const [importErrorSummary, setImportErrorSummary] = useState('');
     const [importErrorItems, setImportErrorItems] = useState([]);
+    const [importErrorData, setImportErrorData] = useState(null);
+    const [fallbackOrderNumber, setFallbackOrderNumber] = useState('');
+    const [fileContent, setFileContent] = useState('');
     const [contextMenu, setContextMenu] = useState(null);
     const [hoveredContextAction, setHoveredContextAction] = useState('');
     const [orderDrafts, setOrderDrafts] = useState({});
@@ -293,6 +296,9 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
             const nextImportErrors = buildImportErrorState(result, { fallbackOrderNumber });
             setImportErrorSummary(nextImportErrors.summary);
             setImportErrorItems(nextImportErrors.items);
+            setImportErrorData(result.errorData);
+            setFallbackOrderNumber(fallbackOrderNumber);
+            setFileContent(fileContent);
             setShowImportErrorDialog(true);
         }
 
@@ -348,7 +354,7 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
     };
 
     const getDisplayShipByDate = (order, index) => {
-        return getSavedOrderDraft(getOrderKey(order, index))?.shipByDate || defaultOrderFormData.shipByDate;
+        return getSavedOrderDraft(getOrderKey(order, index))?.shipByDate || order.ship_by_date || defaultOrderFormData.shipByDate;
     };
 
     const getDisplayNotAfterDate = (order, index) => {
@@ -604,6 +610,46 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
 
     const closeImportErrorDialog = () => {
         setShowImportErrorDialog(false);
+        setImportErrorData(null);
+        setFallbackOrderNumber('');
+        setFileContent('');
+    };
+
+    const handleSaveOrderAsRejected = async () => {
+        if (!importErrorData) {
+            setError('Unable to save rejected order: missing error data.');
+            closeImportErrorDialog();
+            return;
+        }
+
+        if (!fileContent) {
+            setError('Unable to save rejected order: missing file content.');
+            closeImportErrorDialog();
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+
+        // Pass file content for backend to parse and extract all required fields
+        const rejectPayload = {
+            file_content: fileContent,
+            order_status: 'rejected',
+            errors: importErrorData?.errors || importErrorData?.message || 'Validation failed during import'
+        };
+
+        const result = await rejectOrderWithValidationErrors(rejectPayload);
+
+        if (result.success) {
+            setSuccess('Order saved as rejected and added to Rejected tab.');
+            await fetchOrders();
+            setTimeout(() => setSuccess(''), 3000);
+            closeImportErrorDialog();
+        } else {
+            setError(result.error || 'Failed to save order as rejected.');
+        }
+
+        setLoading(false);
     };
 
     const handleOrderFormChange = (e) => {
@@ -715,10 +761,23 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
     const visibleOrderGridItems = isOrderDetailsTab ? selectedOrderGridItems : [];
     const isOrderStatusLocked = isPastDate(orderFormData.shipByDate, todayDate);
 
-    const getStatusBadgeStyle = (status) => ({
-        backgroundColor: getStatusColor(status),
-        color: getStatusTextColor(status)
-    });
+    const getStatusBadgeStyle = (status, shipByDate) => {
+        const statusLower = (status || '').toLowerCase();
+        const isNotCancelledOrPending = statusLower !== 'cancelled' && statusLower !== 'pending';
+        const isDatePassed = isPastDate(shipByDate, todayDate);
+        
+        if (isNotCancelledOrPending && isDatePassed) {
+            return {
+                backgroundColor: '#dc2626',
+                color: '#ffffff'
+            };
+        }
+        
+        return {
+            backgroundColor: getStatusColor(status),
+            color: getStatusTextColor(status)
+        };
+    };
 
     const getImportTabStatusClass = (tab) => {
         const tabSlug = tab.toLowerCase().replace(/\s+/g, '-');
@@ -752,8 +811,16 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
     };
 
     const shouldShowOrderForActiveTab = (order, index) => {
-        const targetTab = getOrderTabForStatus(getDisplayOrderStatus(order, index));
-        return targetTab ? activeImportTab === targetTab : true;
+        const orderStatus = getDisplayOrderStatus(order, index);
+        const targetTab = getOrderTabForStatus(orderStatus);
+        
+        // Show pending/unpicked orders on Unpicked tab
+        if (activeImportTab === 'Unpicked') {
+            return !targetTab || targetTab === 'Unpicked';
+        }
+        
+        // Show rejected orders on Rejected tab, and other specific statuses on their tabs
+        return targetTab === activeImportTab;
     };
 
     const visibleOrders = orders.reduce((accumulator, order, index) => {
@@ -893,7 +960,7 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
                                                     <td>
                                                         <span
                                                             className="order-status-badge"
-                                                            style={getStatusBadgeStyle(getDisplayOrderStatus(order, sourceIndex))}
+                                                            style={getStatusBadgeStyle(getDisplayOrderStatus(order, sourceIndex), getDisplayShipByDate(order, sourceIndex))}
                                                         >
                                                             {getDisplayOrderStatus(order, sourceIndex)}
                                                         </span>
@@ -1020,7 +1087,15 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
                         <div className="order-form-actions">
                             <div className="import-error-dialog-spacer" />
                             <div className="order-form-actions-right">
-                                <button className="close-modal-button split-olive-button" onClick={closeImportErrorDialog}>
+                                <button className="save-modal-button split-olive-button" onClick={handleSaveOrderAsRejected} disabled={loading}>
+                                    <span className="split-olive-button-text">{loading ? 'Saving...' : 'Okay'}</span>
+                                    <span className="split-olive-button-icon-wrap" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </span>
+                                </button>
+                                <button className="close-modal-button split-olive-button" onClick={closeImportErrorDialog} disabled={loading}>
                                     <span className="split-olive-button-text">Close</span>
                                     <span className="split-olive-button-icon-wrap" aria-hidden="true">
                                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1090,7 +1165,7 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
                                         style={{ borderColor: selectedOrderStatusColor, borderTopColor: selectedOrderStatusColor }}
                                     >
                                         <span className="order-insight-summary-label">Order status</span>
-                                        <span className="order-insight-summary-value order-insight-status-pill" style={getStatusBadgeStyle(selectedOrderStatus)}>
+                                        <span className="order-insight-summary-value order-insight-status-pill" style={getStatusBadgeStyle(selectedOrderStatus, orderFormData.shipByDate)}>
                                             {selectedOrderStatus}
                                         </span>
                                     </div>
@@ -1181,7 +1256,7 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
                                 <div className="order-modal-meta-value">{selectedOrderStoreName}</div>
                             </div>
                             <div className="order-modal-header-actions">
-                                <span className="order-details-status order-status-badge" style={getStatusBadgeStyle(orderFormData.orderStatus)}>
+                                <span className="order-details-status order-status-badge" style={getStatusBadgeStyle(orderFormData.orderStatus, orderFormData.shipByDate)}>
                                     {(orderFormData.orderStatus || 'pending').toUpperCase()}
                                 </span>
                                 <button className="order-details-close" onClick={closeOrderModal} aria-label="Close modify order form">×</button>

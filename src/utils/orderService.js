@@ -158,3 +158,33 @@ export const updateOrder = async (orderId, updateData) => {
         return { success: false, error: err.message };
     }
 };
+
+export const rejectOrderWithValidationErrors = async (orderData) => {
+    try {
+        const endpoint = `${API_URL}/order/reject`;
+        console.log('Sending reject order request to:', endpoint);
+        console.log('Payload:', orderData);
+
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: getJsonAuthHeader(),
+            body: JSON.stringify(orderData)
+        });
+
+        console.log('Response status:', response.status);
+
+        if (!response.ok) {
+            const errorData = await parseJsonResponse(response);
+            console.error('Error response:', errorData);
+            handleAuthExpiry(response, errorData);
+            throw new Error(errorData?.message || errorData?.msg || `Error: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await parseJsonResponse(response);
+        console.log('Success response:', data);
+        return { success: true, data };
+    } catch (err) {
+        console.error('Error rejecting order with validation errors:', err);
+        return { success: false, error: err.message };
+    }
+};
