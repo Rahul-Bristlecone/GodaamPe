@@ -4,6 +4,10 @@ on:
     branches: [main]
   
 jobs:
+  # Keep Docker image name centralized so build/push use identical tags.
+  # This avoids pushing to docker.io/library/godaampe, which is not writable.
+  # Example resolved value: <docker-username>/godaampe:latest
+  
   build-image:
     runs-on: ubuntu-latest
     steps:
@@ -28,6 +32,8 @@ jobs:
   push-image:
     runs-on: ubuntu-latest
     needs: build-image
+    env:
+      IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/godaampe
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -39,8 +45,8 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker build -t godaampe:latest .
+        run: docker build -t $IMAGE_NAME:latest .
 
       - name: Push Docker image to Docker Hub
-        run: docker push godaampe:latest
+        run: docker push $IMAGE_NAME:latest
         
