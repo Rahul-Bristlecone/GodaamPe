@@ -1,7 +1,7 @@
 name: Godaampe CI
 on:
-  push:
-    # branches: [main]
+  # push:
+  #   branches: [main]
 
 # when I say deploy - it means deploying docker image to docker hub 
 # and then deploying to kubernetes cluster using helm charts.
