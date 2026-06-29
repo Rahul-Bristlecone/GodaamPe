@@ -1,7 +1,7 @@
 name: Godaampe UI (Build and Package)
 on:
   push:
-    branches: [main]
+    # branches: [main]
 
   workflow_dispatch:
     inputs:
