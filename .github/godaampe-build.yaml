@@ -1,7 +1,7 @@
 name: Godaampe CI
 on:
   push:
-    branches: [main]
+    # branches: [main]
 
   input:
     # Define the input parameters for the workflow
@@ -22,27 +22,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      -name: setup node.js
+      - name: setup node.js
         uses: actions/setup-node@v6
         with:
           node-version: '18'
 
-      -name: Install dependencies
-        uses: npm install
+      - name: Install dependencies
+        run: npm install
       
       # -name: Run tests
       #   run: npm test
 
-      -name: build the application
+      - name: build the application
         run: npm run build
 
-      -name: Package the application
+      - name: Package the application
         run: npm pack
       
-      -name: Store the packaged application as an artifact
+      - name: Store the packaged application as an artifact
         uses: actions/upload-artifact@v3
         with:
           name: myapp-package
 
-      -name: Proceed with deployment
+      - name: Proceed with deployment
         run: echo "Proceeding with deployment steps..."
