@@ -1,10 +1,7 @@
 # This should not run, this is for deployment
 name: Godaampe CI
 on:
-  schedule:
-    - cron: '0 0 * * *' # Runs every day at midnight
-  push:
-    # branches: [main]
+  workflow_dispatch:
 
 # when I say deploy - it means deploying docker image to docker hub 
 # and then deploying to kubernetes cluster using helm charts.
