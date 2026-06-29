@@ -1,7 +1,7 @@
 name: Godaampe CI
 on:
-  push:
-    # branches: [main]
+  # push:
+  #   branches: [main]
 
   input:
     # Define the input parameters for the workflow

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: sharma92/daemons:frontend-service   # replace with your pushed image
+          image: sharma92/godaampe:latest   # replace with your pushed image
           imagePullPolicy: Always
           ports:
             - containerPort: 80
