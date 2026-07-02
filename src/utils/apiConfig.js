@@ -6,6 +6,24 @@ const trimTrailingSlash = (value) => {
     return value.replace(/\/+$/, '');
 };
 
+const getRuntimeConfigValue = (key) => {
+    if (typeof window === 'undefined') {
+        return '';
+    }
+
+    const runtimeConfig = window.__APP_CONFIG__;
+    if (!runtimeConfig || typeof runtimeConfig !== 'object') {
+        return '';
+    }
+
+    const value = runtimeConfig[key];
+    if (typeof value !== 'string') {
+        return '';
+    }
+
+    return trimTrailingSlash(value.trim());
+};
+
 const firstDefined = (...values) => {
     for (const value of values) {
         if (typeof value === 'string' && value.trim()) {
@@ -40,6 +58,7 @@ export const getUserServiceUrl = () => {
     }
 
     return firstDefined(
+        getRuntimeConfigValue('USER_SERVICE_URL'),
         import.meta.env.VITE_USER_SERVICE_URL,
         import.meta.env.VITE_USER_SERVICE_URL_LOCAL,
         USER_SERVICE_FALLBACK
@@ -55,6 +74,7 @@ export const getStoreServiceUrl = () => {
     }
 
     return firstDefined(
+        getRuntimeConfigValue('STORE_SERVICE_URL'),
         import.meta.env.VITE_STORE_SERVICE_URL,
         import.meta.env.VITE_STORE_SERVICE_URL_LOCAL,
         STORE_SERVICE_FALLBACK
@@ -70,6 +90,7 @@ export const getProductServiceUrl = () => {
     }
 
     return firstDefined(
+        getRuntimeConfigValue('PRODUCT_SERVICE_URL'),
         import.meta.env.VITE_PRODUCT_SERVICE_URL,
         import.meta.env.VITE_PRODUCT_SERVICE_URL_LOCAL,
         PRODUCT_SERVICE_FALLBACK
@@ -85,6 +106,7 @@ export const getAbsConfigServiceUrl = () => {
     }
 
     return firstDefined(
+        getRuntimeConfigValue('ABS_CONFIG_SERVICE_URL'),
         import.meta.env.VITE_ABS_CONFIG_SERVICE_URL,
         import.meta.env.VITE_ABS_CONFIG_SERVICE_URL_LOCAL,
         ABS_CONFIG_SERVICE_FALLBACK
@@ -100,6 +122,7 @@ export const getCompanyServiceUrl = () => {
     }
 
     return firstDefined(
+        getRuntimeConfigValue('COMPANY_SERVICE_URL'),
         import.meta.env.VITE_COMPANY_SERVICE_URL,
         import.meta.env.VITE_COMPANY_SERVICE_URL_LOCAL,
         COMPANY_SERVICE_FALLBACK
@@ -115,6 +138,7 @@ export const getCustomerServiceUrl = () => {
     }
 
     return firstDefined(
+        getRuntimeConfigValue('CUSTOMER_SERVICE_URL'),
         import.meta.env.VITE_CUSTOMER_SERVICE_URL,
         import.meta.env.VITE_CUSTOMER_SERVICE_URL_LOCAL,
         CUSTOMER_SERVICE_FALLBACK
@@ -130,6 +154,7 @@ export const getOrderServiceUrl = () => {
     }
 
     return firstDefined(
+        getRuntimeConfigValue('ORDER_SERVICE_URL'),
         import.meta.env.VITE_ORDER_SERVICE_URL,
         import.meta.env.VITE_ORDER_SERVICE_URL_LOCAL,
         ORDER_SERVICE_FALLBACK
