@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+data:
+  USER_SERVICE_URL: "/user-api"
+  STORE_SERVICE_URL: "/store-api"
+  PRODUCT_SERVICE_URL: "/product-api"
+  ABS_CONFIG_SERVICE_URL: "/config-api"
+  COMPANY_SERVICE_URL: "/company-api"
+  CUSTOMER_SERVICE_URL: "/customer-api"
+  ORDER_SERVICE_URL: "/order-api"

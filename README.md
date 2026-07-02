@@ -166,8 +166,17 @@ See complete diagrams in `FLOW_DIAGRAM.md`.
 
 ## Configuration Notes
 
-- API URLs are currently hardcoded inside utility/page files.
-- Recommended next step is to move all API base URLs to Vite environment variables (for dev/stage/prod switching).
+- Development (`npm run dev`) uses Vite proxy paths (for example `/user-api`) and forwards requests to local backend targets configured in `vite.config.js`.
+- Production (Docker/Nginx) reads runtime environment variables at container startup and generates `/runtime-config.js`.
+- Runtime variables supported in production:
+	- `USER_SERVICE_URL`
+	- `STORE_SERVICE_URL`
+	- `PRODUCT_SERVICE_URL`
+	- `ABS_CONFIG_SERVICE_URL`
+	- `COMPANY_SERVICE_URL`
+	- `CUSTOMER_SERVICE_URL`
+	- `ORDER_SERVICE_URL`
+- If a runtime variable is missing, the frontend falls back to path-based URLs like `/user-api`, `/store-api`, and `/product-api`, which works well with Kubernetes Ingress path routing.
 
 ## Troubleshooting
 

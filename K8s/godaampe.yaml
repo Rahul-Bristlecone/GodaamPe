@@ -18,6 +18,9 @@ spec:
         - name: frontend
           image: sharma92/godaampe:latest   # replace with your pushed image
           imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: frontend-config
           ports:
             - containerPort: 80
 ---
