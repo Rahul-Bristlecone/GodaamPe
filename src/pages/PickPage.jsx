@@ -325,7 +325,21 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
     };
 
     const getOrderKey = (order, index = 0) => {
+        if (!order) {
+            return `order-store-${index}`;
+        }
         return `${order.order_id || 'order'}-${order.store_number || order.store_id || 'store'}-${index}`;
+    };
+
+    const getStatusForShipByDate = (status, shipByDate) => {
+        const normalizedStatus = String(status || '').toLowerCase();
+        const shouldAutoTogglePendingState = normalizedStatus === 'pending' || normalizedStatus === 'cancelled';
+
+        if (!shouldAutoTogglePendingState) {
+            return status || 'pending';
+        }
+
+        return isPastDate(shipByDate, todayDate) ? 'cancelled' : 'pending';
     };
 
     const getSavedOrderDraft = (orderKey) => {
@@ -339,14 +353,10 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
             ...savedDraft
         };
 
-        if (isPastDate(mergedDraft.shipByDate, todayDate)) {
-            return {
-                ...mergedDraft,
-                orderStatus: 'cancelled'
-            };
-        }
-
-        return mergedDraft;
+        return {
+            ...mergedDraft,
+            orderStatus: getStatusForShipByDate(mergedDraft.orderStatus, mergedDraft.shipByDate)
+        };
     };
 
     const getDisplayOrderStatus = (order, index) => {
@@ -366,6 +376,10 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
     };
 
     const buildBaseOrderDraft = (order, index) => {
+        if (!order) {
+            return { ...defaultOrderFormData };
+        }
+
         const orderKey = getOrderKey(order, index);
         const savedDraft = getSavedOrderDraft(orderKey);
         if (savedDraft) {
@@ -386,6 +400,26 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
             price: order.unit_price ?? '',
             editComment: order.comment || order.notes || '',
         };
+    };
+
+    const getComparableOrderDraft = (draft) => {
+        const normalizeStringOrEmpty = (value) => (value === undefined || value === null ? '' : String(value));
+
+        return {
+            ...defaultOrderFormData,
+            ...draft,
+            shipByDate: normalizeStringOrEmpty(draft?.shipByDate),
+            quantityToDeliver: normalizeStringOrEmpty(draft?.quantityToDeliver),
+            price: normalizeStringOrEmpty(draft?.price),
+            editComment: normalizeStringOrEmpty(draft?.editComment),
+        };
+    };
+
+    const getChangedOrderFormFields = (currentDraft, baseDraft) => {
+        const comparableCurrent = getComparableOrderDraft(currentDraft);
+        const comparableBase = getComparableOrderDraft(baseDraft);
+
+        return Object.keys(comparableCurrent).filter((fieldName) => comparableCurrent[fieldName] !== comparableBase[fieldName]);
     };
 
     const initializeOrderSelection = (order, index) => {
@@ -658,7 +692,7 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
             ...prev,
             [name]: value,
             ...(name === 'shipByDate'
-                ? { orderStatus: isPastDate(value, todayDate) ? 'cancelled' : 'pending' }
+                ? { orderStatus: getStatusForShipByDate(prev.orderStatus, value) }
                 : {})
         }));
     };
@@ -668,14 +702,25 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
             return;
         }
 
-        const nextOrderFormData = isPastDate(orderFormData.shipByDate, todayDate)
-            ? { ...orderFormData, orderStatus: 'cancelled' }
-            : orderFormData;
+        if (!selectedOrder) {
+            setError('Unable to update order: missing selected order.');
+            return;
+        }
 
-        if (!String(nextOrderFormData.editComment || '').trim()) {
+        const baseOrderFormData = buildBaseOrderDraft(selectedOrder, 0) || defaultOrderFormData;
+        const changedFields = getChangedOrderFormFields(orderFormData, baseOrderFormData);
+        const commentOptionalFields = new Set(['shipByDate', 'quantityToDeliver']);
+        const requiresEditComment = changedFields.some(fieldName => !commentOptionalFields.has(fieldName));
+
+        if (requiresEditComment && !String(orderFormData.editComment || '').trim()) {
             setError('Comment is mandatory when editing an order.');
             return;
         }
+
+        const nextOrderFormData = {
+            ...orderFormData,
+            orderStatus: getStatusForShipByDate(orderFormData.orderStatus, orderFormData.shipByDate)
+        };
 
         if (!selectedOrder?.order_id) {
             setError('Unable to update order: missing order id.');
@@ -741,8 +786,12 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
         closeOrderModal();
     };
 
-    const hasOrderChanges = selectedOrderKey && JSON.stringify(orderFormData) !== JSON.stringify(buildBaseOrderDraft(selectedOrder, 0) || defaultOrderFormData);
-    const isEditCommentMissing = hasOrderChanges && !String(orderFormData.editComment || '').trim();
+    const baseOrderFormData = selectedOrder ? (buildBaseOrderDraft(selectedOrder, 0) || defaultOrderFormData) : defaultOrderFormData;
+    const changedOrderFields = selectedOrder ? getChangedOrderFormFields(orderFormData, baseOrderFormData) : [];
+    const hasOrderChanges = Boolean(selectedOrderKey && selectedOrder) && changedOrderFields.length > 0;
+    const commentOptionalFields = new Set(['shipByDate', 'quantityToDeliver']);
+    const requiresEditComment = changedOrderFields.some(fieldName => !commentOptionalFields.has(fieldName));
+    const isEditCommentMissing = hasOrderChanges && requiresEditComment && !String(orderFormData.editComment || '').trim();
     const selectedOrderStoreName = selectedOrder
         ? (selectedOrder.store_name || storesById[selectedOrder.store_number] || storesById[selectedOrder.store_id] || 'Unknown Store')
         : '';
