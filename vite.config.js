@@ -17,8 +17,8 @@ const USER_SERVICE_FALLBACK = 'http://127.0.0.1:5001';
 const STORE_SERVICE_FALLBACK = 'http://127.0.0.1:5002';
 const PRODUCT_SERVICE_FALLBACK = 'http://127.0.0.1:5003';
 const ABS_CONFIG_SERVICE_FALLBACK = 'http://127.0.0.1:5004';
-const COMPANY_SERVICE_FALLBACK = 'http://127.0.0.1:5006';
-const CUSTOMER_SERVICE_FALLBACK = 'http://127.0.0.1:5005';
+const COMPANY_SERVICE_FALLBACK = 'http://127.0.0.1:5005';
+const CUSTOMER_SERVICE_FALLBACK = 'http://127.0.0.1:5006';
 const ORDER_SERVICE_FALLBACK = 'http://127.0.0.1:5007';
 
 export default defineConfig(({ command }) => {

@@ -393,7 +393,7 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
             notAfter: order.not_after || defaultOrderFormData.notAfter,
             notBefore: order.not_before || defaultOrderFormData.notBefore,
             dontPickBefore: order.dont_pick_before || defaultOrderFormData.dontPickBefore,
-            poaStatus: order.poa_status || order.poaStatus || defaultOrderFormData.poaStatus,
+            poaStatus: getOrderPoaStatusLabel(order),
             carrier: order.carrier || defaultOrderFormData.carrier,
             consignmentNoteNumber: order.consignment_note_number || order.consignmentNoteNumber || defaultOrderFormData.consignmentNoteNumber,
             quantityToDeliver: order.quantity_to_deliver ?? '',
@@ -709,7 +709,7 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
 
         const baseOrderFormData = buildBaseOrderDraft(selectedOrder, 0) || defaultOrderFormData;
         const changedFields = getChangedOrderFormFields(orderFormData, baseOrderFormData);
-        const commentOptionalFields = new Set(['shipByDate', 'quantityToDeliver']);
+        const commentOptionalFields = new Set(['shipByDate', 'quantityToDeliver', 'orderStatus']);
         const requiresEditComment = changedFields.some(fieldName => !commentOptionalFields.has(fieldName));
 
         if (requiresEditComment && !String(orderFormData.editComment || '').trim()) {
@@ -788,8 +788,10 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
 
     const baseOrderFormData = selectedOrder ? (buildBaseOrderDraft(selectedOrder, 0) || defaultOrderFormData) : defaultOrderFormData;
     const changedOrderFields = selectedOrder ? getChangedOrderFormFields(orderFormData, baseOrderFormData) : [];
-    const hasOrderChanges = Boolean(selectedOrderKey && selectedOrder) && changedOrderFields.length > 0;
-    const commentOptionalFields = new Set(['shipByDate', 'quantityToDeliver']);
+    const hasShipByDateChanged = String(orderFormData.shipByDate || '') !== String(baseOrderFormData.shipByDate || '');
+    const hasQuantityToDeliverChanged = String(orderFormData.quantityToDeliver ?? '') !== String(baseOrderFormData.quantityToDeliver ?? '');
+    const hasOrderChanges = Boolean(selectedOrderKey && selectedOrder) && (changedOrderFields.length > 0 || hasShipByDateChanged || hasQuantityToDeliverChanged);
+    const commentOptionalFields = new Set(['shipByDate', 'quantityToDeliver', 'orderStatus']);
     const requiresEditComment = changedOrderFields.some(fieldName => !commentOptionalFields.has(fieldName));
     const isEditCommentMissing = hasOrderChanges && requiresEditComment && !String(orderFormData.editComment || '').trim();
     const selectedOrderStoreName = selectedOrder
@@ -1673,7 +1675,31 @@ function getOrderPoaStatusLabel(order) {
 }
 
 function mapPoaStatusToApiValue(poaStatus) {
-    const normalizedValue = String(poaStatus || '').trim().toLowerCase();
+    if (poaStatus === null || poaStatus === undefined || poaStatus === '') {
+        return 0;
+    }
+
+    if (typeof poaStatus === 'number') {
+        return poaStatus > 0 ? 1 : 0;
+    }
+
+    if (typeof poaStatus === 'boolean') {
+        return poaStatus ? 1 : 0;
+    }
+
+    const normalizedValue = String(poaStatus).trim().toLowerCase();
+    if (!normalizedValue) {
+        return 0;
+    }
+
+    if (normalizedValue === '1' || normalizedValue === 'true' || normalizedValue === 'yes' || normalizedValue === 'sent' || normalizedValue === 'poa sent') {
+        return 1;
+    }
+
+    if (normalizedValue === '0' || normalizedValue === 'false' || normalizedValue === 'no' || normalizedValue === 'not sent' || normalizedValue === 'poa not sent') {
+        return 0;
+    }
+
     return normalizedValue.includes('sent') && !normalizedValue.includes('not') ? 1 : 0;
 }
 
