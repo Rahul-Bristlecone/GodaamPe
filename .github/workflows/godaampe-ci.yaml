@@ -45,8 +45,32 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker build -t $IMAGE_NAME:latest .
+        run: docker build -t $IMAGE_NAME:${{ github.sha }} .
 
       - name: Push Docker image to Docker Hub
-        run: docker push $IMAGE_NAME:latest
+        run: docker push $IMAGE_NAME:${{ github.sha }}
+
+      - name: Update Kubernetes manifest with new image tag
+        run: |
+          sed -i "s|image: .*$IMAGE_NAME:.*|image: $IMAGE_NAME:${{ github.sha }}|" ./K8s/godaampe.yaml
+
+      - name: Commit and push manifest update
+        run: |
+          git config user.name "rahul-bristlecone"
+          git config user.email "rsshrma92@hotmail.com"
+          git add ./K8s/godaampe.yaml
+          git commit -m "Update image to $IMAGE_NAME:${{ github.sha }}"
+          git push
+
+# this is for reusable workflow to update the image tag in the argocd-infra repo
+      # - name: Update infra repo with new image tag
+      #   run: |
+      #     git clone https://github.com/<org>/argocd-infra.git
+      #     cd argocd-infra/backend/
+      #     sed -i "s|image: .*$IMAGE_NAME:.*|image: $IMAGE_NAME:${{ github.sha }}|" deployment.yaml
+      #     git config user.name "rahul-bristlecone"
+      #     git config user.email "rsshrma92@hotmail.com"
+      #     git add deployment.yaml
+      #     git commit -m "Update backend image to $IMAGE_NAME:${{ github.sha }}"
+      #     git push
         

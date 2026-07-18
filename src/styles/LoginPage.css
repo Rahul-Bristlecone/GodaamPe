@@ -35,23 +35,43 @@
 .login-branding {
     text-align: center;
     margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
 }
 
-.brand-title {
-    margin: 0 0 0.25rem 0;
-    color: white;
-    font-size: 2.5rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-}
-
-.brand-subtitle {
+.brand-welcome {
     margin: 0;
-    color: rgba(255, 255, 255, 0.95);
-    font-size: 1rem;
-    font-weight: 300;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.brand-logo {
+    width: 280px;
+    max-width: 90vw;
+    /* White background pill so the dark-on-white logo pops on the gradient */
+    background: white;
+    border-radius: 14px;
+    padding: 10px 20px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+}
+
+.brand-tagline-box {
+    display: inline-block;
+    color: white;
+    font-size: 0.88rem;
+    font-weight: 600;
     letter-spacing: 0.5px;
+    border: 2px solid rgba(255, 255, 255, 0.75);
+    border-radius: 6px;
+    padding: 0.35rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
 }
 
 .login-wrapper {
@@ -246,12 +266,8 @@
         right: 1rem;
     }
 
-    .brand-title {
-        font-size: 2.5rem;
-    }
-
-    .brand-subtitle {
-        font-size: 1rem;
+    .brand-logo {
+        width: 220px;
     }
 
     .login-wrapper {
@@ -291,4 +307,32 @@
     .button-group button {
         width: 100%;
     }
+}
+
+.auth-footer {
+    margin-top: 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.auth-footer-link {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.auth-footer-link:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.auth-footer-separator {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+    -webkit-user-select: none;
+    user-select: none;
 }
