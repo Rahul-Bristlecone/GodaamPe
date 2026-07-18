@@ -52,7 +52,8 @@ export const createStore = async (storeData) => {
         if (!response.ok) {
             const errorData = await parseJsonResponse(response);
             handleAuthExpiry(response, errorData);
-            throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}`);
+            const details = errorData?.errors ? ` - ${JSON.stringify(errorData.errors)}` : '';
+            throw new Error(errorData?.message || `Error: ${response.status} ${response.statusText}${details}`);
         }
 
         const data = await parseJsonResponse(response);

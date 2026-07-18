@@ -112,6 +112,10 @@ function LocationsTablePage({ username, onLogout, onBack }) {
         }));
     };
 
+    const getSelectedCustomer = (customerId) => {
+        return customerOptions.find((customer) => customer.id === String(customerId));
+    };
+
     const getAddressPreviewLines = (location) => {
         return [location.address_line1, location.address_line2, location.address_line3]
             .filter(Boolean)
@@ -129,15 +133,21 @@ function LocationsTablePage({ username, onLogout, onBack }) {
         setError('');
         setSuccess('');
 
-        // Prepare payload - adjust field names to match backend schema
-        // Convert numeric fields to proper types
+        const selectedCustomer = getSelectedCustomer(formData.customerId);
+        if (!selectedCustomer) {
+            setError('Please select a valid customer');
+            setLoading(false);
+            return;
+        }
+
+        // Backend store schema expects customer_name from the selected customer option.
         const payload = {
             store_number: parseInt(formData.userStoreNumber, 10),
+            customer_name: selectedCustomer.label,
             store_name: formData.storeName,
-            customer_id: parseInt(formData.customerId, 10),
             address_line1: formData.addressLine1,
-            ...(formData.addressLine2 ? { address_line2: formData.addressLine2 } : {}),
-            ...(formData.addressLine3 ? { address_line3: formData.addressLine3 } : {}),
+            address_line2: formData.addressLine2 || null,
+            address_line3: formData.addressLine3 || null,
             pin_code: formData.pinCode,
             state_code: formData.stateCode,
             country_code: formData.countryCode,
@@ -258,11 +268,18 @@ function LocationsTablePage({ username, onLogout, onBack }) {
         setError('');
         setSuccess('');
 
-        // Prepare payload
+        const selectedCustomer = getSelectedCustomer(formData.customerId);
+        if (!selectedCustomer) {
+            setError('Please select a valid customer');
+            setLoading(false);
+            return;
+        }
+
+        // Backend store schema expects customer_name from the selected customer option.
         const payload = {
             store_number: parseInt(formData.userStoreNumber, 10),
+            customer_name: selectedCustomer.label,
             store_name: formData.storeName,
-            customer_id: parseInt(formData.customerId, 10),
             address_line1: formData.addressLine1,
             address_line2: formData.addressLine2 || null,
             address_line3: formData.addressLine3 || null,
