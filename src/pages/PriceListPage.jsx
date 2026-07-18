@@ -15,7 +15,7 @@ function PriceListPage({ username, onLogout, onBack }) {
                             </svg>
                         </span>
                     </button>
-                    <h1>💵 ABS Price list</h1>
+                    <h1>💵 GodaamPe Price list</h1>
                 </div>
                 <div className="content-area">
                     <p>Price list management content will go here.</p>

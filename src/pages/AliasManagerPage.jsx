@@ -15,7 +15,7 @@ function AliasManagerPage({ username, onLogout, onBack }) {
                             </svg>
                         </span>
                     </button>
-                    <h1>🔖 ABS Alias manager</h1>
+                    <h1>🔖 GodaamPe Alias manager</h1>
                 </div>
                 <div className="content-area">
                     <p>Alias manager content will go here.</p>

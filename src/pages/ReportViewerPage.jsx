@@ -28,7 +28,7 @@ function ReportViewerPage({ username, onLogout, onBack }) {
                             </svg>
                         </span>
                     </button>
-                    <h1>📈 ABS Report viewer</h1>
+                    <h1>📈 GodaamPe Report viewer</h1>
                 </div>
                 <div className="content-area">
                     {reportContext?.reportType === 'Delivery Docket' ? (

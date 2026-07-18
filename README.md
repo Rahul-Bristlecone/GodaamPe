@@ -3,7 +3,7 @@
 **This ReadMe will be updated with the project Evolution**
 ** I am testing**
 
-GodaamPe is a React + Vite frontend for the ABS Suite workflow. It provides a login experience, a dashboard launcher, and multiple operations pages such as pick, stock, pricing, alias management, and table/config management.
+GodaamPe is a React + Vite frontend for the GodaamPe workflow. It provides a login experience, a dashboard launcher, and multiple operations pages such as pick, stock, pricing, alias management, and table/config management.
 
 ## Tech Stack
 
@@ -15,7 +15,7 @@ GodaamPe is a React + Vite frontend for the ABS Suite workflow. It provides a lo
 ## Features
 
 - JWT-based login and logout flow
-- Dashboard with quick access cards for all ABS modules
+- Dashboard with quick access cards for all GodaamPe modules
 - App-level page switching without external routing
 - Reusable auth utility for authenticated API requests
 - API utility modules for store and upload/order workflows
@@ -56,18 +56,18 @@ GodaamPe is a React + Vite frontend for the ABS Suite workflow. It provides a lo
 
 After login, users land on the dashboard and can open:
 
-- ABS Pick
+- GodaamPe Pick
 - Config Manager
 - Sales Manager
 - Product Table
 - Company Table
 - Customer Table
 - Locations Table
-- ABS Price list
-- ABS Alias manager
-- ABS Log display
-- ABS Stock
-- ABS Report viewer
+- GodaamPe Price list
+- GodaamPe Alias manager
+- GodaamPe Log display
+- GodaamPe Stock
+- GodaamPe Report viewer
 
 ## API Integration
 
@@ -172,7 +172,7 @@ See complete diagrams in `FLOW_DIAGRAM.md`.
 	- `USER_SERVICE_URL`
 	- `STORE_SERVICE_URL`
 	- `PRODUCT_SERVICE_URL`
-	- `ABS_CONFIG_SERVICE_URL`
+	- `GodaamPe_CONFIG_SERVICE_URL`
 	- `COMPANY_SERVICE_URL`
 	- `CUSTOMER_SERVICE_URL`
 	- `ORDER_SERVICE_URL`

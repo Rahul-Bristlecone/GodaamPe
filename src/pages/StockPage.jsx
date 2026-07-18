@@ -15,7 +15,7 @@ function StockPage({ username, onLogout, onBack }) {
                             </svg>
                         </span>
                     </button>
-                    <h1>📊 ABS Stock</h1>
+                    <h1>📊 GodaamPe Stock</h1>
                 </div>
                 <div className="content-area">
                     <p>Stock management content will go here.</p>

@@ -1,6 +1,6 @@
 import Header from '../components/Header';
 import { useRef, useState, useEffect } from 'react';
-import { saveAbsConfiguration, getAbsConfiguration } from '../utils/absConfigService';
+import { saveGodaamPeConfiguration, getGodaamPeConfiguration } from '../utils/godaampeConfigService';
 import '../styles/SubPage.css';
 
 function ConfigManagerPage({ onClose }) {
@@ -24,7 +24,7 @@ function ConfigManagerPage({ onClose }) {
         'Shutdown'
     ];
 
-    const ABS_CONFIG_FIELDS = new Set([
+    const GodaamPe_CONFIG_FIELDS = new Set([
         'DAYSBEFORENOTBEFORE', 'DAYSBEFORENOTAFTER', 'ALLOWHANDPICK', 'ALLOWOVERPICK', 'ALLOWPICKBYPRODWOSCAN',
         'THIRDPARTYPACKER', 'INVGENMETHOD', 'HIGHLIGHTDAYS', 'DAYSTOSHOW', 'DAYSTOSHOWDISCARDED',
         'DAYSTOSHOWCANCELLED', 'ALLOWORDERFORWARDING', 'SHOWCOSTPRICE', 'DISPLAYRACKLOCNONPDT', 'PDTCOMPORT',
@@ -91,7 +91,7 @@ function ConfigManagerPage({ onClose }) {
         }
 
         return Object.entries(source).reduce((acc, [key, value]) => {
-            if (!ABS_CONFIG_FIELDS.has(key)) {
+            if (!GodaamPe_CONFIG_FIELDS.has(key)) {
                 return acc;
             }
 
@@ -119,7 +119,7 @@ function ConfigManagerPage({ onClose }) {
     }, [activeTab, tabDrafts]);
 
     const fetchAndLoadConfiguration = async () => {
-        const result = await getAbsConfiguration();
+        const result = await getGodaamPeConfiguration();
         if (result.success && result.data) {
             const fetchedData = Array.isArray(result.data) ? (result.data[0] || {}) : result.data;
             setTabDrafts((prev) => ({
@@ -130,7 +130,7 @@ function ConfigManagerPage({ onClose }) {
             setUpdateMessage('');
         } else {
             const errorMessage = result.error || 'Failed to fetch configuration.';
-            console.warn('Failed to fetch ABS configuration:', errorMessage);
+            console.warn('Failed to fetch GodaamPe configuration:', errorMessage);
             setUpdateStatus('error');
             setUpdateMessage(errorMessage);
             setShowSuccessDialog(false);
@@ -151,7 +151,7 @@ function ConfigManagerPage({ onClose }) {
 
             fields.forEach((field, index) => {
                 const key = makeFieldKey(field, index);
-                if (!key || !ABS_CONFIG_FIELDS.has(key) || !(key in data)) {
+                if (!key || !GodaamPe_CONFIG_FIELDS.has(key) || !(key in data)) {
                     return;
                 }
 
@@ -215,7 +215,7 @@ function ConfigManagerPage({ onClose }) {
             }
 
             const key = makeFieldKey(field, index) || `field_${index + 1}`;
-            if (!ABS_CONFIG_FIELDS.has(key)) {
+            if (!GodaamPe_CONFIG_FIELDS.has(key)) {
                 return;
             }
 
@@ -283,7 +283,7 @@ function ConfigManagerPage({ onClose }) {
 
         const payload = mergeAllTabValues();
 
-        const result = await saveAbsConfiguration(payload);
+        const result = await saveGodaamPeConfiguration(payload);
 
         if (result.success) {
             setUpdateStatus('success');
@@ -327,7 +327,7 @@ function ConfigManagerPage({ onClose }) {
                         <div className="form-group full-width">
                             <label className="compact-label">Invoice Number Generation Method</label>
                             <select className="compact-select invoice-method-select">
-                                <option>ABS Generated</option>
+                                <option>GodaamPe Generated</option>
                                 <option>User Keyed-in (duplicates not allowed)</option>
                                 <option>Import via Account Interface</option>
                             </select>
@@ -648,11 +648,11 @@ function ConfigManagerPage({ onClose }) {
 
     return (
         <div className="modal-overlay" ref={dialogRef}>
-            <div className="config-dialog abspick-config-dialog">
+            <div className="config-dialog godaampepick-config-dialog">
                 <div className="config-dialog-header">
                     <div>
-                        <h1>AbsPick Configuration</h1>
-                        <p className="dialog-note">Configure AbsPick settings for the application.</p>
+                        <h1>GodaamPe Pick Configuration</h1>
+                        <p className="dialog-note">Configure GodaamPe Pick settings for the application.</p>
                         <div className="dialog-tabs">
                             {tabs.map(tab => (
                                 <button

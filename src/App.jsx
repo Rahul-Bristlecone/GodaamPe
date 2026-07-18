@@ -92,7 +92,7 @@ function App() {
                         )}
                     </>
                 );
-            case 'ABS Pick':
+            case 'GodaamPe Pick':
                 return <PickPage {...pageProps} />;
             case 'Sales Manager':
                 return <SalesManagerPage {...pageProps} />;
@@ -104,15 +104,15 @@ function App() {
                 return <CustomerTablePage {...pageProps} />;
             case 'Locations Table':
                 return <LocationsTablePage {...pageProps} />;
-            case 'ABS Price list':
+            case 'GodaamPe Price list':
                 return <PriceListPage {...pageProps} />;
-            case 'ABS Alias manager':
+            case 'GodaamPe Alias manager':
                 return <AliasManagerPage {...pageProps} />;
-            case 'ABS Log display':
+            case 'GodaamPe Log display':
                 return <LogDisplayPage {...pageProps} />;
-            case 'ABS Stock':
+            case 'GodaamPe Stock':
                 return <StockPage {...pageProps} />;
-            case 'ABS Report viewer':
+            case 'GodaamPe Report viewer':
                 return <ReportViewerPage {...pageProps} />;
             default:
                 return <DashboardPage username={loggedInUser} onLogout={handleLogout} onNavigate={handleNavigate} />;

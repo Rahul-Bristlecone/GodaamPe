@@ -749,7 +749,7 @@
     width: min(100%, 620px);
 }
 
-.config-dialog.abspick-config-dialog {
+.config-dialog.godaampepick-config-dialog {
     width: min(100%, 550px);
 }
 
@@ -1166,7 +1166,7 @@
     background-color: #cbd5e1;
 }
 
-/* AbsPick Configuration: match header user-info button look with solid colors */
+/* GodaamPe Pick Configuration: match header user-info button look with solid colors */
 .config-dialog .dialog-tab,
 .config-dialog .primary-button,
 .config-dialog .secondary-button,
