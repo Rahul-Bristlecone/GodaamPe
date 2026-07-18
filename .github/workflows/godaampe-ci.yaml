@@ -52,7 +52,7 @@ jobs:
 
       - name: Update Kubernetes manifest with new image tag
         run: |
-          git clone https://${{ github.token }}@github.com/Rahul-Bristlecone/godaampe-infra.git
+          git clone https://${{ secrets.DEPLOY_TOKEN }}@github.com/Rahul-Bristlecone/godaampe-infra.git
           cd godaampe-infra
           sed -i "s|image: .*$IMAGE_NAME:.*|image: $IMAGE_NAME:${{ github.sha }}|" frontend/templates/deployment.yaml
           git config user.name "rahul-bristlecone"
