@@ -403,6 +403,10 @@
 }
 
 @media (max-width: 768px) {
+    .login-container::after {
+        opacity: 0.5;
+    }
+
     .login-container {
         background-size: cover, 260px auto;
     }
