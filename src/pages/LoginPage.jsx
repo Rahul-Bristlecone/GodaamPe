@@ -97,80 +97,90 @@ function LoginPage({ onLoginSuccess, onNavigateToRegister }) {
 
     return (
         <div className="login-container">
-            <div className="auth-page-actions">
-                <button
-                    type="button"
-                    className="auth-link-btn"
-                    onClick={onNavigateToRegister}
-                >
-                    Sign Up
-                </button>
-            </div>
-
-            <div className="login-branding">
-                <p className="brand-welcome">Welcome to</p>
-                <img src={godaamLogo} alt="GodaamPe" className="brand-logo" />
-                <div className="brand-tagline-box">India's own Supply Chain Tunnel</div>
-            </div>
-
-            <div className="login-wrapper">
-                <div className="login-type-tabs">
-                    <div 
-                        className={`login-tab ${loginType === 'company' ? 'active' : ''}`}
-                        onClick={() => switchLoginType('company')}
-                    >
-                        <span className="tab-icon">🏢</span>
-                        <span className="tab-text">Supplier Login</span>
-                    </div>
-                    <div 
-                        className={`login-tab ${loginType === 'support' ? 'active' : ''}`}
-                        onClick={() => switchLoginType('support')}
-                    >
-                        <span className="tab-icon">🛠️</span>
-                        <span className="tab-text">Support Login</span>
-                    </div>
+            <div className="auth-left-panel">
+                <div className="login-branding">
+                    <img src={godaamLogo} alt="GodaamPe" className="brand-logo" />
+                    <div className="brand-tagline-box">India's own Supply Chain Tunnel</div>
                 </div>
 
-                {error && <div className="error-message">{error}</div>}
-
-                <div className="login-form">
-                    <div className="form-group">
-                        <input
-                            type="text"
-                            placeholder="Username"
-                            value={username}
-                            onChange={(e) => {
-                                setUsername(e.target.value);
-                                setError('');
-                            }}
-                            onKeyPress={handleKeyPress}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => {
-                                setPassword(e.target.value);
-                                setError('');
-                            }}
-                            onKeyPress={handleKeyPress}
-                        />
-                    </div>
-                    <div className="button-group">
-                        <button onClick={handleCancel} className="cancel-btn" disabled={loading}>Cancel</button>
-                        <button onClick={handleLogin} className="login-btn" disabled={loading}>Login</button>
-                    </div>
+                <div className="auth-footer auth-footer-left">
+                    <a href="/faq" className="auth-footer-link">Help &amp; Support</a>
+                    <span className="auth-footer-separator">·</span>
+                    <a href="/terms" className="auth-footer-link">Terms of Service</a>
+                    <span className="auth-footer-separator">·</span>
+                    <a href="/privacy" className="auth-footer-link">Privacy Policy</a>
                 </div>
             </div>
 
-            <div className="auth-footer">
-                <a href="/faq" className="auth-footer-link">Help &amp; Support</a>
-                <span className="auth-footer-separator">·</span>
-                <a href="/terms" className="auth-footer-link">Terms of Service</a>
-                <span className="auth-footer-separator">·</span>
-                <a href="/privacy" className="auth-footer-link">Privacy Policy</a>
+            <div className="auth-right-panel">
+                <div className="auth-page-actions">
+                    <button
+                        type="button"
+                        className="auth-link-btn"
+                        onClick={onNavigateToRegister}
+                    >
+                        Sign Up
+                    </button>
+                </div>
+
+                <div className="auth-title-block">
+                    <h1 className="auth-title">
+                        <span className="auth-title-godaam">Godaam</span>
+                        <span className="auth-title-pe">Pe</span>
+                    </h1>
+                </div>
+
+                <div className="login-wrapper">
+                    <div className="login-type-tabs">
+                        <div 
+                            className={`login-tab ${loginType === 'company' ? 'active' : ''}`}
+                            onClick={() => switchLoginType('company')}
+                        >
+                            <span className="tab-icon">🏢</span>
+                            <span className="tab-text">Supplier Login</span>
+                        </div>
+                        <div 
+                            className={`login-tab ${loginType === 'support' ? 'active' : ''}`}
+                            onClick={() => switchLoginType('support')}
+                        >
+                            <span className="tab-icon">🛠️</span>
+                            <span className="tab-text">Support Login</span>
+                        </div>
+                    </div>
+
+                    {error && <div className="error-message">{error}</div>}
+
+                    <div className="login-form">
+                        <div className="form-group">
+                            <input
+                                type="text"
+                                placeholder="Username"
+                                value={username}
+                                onChange={(e) => {
+                                    setUsername(e.target.value);
+                                    setError('');
+                                }}
+                                onKeyPress={handleKeyPress}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <input
+                                type="password"
+                                placeholder="Password"
+                                value={password}
+                                onChange={(e) => {
+                                    setPassword(e.target.value);
+                                    setError('');
+                                }}
+                                onKeyPress={handleKeyPress}
+                            />
+                        </div>
+                        <div className="button-group">
+                            <button onClick={handleCancel} className="cancel-btn" disabled={loading}>Cancel</button>
+                            <button onClick={handleLogin} className="login-btn" disabled={loading}>Login</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
