@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import '../styles/LoginPage.css';
 import { getUserServiceUrl } from '../utils/apiConfig';
+import godaamLogo from '../assets/godaampe_brand_logo.png';
 
 const userServiceUrl = getUserServiceUrl();
 
@@ -89,8 +90,8 @@ function RegisterPage({ onNavigateToLogin }) {
             </div>
 
             <div className="login-branding">
-                <h1 className="brand-title">ABS Suite</h1>
-                <p className="brand-subtitle">Create your account</p>
+                <img src={godaamLogo} alt="GodaamPe" className="brand-logo" />
+                <div className="brand-tagline-box">India's own Supply Chain Tunnel</div>
             </div>
 
             <div className="login-wrapper">
@@ -142,6 +143,14 @@ function RegisterPage({ onNavigateToLogin }) {
                         </button>
                     </div>
                 </div>
+            </div>
+
+            <div className="auth-footer">
+                <a href="/faq" className="auth-footer-link">Help &amp; Support</a>
+                <span className="auth-footer-separator">·</span>
+                <a href="/terms" className="auth-footer-link">Terms of Service</a>
+                <span className="auth-footer-separator">·</span>
+                <a href="/privacy" className="auth-footer-link">Privacy Policy</a>
             </div>
         </div>
     );
