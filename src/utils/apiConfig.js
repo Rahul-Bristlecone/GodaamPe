@@ -36,14 +36,14 @@ const firstDefined = (...values) => {
 const USER_SERVICE_FALLBACK = '/user-api';
 const STORE_SERVICE_FALLBACK = '/store-api';
 const PRODUCT_SERVICE_FALLBACK = '/product-api';
-const ABS_CONFIG_SERVICE_FALLBACK = '/config-api';
+const GodaamPe_CONFIG_SERVICE_FALLBACK = '/config-api';
 const COMPANY_SERVICE_FALLBACK = '/company-api';
 const CUSTOMER_SERVICE_FALLBACK = '/customer-api';
 const ORDER_SERVICE_FALLBACK = '/order-api';
 const USER_SERVICE_DEV_PROXY_PATH = '/user-api';
 const STORE_SERVICE_DEV_PROXY_PATH = '/store-api';
 const PRODUCT_SERVICE_DEV_PROXY_PATH = '/product-api';
-const ABS_CONFIG_SERVICE_DEV_PROXY_PATH = '/config-api';
+const GodaamPe_CONFIG_SERVICE_DEV_PROXY_PATH = '/config-api';
 const COMPANY_SERVICE_DEV_PROXY_PATH = '/company-api';
 const CUSTOMER_SERVICE_DEV_PROXY_PATH = '/customer-api';
 const ORDER_SERVICE_DEV_PROXY_PATH = '/order-api';
@@ -97,19 +97,19 @@ export const getProductServiceUrl = () => {
     );
 };
 
-export const getAbsConfigServiceUrl = () => {
+export const getGodaamPeConfigServiceUrl = () => {
     if (import.meta.env.DEV) {
         return firstDefined(
-            import.meta.env.VITE_ABS_CONFIG_SERVICE_PROXY_PATH,
-            ABS_CONFIG_SERVICE_DEV_PROXY_PATH
+            import.meta.env.VITE_GodaamPe_CONFIG_SERVICE_PROXY_PATH,
+            GodaamPe_CONFIG_SERVICE_DEV_PROXY_PATH
         );
     }
 
     return firstDefined(
-        getRuntimeConfigValue('ABS_CONFIG_SERVICE_URL'),
-        import.meta.env.VITE_ABS_CONFIG_SERVICE_URL,
-        import.meta.env.VITE_ABS_CONFIG_SERVICE_URL_LOCAL,
-        ABS_CONFIG_SERVICE_FALLBACK
+        getRuntimeConfigValue('GodaamPe_CONFIG_SERVICE_URL'),
+        import.meta.env.VITE_GodaamPe_CONFIG_SERVICE_URL,
+        import.meta.env.VITE_GodaamPe_CONFIG_SERVICE_URL_LOCAL,
+        GodaamPe_CONFIG_SERVICE_FALLBACK
     );
 };
 

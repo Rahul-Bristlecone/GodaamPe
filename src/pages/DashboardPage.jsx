@@ -8,18 +8,18 @@ function DashboardPage({ onLogout, username, onNavigate }) {
     };
 
     const cards = [
-        { id: 0, title: 'ABS Pick', icon: '📋' },
+        { id: 0, title: 'GodaamPe Pick', icon: '📋' },
         { id: 1, title: 'Config Manager', icon: '⚙️' },
         { id: 2, title: 'Sales Manager', icon: '💰' },
         { id: 3, title: 'Product Table', icon: '📦' },
         { id: 4, title: 'Company Table', icon: '🏢' },
         { id: 5, title: 'Customer Table', icon: '👥' },
         { id: 6, title: 'Locations Table', icon: '📍' },
-        { id: 7, title: 'ABS Price list', icon: '💵' },
-        { id: 8, title: 'ABS Alias manager', icon: '🔖' },
-        { id: 9, title: 'ABS Log display', icon: '📋' },
-        { id: 10, title: 'ABS Stock', icon: '📊' },
-        { id: 11, title: 'ABS Report viewer', icon: '📈' }
+        { id: 7, title: 'GodaamPe Price list', icon: '💵' },
+        { id: 8, title: 'GodaamPe Alias manager', icon: '🔖' },
+        { id: 9, title: 'GodaamPe Log display', icon: '📋' },
+        { id: 10, title: 'GodaamPe Stock', icon: '📊' },
+        { id: 11, title: 'GodaamPe Report viewer', icon: '📈' }
     ];
 
     return (
@@ -27,7 +27,7 @@ function DashboardPage({ onLogout, username, onNavigate }) {
             <Header username={username} onLogout={onLogout} onDashboard={() => {}} />
             <div className="dashboard-content">
                 <h2 className="welcome-message">
-                    Welcome <span className="username-highlight">{username}</span> to the ABS Suite
+                    Welcome <span className="username-highlight">{username}</span> to GodaamPe
                 </h2>
                 <div className="cards-grid">
                     {cards.map(card => (

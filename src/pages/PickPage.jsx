@@ -573,7 +573,7 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
         setContextMenu(null);
 
         if (onNavigate) {
-            onNavigate('ABS Report viewer');
+            onNavigate('GodaamPe Report viewer');
             return;
         }
 
@@ -952,7 +952,7 @@ function PickPage({ username, onLogout, onBack, onNavigate }) {
                                 </div>
                             </div>
 
-                            <div className="import-status-tabs" aria-label="ABSPick import status tabs" role="tablist">
+                            <div className="import-status-tabs" aria-label="GodaamPePick import status tabs" role="tablist">
                                 {importStatusTabs.map((tab) => (
                                     <button
                                         key={tab}

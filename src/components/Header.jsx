@@ -1,11 +1,13 @@
 import '../styles/Header.css';
+import headerImage from '../assets/header_image_transparent.png';
 
 function Header({ username, onLogout, onDashboard }) {
     return (
         <header className="app-header">
-            <div className="header-left">
-                <h1 className="app-title" onClick={onDashboard}>ABS Suite</h1>
-                <span className="app-subtitle">Advanced Barcoding Solution</span>
+            <div className="header-left" onClick={onDashboard} role="button" tabIndex={0} onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onDashboard()}>
+                <div className="header-logo-block">
+                    <img src={headerImage} alt="GodaamPe" className="header-logo" />
+                </div>
             </div>
             <div className="header-right">
                 <div className="user-info">

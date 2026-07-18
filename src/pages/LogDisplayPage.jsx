@@ -15,7 +15,7 @@ function LogDisplayPage({ username, onLogout, onBack }) {
                             </svg>
                         </span>
                     </button>
-                    <h1>📋 ABS Log display</h1>
+                    <h1>📋 GodaamPe Log display</h1>
                 </div>
                 <div className="content-area">
                     <p>Log display content will go here.</p>

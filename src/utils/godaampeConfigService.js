@@ -1,11 +1,11 @@
 /**
- * Abs Configuration Service - Handles global configuration API calls
+ * GodaamPe Configuration Service - Handles global configuration API calls
  */
 
 import { getAuthToken, handleAuthExpiry } from './authService';
-import { getAbsConfigServiceUrl } from './apiConfig';
+import { getGodaamPeConfigServiceUrl } from './apiConfig';
 
-const API_URL = getAbsConfigServiceUrl();
+const API_URL = getGodaamPeConfigServiceUrl();
 
 const getAuthHeader = () => {
     const token = getAuthToken();
@@ -83,7 +83,7 @@ const normalizeNetworkErrorMessage = (err) => {
     return isNetworkFailure ? 'Error: 502 Bad Gateway' : message;
 };
 
-export const getAbsConfiguration = async () => {
+export const getGodaamPeConfiguration = async () => {
     try {
         const endpoint = `${API_URL}/glbconfig`;
         const response = await fetch(endpoint, {
@@ -100,12 +100,12 @@ export const getAbsConfiguration = async () => {
         const data = await parseJsonResponse(response);
         return { success: true, data };
     } catch (err) {
-        console.error('Error fetching ABS configuration:', err);
+        console.error('Error fetching GodaamPe configuration:', err);
         return { success: false, error: normalizeNetworkErrorMessage(err) };
     }
 };
 
-export const saveAbsConfiguration = async (payload) => {
+export const saveGodaamPeConfiguration = async (payload) => {
     try {
         const endpoint = `${API_URL}/glbconfig`;
         const requestOptions = {
@@ -118,7 +118,7 @@ export const saveAbsConfiguration = async (payload) => {
             body: JSON.stringify(payload)
         });
 
-        // Some ABS backends expect flattened values instead of { tab, values }.
+        // Some GodaamPe backends expect flattened values instead of { tab, values }.
         if (response.status === 422 && payload?.values && typeof payload.values === 'object') {
             response = await fetch(endpoint, {
                 ...requestOptions,
@@ -146,7 +146,7 @@ export const saveAbsConfiguration = async (payload) => {
         const data = await parseJsonResponse(response);
         return { success: true, data };
     } catch (err) {
-        console.error('Error saving ABS configuration:', err);
+        console.error('Error saving GodaamPe configuration:', err);
         return { success: false, error: normalizeNetworkErrorMessage(err) };
     }
 };

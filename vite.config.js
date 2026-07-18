@@ -9,14 +9,14 @@ import { env } from 'process';
 const USER_SERVICE_PROXY_PATH = '/user-api';
 const STORE_SERVICE_PROXY_PATH = '/store-api';
 const PRODUCT_SERVICE_PROXY_PATH = '/product-api';
-const ABS_CONFIG_SERVICE_PROXY_PATH = '/config-api';
+const GodaamPe_CONFIG_SERVICE_PROXY_PATH = '/config-api';
 const COMPANY_SERVICE_PROXY_PATH = '/company-api';
 const CUSTOMER_SERVICE_PROXY_PATH = '/customer-api';
 const ORDER_SERVICE_PROXY_PATH = '/order-api';
 const USER_SERVICE_FALLBACK = 'http://127.0.0.1:5001';
 const STORE_SERVICE_FALLBACK = 'http://127.0.0.1:5002';
 const PRODUCT_SERVICE_FALLBACK = 'http://127.0.0.1:5003';
-const ABS_CONFIG_SERVICE_FALLBACK = 'http://127.0.0.1:5004';
+const GodaamPe_CONFIG_SERVICE_FALLBACK = 'http://127.0.0.1:5004';
 const COMPANY_SERVICE_FALLBACK = 'http://127.0.0.1:5005';
 const CUSTOMER_SERVICE_FALLBACK = 'http://127.0.0.1:5006';
 const ORDER_SERVICE_FALLBACK = 'http://127.0.0.1:5007';
@@ -33,7 +33,7 @@ export default defineConfig(({ command }) => {
   const userServiceTarget = env.VITE_USER_SERVICE_URL_LOCAL || USER_SERVICE_FALLBACK;
   const storeServiceTarget = env.VITE_STORE_SERVICE_URL_LOCAL || STORE_SERVICE_FALLBACK;
   const productServiceTarget = env.VITE_PRODUCT_SERVICE_URL_LOCAL || PRODUCT_SERVICE_FALLBACK;
-  const absConfigServiceTarget = env.VITE_ABS_CONFIG_SERVICE_URL_LOCAL || ABS_CONFIG_SERVICE_FALLBACK;
+  const godaamPeConfigServiceTarget = env.VITE_GodaamPe_CONFIG_SERVICE_URL_LOCAL || GodaamPe_CONFIG_SERVICE_FALLBACK;
   const companyServiceTarget = env.VITE_COMPANY_SERVICE_URL_LOCAL || COMPANY_SERVICE_FALLBACK;
   const customerServiceTarget = env.VITE_CUSTOMER_SERVICE_URL_LOCAL || CUSTOMER_SERVICE_FALLBACK;
   const orderServiceTarget = env.VITE_ORDER_SERVICE_URL_LOCAL || ORDER_SERVICE_FALLBACK;
@@ -44,7 +44,7 @@ export default defineConfig(({ command }) => {
         ? `${env.APPDATA}/ASP.NET/https`
         : `${env.HOME}/.aspnet/https`;
 
-    const certificateName = 'sps-suite.client';
+    const certificateName = 'godaampe.client';
     const certFilePath = path.join(baseFolder, `${certificateName}.pem`);
     const keyFilePath = path.join(baseFolder, `${certificateName}.key`);
 
@@ -113,12 +113,12 @@ export default defineConfig(({ command }) => {
           rewrite: (requestPath) =>
             requestPath.replace(new RegExp(`^${PRODUCT_SERVICE_PROXY_PATH}`), ''),
         },
-        [`^${ABS_CONFIG_SERVICE_PROXY_PATH}`]: {
-          target: absConfigServiceTarget,
+        [`^${GodaamPe_CONFIG_SERVICE_PROXY_PATH}`]: {
+          target: godaamPeConfigServiceTarget,
           changeOrigin: true,
           secure: false,
           rewrite: (requestPath) =>
-            requestPath.replace(new RegExp(`^${ABS_CONFIG_SERVICE_PROXY_PATH}`), ''),
+            requestPath.replace(new RegExp(`^${GodaamPe_CONFIG_SERVICE_PROXY_PATH}`), ''),
         },
         [`^${COMPANY_SERVICE_PROXY_PATH}`]: {
           target: companyServiceTarget,
