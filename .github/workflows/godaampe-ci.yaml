@@ -53,15 +53,12 @@ jobs:
       - name: Update Kubernetes manifest with new image tag
         run: |
           git clone https://github.com/Rahul-Bristlecone/godaampe-infra.git
-          cd godaampe-infra/frontend/templates/
-          sed -i "s|image: .*$IMAGE_NAME:.*|image: $IMAGE_NAME:${{ github.sha }}|" deployment.yaml
-
-      - name: Commit and push manifest update
-        run: |
+          cd godaampe-infra
+          sed -i "s|image: .*$IMAGE_NAME:.*|image: $IMAGE_NAME:${{ github.sha }}|" frontend/templates/deployment.yaml
           git config user.name "rahul-bristlecone"
           git config user.email "rsshrma92@hotmail.com"
-          git add deployment.yaml
-          git commit -m "Update image to $IMAGE_NAME:${{ github.sha }}"
+          git add frontend/templates/deployment.yaml
+          git commit -m "Update frontend image to $IMAGE_NAME:${{ github.sha }}"
           git push
 
 # this is for reusable workflow to update the image tag in the argocd-infra repo
